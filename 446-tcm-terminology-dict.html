@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>中医术语词典 · 446体系术语层</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f8f7f4; --bg2: #ffffff; --bg3: #f0ede6;
+      --accent-gold: #b45309; --accent-cyan: #0891b2;
+      --accent-purple: #7c3aed; --accent-rose: #be123c;
+      --accent-green: #047857;
+      --border: rgba(0,0,0,0.08); --border2: rgba(0,0,0,0.14);
+      --text: #1c1917; --text2: #57534e; --text3: #a8a29e;
+      /* 三分类色系：对齐446体系三大模块 */
+      --deficiency: #047857;   /* 虚证治法 → 绿 (四虚) */
+      --excess: #7c3aed;      /* 实证治法 → 紫 (四实+寒热错杂) */
+      --external: #c2410c;     /* 外感证治法 → 橙红 (六外感) */
+      /* 保留旧色系供卡片border兼容 */
+      --warm: #c2410c; --cool: #1d4ed8; --tonic: #047857;
+      --drain: #7c3aed; --organ: #be123c; --blood: #9f1239;
+      --heat: #b91c1c;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: var(--bg); color: var(--text); font-family: 'Noto Sans SC', sans-serif; line-height: 1.7; }
+    header { background: var(--bg2); border-bottom: 1px solid var(--border2); padding: 28px 0 20px; text-align: center; }
+    .eyebrow { font-size: 10px; letter-spacing: 3px; color: var(--text3); text-transform: uppercase; margin-bottom: 6px; }
+    h1 { font-family: 'Noto Serif SC', serif; font-size: 26px; font-weight: 900; margin-bottom: 4px; }
+    h1 span { color: var(--accent-gold); }
+    .header-sub { font-size: 12px; color: var(--text2); letter-spacing: 2px; margin-bottom: 18px; }
+    .stats-row { display: flex; justify-content: center; gap: 32px; flex-wrap: wrap; }
+    .stat-item { text-align: center; }
+    .stat-n { font-size: 18px; font-weight: 700; color: var(--accent-gold); }
+    .stat-l { font-size: 9px; letter-spacing: 1px; color: var(--text3); margin-top: 2px; }
+    .search-wrap { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 14px 0; position: sticky; top: 0; z-index: 100; }
+    .search-inner { max-width: 680px; margin: 0 auto; padding: 0 20px; position: relative; }
+    #search-input { width: 100%; padding: 10px 16px 10px 42px; border: 1px solid var(--border2); border-radius: 10px; font-size: 14px; font-family: 'Noto Sans SC', sans-serif; background: var(--bg); outline: none; transition: border-color 0.2s; }
+    #search-input:focus { border-color: var(--accent-gold); }
+    .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 15px; opacity: 0.4; }
+    #search-count { font-size: 11px; color: var(--text3); margin-top: 6px; text-align: center; min-height: 16px; }
+    .cat-nav { background: var(--bg2); border-bottom: 1px solid var(--border); overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .cat-nav-inner { display: flex; gap: 4px; padding: 10px 16px; max-width: 900px; margin: 0 auto; min-width: max-content; }
+    .cat-btn { padding: 5px 14px; border-radius: 20px; border: 1px solid var(--border2); font-size: 12px; cursor: pointer; white-space: nowrap; background: transparent; color: var(--text2); transition: all 0.15s; font-family: 'Noto Sans SC', sans-serif; }
+    .cat-btn:hover { border-color: var(--accent-gold); color: var(--accent-gold); }
+    .cat-btn.active { background: var(--accent-gold); color: white; border-color: var(--accent-gold); }
+    .cat-btn .dot { display: inline-block; margin-right: 4px; }
+    main { max-width: 800px; margin: 0 auto; padding: 24px 16px 60px; }
+    .term-section { margin-bottom: 40px; }
+    .term-section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 2px solid var(--border2); }
+    .term-section-icon { font-size: 18px; }
+    .term-section-title { font-family: 'Noto Serif SC', serif; font-size: 16px; font-weight: 700; }
+    .term-section-sub { font-size: 11px; color: var(--text3); margin-left: auto; }
+    .term-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; margin-bottom: 12px; transition: box-shadow 0.2s, opacity 0.2s; border-left: 4px solid transparent; }
+    .term-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+    .term-card.hidden { display: none; }
+    /* 三分类卡片边框 */
+    .term-card.bar-deficiency { border-left-color: var(--deficiency); }
+    .term-card.bar-excess    { border-left-color: var(--excess); }
+    .term-card.bar-external  { border-left-color: var(--external); }
+    .term-card-top { display: flex; align-items: baseline; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+    .term-main { font-family: 'Noto Serif SC', serif; font-size: 18px; font-weight: 700; letter-spacing: 1px; }
+    .term-main .term-sep { color: var(--text3); font-weight: 400; margin: 0 2px; }
+    .term-badge { font-size: 10px; letter-spacing: 1px; padding: 2px 8px; border-radius: 10px; font-weight: 700; flex-shrink: 0; }
+    /* 三分类徽标 */
+    .badge-deficiency { background: rgba(4,120,87,0.13); color: var(--deficiency); }
+    .badge-excess     { background: rgba(124,58,237,0.13); color: var(--excess); }
+    .badge-external   { background: rgba(194,65,12,0.13); color: var(--external); }
+    .term-breakdown { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; align-items: center; }
+    .breakdown-chip { background: var(--bg3); border-radius: 6px; padding: 3px 10px; font-size: 12px; color: var(--text2); }
+    .breakdown-chip .arrow { color: var(--accent-gold); margin: 0 4px; font-size: 10px; }
+    .term-image { background: var(--bg3); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--text2); margin-bottom: 12px; line-height: 1.8; border-left: 3px solid var(--border2); }
+    .term-image strong { color: var(--accent-gold); }
+    .term-def { font-size: 13px; color: var(--text2); line-height: 1.8; margin-bottom: 12px; padding: 8px 12px; background: rgba(180,83,9,0.04); border-radius: 8px; }
+    .term-formulas { display: flex; flex-direction: column; gap: 6px; }
+    /* 446定位区块 */
+    .term-446 { background: rgba(180,83,9,0.06); border: 1px solid rgba(180,83,9,0.15);
+                    border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; font-size: 12px; line-height: 1.8; }
+    .term-446-title { font-weight: 700; color: var(--accent-gold); letter-spacing: 1px; margin-bottom: 4px; }
+    .term-446-line { color: var(--text2); }
+    .term-446-line span { color: var(--accent-gold); font-weight: 600; }
+    .term-formula { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; }
+    .term-formula .f-num { font-weight: 700; color: var(--accent-gold); width: 22px; flex-shrink: 0; line-height: 1.7; }
+    .term-formula .f-name { font-weight: 600; color: var(--text); width: 110px; flex-shrink: 0; }
+    .term-formula .f-role { color: var(--text2); font-size: 11px; }
+    .group-label { font-size: 11px; letter-spacing: 1.5px; color: var(--text3); margin: 18px 0 10px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+    .group-label::after { content: ''; flex: 1; height: 1px; background: var(--border2); }
+    .how-to { background: rgba(180,83,9,0.05); border: 1px solid rgba(180,83,9,0.15); border-radius: 12px; padding: 16px 20px; margin-bottom: 28px; font-size: 13px; color: var(--text2); line-height: 1.9; }
+    .how-to-title { font-size: 11px; letter-spacing: 2px; color: var(--accent-gold); font-weight: 700; margin-bottom: 8px; }
+    .how-to strong { color: var(--accent-gold); }
+    #jump-top { position: fixed; bottom: 24px; right: 24px; width: 40px; height: 40px; border-radius: 50%; background: var(--accent-gold); color: white; border: none; cursor: pointer; font-size: 18px; display: none; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(180,83,9,0.3); transition: opacity 0.2s; }
+    #jump-top.show { display: flex; }
+
+  /* ===== Home Button (unified) ===== */
+  .home-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 18px;
+    background: #40916C;
+    color: white !important;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background 0.2s, transform 0.15s;
+    font-family: inherit;
+    cursor: pointer;
+  }
+  .home-btn:hover {
+    background: #2D6A4F;
+    transform: translateY(-1px);
+  }
+  .home-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+  </style>
+</head>
+<body>
+
+<nav style="position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:0 32px;height:56px;background:rgba(255,255,255,0.90);backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,0,0,0.08);">
+  <a href="446-index.html" class="home-btn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1V9.5z"/></svg>
+    首页
+  </a>
+</nav>
+
+<header>
+  <div class="eyebrow">446 辨证体系 · 术语解释层</div>
+  <h1>中医术语<span>词典</span></h1>
+  <div class="header-sub">治法动词 × 446证型对齐 × 72首方剂联动</div>
+  <div class="stats-row">
+    <div class="stat-item"><div class="stat-n">40</div><div class="stat-l">核心术语</div></div>
+    <div class="stat-item"><div class="stat-n">3</div><div class="stat-l">446分类</div></div>
+    <div class="stat-item"><div class="stat-n">72</div><div class="stat-l">关联方剂</div></div>
+  </div>
+</header>
+<div class="search-wrap">
+  <div class="search-inner">
+    <div class="search-icon">🔍</div>
+    <input type="text" id="search-input" placeholder="搜索术语、功效、代表方……" autocomplete="off">
+    <div id="search-count"></div>
+  </div>
+</div>
+<div class="cat-nav">
+  <div class="cat-nav-inner">
+    <button class="cat-btn active" data-cat="all"><span class="dot">📚</span>全部</button>
+    <button class="cat-btn" data-cat="deficiency"><span class="dot">🌱</span>虚证治法</button>
+    <button class="cat-btn" data-cat="excess"><span class="dot">⚡</span>实证治法</button>
+    <button class="cat-btn" data-cat="external"><span class="dot">🌀</span>外感证治法</button>
+  </div>
+</div>
+<main>
+<main>
+<div class="how-to">
+  <div class="how-to-title">使用说明</div>
+  每个术语卡分五层记忆：
+  <strong>①原词</strong>（四字凝练原文）→
+  <strong>②拆解</strong>（动作+对象还原）→
+  <strong>③画面</strong>（一个日常想象）→
+  <strong>④446定位</strong>（证型+辨证要点+方剂）→
+  <strong>⑤代表方</strong>（举一反三）。
+  点击上方三分类按钮或直接搜索，快速定位。
+</div>
+<div class="term-section" data-section="deficiency">
+  <div class="term-section-header">
+    <div class="term-section-icon">🌱</div>
+    <div class="term-section-title">虚证治法</div>
+    <div class="term-section-sub">四虚：气虚/阳虚/血虚/阴虚</div>
+  </div>
+
+<div class="term-card bar-deficiency" data-keywords="温阳 回阳 救逆" data-section="deficiency">
+    <div class="term-card-top">
+      <div class="term-main">温阳</div>
+      <div class="term-badge badge-deficiency">虚证治法</div>
+    </div>
+    <div class="term-def">把体内衰退的阳气温热起来，恢复温煦功能。主用于阳虚证。</div>
+    <div class="term-breakdown">
+      <div class="breakdown-chip">温 →</span> 让冷变热</div>
+      <div class="breakdown-chip">阳 →</span> 脾阳/肾阳/全身阳气</div>
+    </div>
+    <div class="term-image">
+      画面：</strong>冬天屋里冷 -> 打开暖气片 -> 全屋逐渐暖起来。
+      辨：</strong>"温"是缓慢升温（vs "回阳"是救极寒）。阳气虚但还没到快没的状态，用温。
+    </div>
+    
+    <div class="term-446">
+      <div class="term-446-title">446定位</div>
+      <div class="term-446-line">证型：<span>阳虚</span></div>
+      <div class="term-446-line">辨证要点：畏寒肢冷/舌淡苔白/脉沉弱</div>
+    </div>
+<div class="term-formulas">
+      <div class="term-formula"><div class="f-num">10</div><div class="f-name">四逆汤</div><div class="f-role">回阳救逆（温肾阳极证）</div></div>
+      <div class="term-formula"><div class="f-num">08</div><div class="f-name">理中丸</div><div class="f-role">温中散寒（温脾阳）</div></div>
+      <div class="term-formula"><div class="f-num">09</div><div class="f-name">吴茱萸汤</div><div class="f-role">温肝胃止呕（肝寒吐涎沫）</div></div>
+    </div>
+  </div>
+
+<div class="term-card bar-deficiency" data-keywords="回阳" data-section="deficiency">
+    <div class="term-card-top">
+      <div class="term-main">回阳</div>
+      <div class="term-badge badge-deficiency">虚证治法</div>
+    </div>
+    <div class="term-def">让已经快要消失的阳气回来。是"救逆"中最紧急的情况——用于亡阳证（阳气暴脱）。</div>
+    <div class="term-breakdown">
+      <div class="breakdown-chip">回 →</span> 回来了（极寒开始暖）</div>
+      <div class="breakdown-chip">阳 →</span> 肾阳（根阳）</div>
+    </div>
+    <div class="term-image">
+      画面：</strong>锅炉快熄灭了（脉微欲绝）-> 大火猛烧 -> 烟囱重新冒烟（脉回来了）。
+      辨：</strong>比"温阳"程度重得多。温阳是调养，回阳是救命。
+    </div>
+    
+    <div class="term-446">
+      <div class="term-446-title">446定位</div>
+      <div class="term-446-line">证型：<span>阳虚(亡阳)</span></div>
+      <div class="term-446-line">辨证要点：四肢厥冷/脉微欲绝/冷汗</div>
+    </div>
+<div class="term-formulas">
+      <div class="term-formula"><div class="f-num">10</div><div class="f-name">四逆汤</div><div class="f-role">回阳救逆·阳气衰极（脉沉微/下利清谷/恶寒蜷卧）</div></div>
+      <div class="term-formula"><div class="f-num">11</div><div class="f-name">通脉四逆汤</div><div class="f-role">回阳通脉·阴盛格阳（面赤身热但脉微）</div></div>
+      <div class="term-formula"><div class="f-num">12</div><div class="f-name">四逆加人参汤</div><div class="f-role">回阳兼补气（亡阳+气随汗脱）</div></div>
+    </div>
+  </div>
+
+<div class="term-card bar-deficiency" data-keywords="救逆" data-section="deficiency">
+    <div class="term-card-top">
+      <div class="term-main">救逆</div>
+      <div class="term-badge badge-deficiency">虚证治法</div>
+    </div>
+    <div class="term-def">救治逆乱证——阳气逆乱、阴阳格拒。用温热药把"假热真寒"或"真寒假热"纠正过来。</div>
+    <div class="term-breakdown">
+      <div class="breakdown-chip">救 →</span> 紧急拉回来</div>
+      <div class="breakdown-chip">逆 →</span> 阴阳逆乱/格拒</div>
+    </div>
+    <div class="term-image">
+      画面：</strong>冷热两股气在打架（阴盛格阳）-> 暖流从里面冲出来降温（回阳救逆）-> 停战，恢复秩序。
+    </div>
+    
+    <div class="term-446">
+      <div class="term-446-title">446定位</div>
+      <div class="term-446-line">证型：<span>阳虚(亡阳)</span></div>
+      <div class="term-446-line">辨证要点：阴阳格拒/假热真寒</div>
+    </div>
+<div class="term-formulas">
+      <div class="term-formula"><div class="f-num">10</div><div class="f-name">四逆汤</div><div class="f-role">回阳救逆（阳气衰极之主方）</div></div>
+      <div class="term-formula"><div class="f-num">13</div><div class="f-name">茯苓四逆汤</div><div class="f-role">救逆+利水（阳虚水泛+烦躁）</div></div>
+    </div>
+  </div>
+
+<div class="term-card bar-deficiency" data-keywords="温中" data-section="deficiency">
+    <div class="term-card-top">
+      <div class="term-main">温中</div>
+      <div class="term-badge badge-deficiency">虚证治法</div>
+    </div>
+    <div class="term-def">温暖脾胃中焦。脾胃虚寒、完谷不化、腹痛喜温喜按时用。</div>
+    <div class="term-breakdown">
+      <div class="breakdown-chip">温 →</span> 温热</div>
+      <div class="breakdown-chip">中 →</span> 脾胃中焦</div>
+    </div>
+    <div class="term-image">
+      画面：</strong>脾胃是灶台上的锅 -> 锅底火太小（脾阳虚）-> 饭煮不熟（完谷不化）-> 加柴火（温中）。
+      辨：</strong>"温中"≠"温阳"。"温阳"范围大（可指肾阳），"温中"专指脾胃。
+    </div>
+    
+    <div class="term-446">
+      <div class="term-446-title">446定位</div>
+      <div class="term-446-line">证型：<span>阳虚(脾胃)</span></div>
+      <div class="term-446-line">辨证要点：腹痛喜温/完谷不化</div>
+    </div>
+<div class="term-formulas">
+      <div class="term-formula"><div class="f-num">08</div><div class="f-name">理中丸</div><div class="f-role">温中散寒·脾胃虚寒基础方</div></div>
+      <div class="term-formula"><div class="f-num">18</div><div class="f-name">小建中汤</div><div class="f-role">建中缓急（中虚里急腹痛）</div></div>
+    </div>
+  </div>
+
+<div class="term-card bar-deficiency" data-keywords="温肺" data-section="deficiency">
+    <div class="term-card-top">
+      <div class="term-main">温肺</div>
+      <div class="term-badge badge-deficiency">虚证治法</div>
+    </div>
+    <div class="term-def">温暖肺脏，化解肺中寒饮。主治外寒里饮（咳喘痰白清稀）。</div>
+    <div class="term-breakdown">
+      <div class="breakdown-chip">温 →</span> 温热</div>
+      <div class="breakdown-chip">肺 →</span> 肺脏/肺中寒饮</div>
+    </div>
+    <div class="term-image">
+      画面：</strong>肺里有一潭冰水（寒饮）-> 咳嗽气喘 -> 用暖气把冰水化成蒸汽（温肺化饮）。
+    </div>
+    
+    <div class="term-446">
+      <div class="term-446-title">446定位</div>
+      <div class="term-446-line">证型：<span>阳虚/寒邪(肺)</span></div>
+      <div class="term-446-line">辨证要点：咳喘痰白清稀/形寒</div>
+    </div>
+<div class="term-formulas">
+      <div class="term-formula"><div class="f-num">67</div><div class="f-name">小青龙汤</div><div class="f-role">外寒里饮·温肺化饮代表方</div></div>
+      <div class="term-formula"><div class="f-num">29</div><div class="f-name">苓桂术甘汤</div><div class="f-role">温阳化饮·水气上逆冲肺（无表证期）</div></div>
+    </div>
+  </div>
+
+<div class="term-card bar-deficiency" data-keywords="温里 散寒" data-section="deficiency">
+    <div class="term-card-top">
+      <div class="term-main">温里 /</span> 散寒</div>
+      <div class="term-badge badge-deficiency">虚证治法</div>
+    </div>
+    <div class="term-def">温里：</strong>温化脏腑内部的寒邪（内寒）。散寒：</strong>把在表的寒气驱散出去（外寒）。</div>
+    <div class="term-breakdown">
+      <div class="breakdown-chip">温里 →</span> 内部加温</div>
+      <div class="breakdown-chip">散寒 →</span> 推出去赶走</div>
+    </div>
+    <div class="term-image">
+      辨：</strong>温里 vs 散寒 = 里寒 vs 表寒。
+      散寒 = 麻黄/桂枝把寒推出去（门开，风雪吹走）。
+      温里 = 干姜/附子从里面加热（灶台生火，整个屋暖）。
+    </div>
+    
+    <div class="term-446">
+      <div class="term-446-title">446定位</div>
+      <div class="term-446-line">证型：<span>阳虚(里寒)</span></div>
+      <div class="term-446-line">辨证要点：内寒/脘腹冷痛</div>
+    </div>
+<div class="term-formulas">
+      <div class="term-formula"><div class="f-num">67</div><div class="f-name">小青龙汤</div><div class="f-role">外散（麻黄桂枝）+内温（干姜细辛）同用</div></div>
+      <div class="term-formula"><div class="f-num">10</div><div class="f-name">四逆汤</div><div class="f-role">温里（附子温肾）</div></div>
+    </div>
+  </div>
+
+<div class="term-card bar-deficiency" data-keywords="温肾阳 温肾 温下 温阳利水" data-section="deficiency">
+    <div class="term-card-top">
+      <div class="term-main">温肾阳 /</span> 温下</div>
+      <div class="term-badge badge-deficiency">虚证治法</div>
+    </div>
+    <div class="term-def">温肾阳：</strong>温补肾中阳气，主治肾阳虚（水肿/畏寒/夜尿多/五更泻）。温下：</strong>温化下焦寒积（寒秘/寒凝少阴）。</div>
+    <div class="term-breakdown">
+      <div class="breakdown-chip">温肾阳 →</span> 给锅炉底部加火（补肾阳根）</div>
+      <div class="breakdown-chip">温下 →</span> 温化下焦寒积</div>
+    </div>
+    <div class="term-image">
+      辨：</strong>真武汤(33)=温肾阳+利水（肾阳虚水泛→水肿/眩晕）。
+      口诀：</strong>肾阳虚水泛用真武，下焦寒实用温下法。
+    </div>
+    
+    <div class="term-446">
+      <div class="term-446-title">446定位</div>
+      <div class="term-446-line">证型：<span>阳虚(肾)</span></div>
+      <div class="term-446-line">辨证要点：水肿/夜尿多/五更泻</div>
+    </div>
+<div class="term-formulas">
+      <div class="term-formula"><div class="f-num">33</div><div class="f-name">真武汤</div><div class="f-role">温肾阳+利水·肾阳虚水泛（水肿/眩晕/心悸）</div></div>
+      <div class="term-formula"><div class="f-num">05</div><div class="f-name">甘草干姜汤</div><div class="f-role">温复肺阳·肺中冷（吐涎沫+遗尿）</div></div>
+    </div>
+  </div>
+
+<div class="term-card bar-deficiency" data-keywords="温经发表 太少两感 表里俱寒 麻黄附子并用" data-section="deficiency">
+    <div class="term-card-top">
+      <div class="term-main">温经发表</div>
+      <div class="term-badge badge-deficiency">虚证治法</div>
+    </div>
+    <div class="term-def">温通经脉 + 发散表邪，表里双解。主治太阳表证+少阴里寒同时存在（表里俱寒）。</div>
+    <div class="term-breakdown">
+      <div class="breakdown-chip">温经 →</span> 温通少阴里寒（附子走里）</div>
+      <div class="breakdown-chip">发表 →</span> 发散太阳表寒（麻黄走表）</div>
+    </div>
+    <div class="term-image">
+      画面：</strong>外有大雪封门（太阳表寒），内有地窖结冰（少阴里寒）-> 麻黄散表+附子温里，内外同时加热。
+      辨：</strong>表证明显→麻黄附子细辛汤(65)。里虚为主→先温里后解表（次序不能乱）。
+    </div>
+    
+    <div class="term-446">
+      <div class="term-446-title">446定位</div>
+      <div class="term-446-line">证型：<span>阳虚+寒邪(太少两感)</span></div>
+      <div class="term-446-line">辨证要点：无汗/脉沉/恶寒</div>
+    </div>
+<div class="term-formulas">
+      <div class="term-formula"><div class="f-num">65</div><div class="f-name">麻黄附子细辛汤</div><div class="f-role">温经发表·太少两感（无汗/脉沉/恶寒）</div></div>
+    </div>
+  </div>
+
+<div class="term-card bar-deficiency" data-keywords="益气 补气" data-section="deficiency">
+    <div class="term-card-top">
+      <div class="term-main">益气 /</span> 补气</div>
+      <div class="term-badge badge-deficiency">虚证治法</div>
+    </div>
+    <div class="term-def">补充人体的气，增强推动/固摄/防御/气化功能。主治气虚证（神疲乏力、少气懒言、脉弱）。</div>
+    <div class="term-breakdown">
+      <div class="breakdown-chip">益 →</span> 增加（锦上添花）</div>
+      <div class="breakdown-chip">补 →</span> 填补（雪中送炭）</div>
+    </div>
+    <div class="term-image">
+      画面：</strong>锅炉火太小（气虚）-> 火力不够 -> 加煤添柴（益气/补气）。
+      辨：</strong>"益气"偏于增强，"补气"偏于填补亏损。常用药：黄芪/人参/党参。
+    </div>
+    
+    <div class="term-446">
+      <div class="term-446-title">446定位</div>
+      <div class="term-446-line">证型：<span>气虚</span></div>
+      <div class="term-446-line">辨证要点：神疲乏力/少气懒言/脉弱</div>
+    </div>
+<div class="term-formulas">
+      <div class="term-formula"><div class="f-num">01</div><div class="f-name">黄芪甘草汤</div><div class="f-role">纯补肺脾之气</div></div>
+      <div class="term-formula"><div class="f-num">04</div><div class="f-name">补中益气汤</div><div class="f-role">补气升提·脏器下垂/久泻</div></div>
+      <div class="term-formula"><div class="f-num">07</div><div class="f-name">黄芪桂枝五物汤</div><div class="f-role">补气通络·血痹麻木</div></div>
+    </div>
+  </div>
+
+<div class="term-card bar-deficiency" data-keywords="补中 升提 升阳 举陷" data-section="deficiency">
+    <div class="term-card-top">
+      <div class="term-main">补中 /</span> 升提 /</span> 升阳 /</span> 举陷</div>
+      <div class="term-badge badge-deficiency">虚证治法</div>
+    </div>
+    <div class="term-def">补中：</strong>补脾胃中焦之气。升提/升阳：</strong>把下陷的气向上托举。举陷：</strong>把中气下陷的症状抬回来。</div>
+    <div class="term-breakdown">
+      <div class="breakdown-chip">补中 →</span> 把中焦气补满</div>
+      <div class="breakdown-chip">升提 →</span> 向上拉（↓变↑）</div>
+    </div>
+    <div class="term-image">
+      画面：</strong>脏器挂在绳子上，绳子松了 -> 脏器往下掉（气陷）-> 把绳子往上拽（升提）。
+      辨：</strong>补中≠升提。补中只是补满，升提是在补满的基础上往上拉。黄芪+柴胡+升麻是升提药对。
+    </div>
+    
+    <div class="term-446">
+      <div class="term-446-title">446定位</div>
+      <div class="term-446-line">证型：<span>气虚(脾胃)</span></div>
+      <div class="term-446-line">辨证要点：腹胀/脏器下垂/久泻</div>
+    </div>
+<div class="term-formulas">
+      <div class="term-formula"><div class="f-num">04</div><div class="f-name">补中益气汤</div><div class="f-role">补中+升提·气虚下陷代表方</div></div>
+      <div class="term-formula"><div class="f-num">36</div><div class="f-name">白虎加人参汤</div><div class="f-role">加人参益气（补气生津）</div></div>
+    </div>
+  </div>
+
+<div class="term-card bar-deficiency" data-keywords="养血 补血" data-section="deficiency">
+    <div class="term-card-top">
+      <div class="term-main">养血 /</span> 补血</div>
+      <div class="term-badge badge-deficiency">虚证治法</div>
+    </div>
+    <div class="term-def">补充血液，濡养全身。主治血虚证（面白无华、头晕心悸、手足麻木、脉细）。</div>
+    <div class="term-breakdown">
+      <div class="breakdown-chip">养 →</span> 慢慢滋养（缓补）</div>
+      <div class="breakdown-chip">补 →</span> 直接填补（急补）</div>
+    </div>
+    <div class="term-image">
+      画面：</strong>井里水太少了（血虚）-> 慢慢往里注水（养血）。
+      辨：</strong>养血偏缓（慢性血虚），补血偏急（严重失血后）。当归/白芍/熟地是养血药。
+    </div>
+    
+    <div class="term-446">
+      <div class="term-446-title">446定位</div>
+      <div class="term-446-line">证型：<span>血虚</span></div>
+      <div class="term-446-line">辨证要点：面白无华/头晕心悸/脉细</div>
+    </div>
+<div class="term-formulas">
+      <div class="term-formula"><div class="f-num">14</div><div class="f-name">芍药甘草汤</div><div class="f-role">养血+缓急·血虚痉挛</div></div>
+      <div class="term-formula"><div class="f-num">16</div><div class="f-name">炙甘草汤</div><div class="f-role">滋阴养血·阴血两虚脉结代</div></div>
+      <div class="term-formula"><div class="f-num">18</div><div class="f-name">小建中汤</div><div class="f-role">养血建中·虚劳里急</div></div>
+    </div>
+  </div>
+
+<div class="term-card bar-deficiency" data-keywords="滋阴 养阴 润燥" data-section="deficiency">
+    <div class="term-card-top">
+      <div class="term-main">滋阴 /</span> 养阴 /</span> 润燥</div>
+      <div class="term-badge badge-deficiency">虚证治法</div>
+    </div>
+    <div class="term-def">滋阴：</strong>填补真阴（肾阴/肺阴/肝阴）。养阴：</strong>滋养阴液（比滋阴温和）。润燥：</strong>滋润燥邪伤津导致的干燥。</div>
+    <div class="term-breakdown">
+      <div class="breakdown-chip">滋 →</span> 大补真阴（水库注满）</div>
+      <div class="breakdown-chip">养 →</span> 小补阴液（细水长流）</div>
+      <div class="breakdown-chip">润 →</span> 滋润干涩</div>
+    </div>
+    <div class="term-image">
+      辨：</strong>阴虚=水库干了（急需补水）-> 滋阴（大剂量）。燥邪=外面太干把水吸走了 -> 润燥（滋润+清热）。
+    </div>
+    
+    <div class="term-446">
+      <div class="term-446-title">446定位</div>
+      <div class="term-446-line">证型：<span>阴虚</span></div>
+      <div class="term-446-line">辨证要点：口干咽燥/五心烦热/舌红少苔</div>
+    </div>
+<div class="term-formulas">
+      <div class="term-formula"><div class="f-num">20</div><div class="f-name">百合地黄汤</div><div class="f-role">养阴润燥·百合病（阴虚神志恍惚）</div></div>
+      <div class="term-formula"><div class="f-num">21</div><div class="f-name">黄连阿胶汤</div><div class="f-role">滋阴泻火·阴虚火旺</div></div>
+      <div class="term-formula"><div class="f-num">71</div><div class="f-name">清燥救肺汤</div><div class="f-role">滋阴润燥·温燥伤肺</div></div>
+    </div>
+  </div>
+
+<div class="term-card bar-deficiency" data-keywords="建中 和中 补中" data-section="deficiency">
+    <div class="term-card-top">
+      <div class="term-main">建中 /</span> 和中 /</span> 补中</div>
+      <div class="term-badge badge-deficiency">虚证治法</div>
+    </div>
+    <div class="term-def">建中：</strong>重建中焦脾胃功能（在脾虚+里急时用）。和中：</strong>调和脾胃（脾胃不和/呕逆）。补中：</strong>填补中焦之气。</div>
+    <div class="term-breakdown">
+      <div class="breakdown-chip">建中 →</span> 重建（中焦功能失常才用）</div>
+      <div class="breakdown-chip">和中 →</span> 调和（脾胃打架时用）</div>
+      <div class="breakdown-chip">补中 →</span> 填补（中气不足时用）</div>
+    </div>
+    <div class="term-image">
+      辨：</strong>建中=补中+缓急（脾虚+肚子疼，里急腹痛）。
+      小建中汤=桂枝汤变方（倍芍药+饴糖）-> 建中缓急第一方。
+      理中丸=补中+温中（脾胃虚寒，无腹痛）。
+    </div>
+    
+    <div class="term-446">
+      <div class="term-446-title">446定位</div>
+      <div class="term-446-line">证型：<span>气虚(脾胃)/阴虚</span></div>
+      <div class="term-446-line">辨证要点：里急腹痛/虚劳</div>
+    </div>
+<div class="term-formulas">
+      <div class="term-formula"><div class="f-num">18</div><div class="f-name">小建中汤</div><div class="f-role">建中缓急·虚劳里急腹痛</div></div>
+      <div class="term-formula"><div class="f-num">08</div><div class="f-name">理中丸</div><div class="f-role">补中温中·脾胃虚寒</div></div>
+      <div class="term-formula"><div class="f-num">04</div><div class="f-name">补中益气汤</div><div class="f-role">补中+升提·气虚下陷</div></div>
+    </div>
+  </div>
+
+</div>
+<div class="term-section" data-section="excess">
+  <div class="term-section-header">
+    <div class="term-section-icon">⚡</div>
+    <div class="term-section-title">实证治法</div>
+    <div class="term-section-sub">四实+寒热错杂：气滞/血瘀/痰湿/实火/痞证</div>
+  </div>
+
+<div class="term-card bar-excess" data-keywords="清热" data-section="excess">
+    <div class="term-card-top">
+      <div class="term-main">清热</div>
+      <div class="term-badge badge-excess">实证治法</div>
+    </div>
+    <div class="term-def">清除体内热邪。根据热在气分/血分/三焦，选用不同层次的清热药。</div>
+    <div class="term-breakdown">
+      <div class="breakdown-chip">清 →</span> 清除干净</div>
+      <div class="breakdown-chip">热 →</span> 实热/虚热</div>
+    </div>
+    <div class="term-image">
+      画面：</strong>锅里水沸腾了（大热）-> 关火或加水降温（清热）。
+      辨：</strong>清热≠泻火。清热范围广（可清气/血/三焦热），泻火专指气分大热。
+    </div>
+    
+    <div class="term-446">
+      <div class="term-446-title">446定位</div>
+      <div class="term-446-line">证型：<span>实火/六外感(热邪)</span></div>
+      <div class="term-446-line">辨证要点：发热/口渴/舌红苔黄</div>
+    </div>
+<div class="term-formulas">
+      <div class="term-formula"><div class="f-num">35</div><div class="f-name">白虎汤</div><div class="f-role">气分大热·清热生津</div></div>
+      <div class="term-formula"><div class="f-num">38</div><div class="f-name">麻杏石甘汤</div><div class="f-role">肺热咳喘·清热宣肺</div></div>
+      <div class="term-formula"><div class="f-num">39</div><div class="f-name">黄芩汤</div><div class="f-role">血热+里急·清热凉血缓急</div></div>
+    </div>
+  </div>
+
+<div class="term-card bar-excess" data-keywords="泻火 清热泻火" data-section="excess">
+    <div class="term-card-top">
+      <div class="term-main">泻火</div>
+      <div class="term-badge badge-excess">实证治法</div>
+    </div>
+    <div class="term-def">用苦寒药直折火势，主清气分大热。高热、烦渴、汗出、脉洪大时用。</div>
+    <div class="term-breakdown">
+      <div class="breakdown-chip">泻 →</span> 强力压下去</div>
+      <div class="breakdown-chip">火 →</span> 熊熊烈火（气分热）</div>
+    </div>
+    <div class="term-image">
+      画面：</strong>森林大火 -> 投灭火弹（苦寒直折）-> 火势骤降。
+      辨：</strong>"泻"字语气最重，适用于实火嚣张，必须压制的场合。
+    </div>
+    
+    <div class="term-446">
+      <div class="term-446-title">446定位</div>
+      <div class="term-446-line">证型：<span>实火(气分大热)</span></div>
+      <div class="term-446-line">辨证要点：高热/烦渴/脉洪大</div>
+    </div>
+<div class="term-formulas">
+      <div class="term-formula"><div class="f-num">35</div><div class="f-name">白虎汤</div><div class="f-role">清气分大热·石膏辛寒直折</div></div>
+      <div class="term-formula"><div class="f-num">41</div><div class="f-name">大黄黄连泻心汤</div><div class="f-role">泻火解毒·三焦热盛</div></div>
+    </div>
+  </div>
+
+<div class="term-card bar-excess" data-keywords="凉血" data-section="excess">
+    <div class="term-card-top">
+      <div class="term-main">凉血</div>
+      <div class="term-badge badge-excess">实证治法</div>
+    </div>
+    <div class="term-def">清血分热邪。热在血分表现为：各种出血（衄血/便血/经血不止）、斑疹鲜红、血热妄行。</div>
+    <div class="term-breakdown">
+      <div class="breakdown-chip">凉 →</span> 冷下来</div>
+      <div class="breakdown-chip">血 →</span> 血分（比气分深一层）</div>
+    </div>
+    <div class="term-image">
+      画面：</strong>血管里的水沸腾了（血热）-> 水从管道漏出来（出血）-> 冷水灌进去降温（凉血）。
+      辨：</strong>"清热"在气分，"凉血"在血分。热入血分才用凉血。
+    </div>
+    
+    <div class="term-446">
+      <div class="term-446-title">446定位</div>
+      <div class="term-446-line">证型：<span>实火(血分)</span></div>
+      <div class="term-446-line">辨证要点：出血/斑疹/舌绛</div>
+    </div>
+<div class="term-formulas">
+      <div class="term-formula"><div class="f-num">39</div><div class="f-name">黄芩汤</div><div class="f-role">凉血+缓急·血热里急（面唇鲜红+出血）</div></div>
+      <div class="term-formula"><div class="f-num">45</div><div class="f-name">白头翁汤</div><div class="f-role">凉血止痢·热毒血痢</div></div>
+    </div>
+  </div>
+
+<div class="term-card bar-excess" data-keywords="生津 止渴 清热生津" data-section="excess">
+    <div class="term-card-top">
+      <div class="term-main">生津 /</span> 止渴</div>
+      <div class="term-badge badge-excess">实证治法</div>
+    </div>
+    <div class="term-def">生津：</strong>生成津液，补充热邪伤及的阴液。止渴：</strong>解除口渴感（虚渴或实渴）。</div>
+    <div class="term-breakdown">
+      <div class="breakdown-chip">生津 →</span> 让锅里重新有水</div>
+      <div class="breakdown-chip">止渴 →</span> 解决渴感</div>
+    </div>
+    <div class="term-image">
+      辨：</strong>热盛伤津（白虎汤证）-> 口大渴+喜冷饮 -> 生津止渴。
+      阴虚内热（黄连阿胶汤证）-> 口干+舌红少苔 -> 滋阴才能止渴。
+    </div>
+    
+    <div class="term-446">
+      <div class="term-446-title">446定位</div>
+      <div class="term-446-line">证型：<span>实火(伤津)</span></div>
+      <div class="term-446-line">辨证要点：大渴/大汗/脉洪大</div>
+    </div>
+<div class="term-formulas">
+      <div class="term-formula"><div class="f-num">35</div><div class="f-name">白虎汤</div><div class="f-role">清热生津·气分大热</div></div>
+      <div class="term-formula"><div class="f-num">36</div><div class="f-name">白虎加人参汤</div><div class="f-role">清热+生津+益气·大热+大渴+大汗</div></div>
+      <div class="term-formula"><div class="f-num">21</div><div class="f-name">黄连阿胶汤</div><div class="f-role">滋阴止渴·阴虚火旺</div></div>
+    </div>
+  </div>
+
+<div class="term-card bar-excess" data-keywords="清热燥湿 泻肝 清肝" data-section="excess">
+    <div class="term-card-top">
+      <div class="term-main">清热燥湿 /</span> 泻肝 /</span> 清肝</div>
+      <div class="term-badge badge-excess">实证治法</div>
+    </div>
+    <div class="term-def">清热燥湿：</strong>用苦寒药清热的同时把湿干燥掉。泻肝：</strong>泻肝胆实火。清肝：</strong>清肝经郁热。</div>
+    <div class="term-breakdown">
+      <div class="breakdown-chip">清热燥湿 →</span> 苦寒清热+燥湿</div>
+      <div class="breakdown-chip">泻肝 →</span> 强力压肝火</div>
+      <div class="breakdown-chip">清肝 →</span> 轻轻清肝郁</div>
+    </div>
+    <div class="term-image">
+      辨：</strong>清热燥湿=一石二鸟（热+湿并存，如湿热泻痢）。泻肝=实火嚣张。清肝=郁热未成实火。
+    </div>
+    
+    <div class="term-446">
+      <div class="term-446-title">446定位</div>
+      <div class="term-446-line">证型：<span>实火(湿热)</span></div>
+      <div class="term-446-line">辨证要点：苔黄腻/身热不扬/黄疸</div>
+    </div>
+<div class="term-formulas">
+      <div class="term-formula"><div class="f-num">39</div><div class="f-name">黄芩汤</div><div class="f-role">清热燥湿·湿热下利</div></div>
+      <div class="term-formula"><div class="f-num">42</div><div class="f-name">葛根芩连汤</div><div class="f-role">清热燥湿·湿热表里同病</div></div>
+    </div>
+  </div>
+
+<div class="term-card bar-excess" data-keywords="清热化湿 祛暑 清热解暑 暑邪 化湿" data-section="excess">
+    <div class="term-card-top">
+      <div class="term-main">清热化湿 /</span> 祛暑</div>
+      <div class="term-badge badge-excess">实证治法</div>
+    </div>
+    <div class="term-def">清热化湿：</strong>清三焦湿热，主治湿温/暑温（身热不扬/脘痞/苔腻）。祛暑：</strong>祛除暑热夹湿之邪。</div>
+    <div class="term-breakdown">
+      <div class="breakdown-chip">清热 →</span> 清除湿中之热</div>
+      <div class="breakdown-chip">化湿 →</span> 分消走泄三焦湿邪</div>
+      <div class="breakdown-chip">祛暑 →</span> 暑多夹湿，暑温同治</div>
+    </div>
+    <div class="term-image">
+      辨：</strong>湿热缠绵（如黄疸/暑湿）→ 三仁汤(70)分消三焦（上焦杏仁/中焦白蔻/下焦薏仁）。
+      清燥救肺汤(71)=温燥伤肺（秋天干燥+干咳无痰）。
+    </div>
+    
+    <div class="term-446">
+      <div class="term-446-title">446定位</div>
+      <div class="term-446-line">证型：<span>六外感(暑湿)</span></div>
+      <div class="term-446-line">辨证要点：身热不扬/脘痞/苔腻</div>
+    </div>
+<div class="term-formulas">
+      <div class="term-formula"><div class="f-num">70</div><div class="f-name">三仁汤</div><div class="f-role">清热化湿·湿温初起（身热不扬/脘痞/苔腻）</div></div>
+      <div class="term-formula"><div class="f-num">44</div><div class="f-name">茵陈蒿汤</div><div class="f-role">清热利湿退黄·湿热黄疸</div></div>
+      <div class="term-formula"><div class="f-num">37</div><div class="f-name">竹叶石膏汤</div><div class="f-role">清热生津益气·热病后期余热未清</div></div>
+    </div>
+  </div>
+
+<div class="term-card bar-excess" data-keywords="清虚热 清热除蒸 骨蒸潮热" data-section="excess">
+    <div class="term-card-top">
+      <div class="term-main">清虚热 /</span> 滋阴清热</div>
+      <div class="term-badge badge-excess">实证治法</div>
+    </div>
+    <div class="term-def">清除阴虚导致的虚热（骨蒸潮热/五心烦热/舌红少苔/脉细数）。特点是"热"是标，"虚"是本。</div>
+    <div class="term-breakdown">
+      <div class="breakdown-chip">清虚热 →</span> 滋阴为本，清热为标</div>
+      <div class="breakdown-chip">滋阴清热 →</span> 水少了才热，先补水</div>
+    </div>
+    <div class="term-image">
+      辨：</strong>实热（白虎汤证）→ 直接清热，火退了就行。
+      虚热（黄连阿胶汤证）→ 必须先补水（滋阴），热才能真正退下来。
+      口诀：</strong>"虚热不除根，只清热不补阴，热还来。"
+    </div>
+    
+    <div class="term-446">
+      <div class="term-446-title">446定位</div>
+      <div class="term-446-line">证型：<span>阴虚(虚热)</span></div>
+      <div class="term-446-line">辨证要点：骨蒸潮热/五心烦热/舌红少苔</div>
+    </div>
+<div class="term-formulas">
+      <div class="term-formula"><div class="f-num">21</div><div class="f-name">黄连阿胶汤</div><div class="f-role">滋阴泻火·阴虚火旺（心烦失眠/舌红少苔）</div></div>
+      <div class="term-formula"><div class="f-num">37</div><div class="f-name">竹叶石膏汤</div><div class="f-role">清热生津+益气和胃·热病后期气阴两伤</div></div>
+    </div>
+  </div>
+
+<div class="term-card bar-excess" data-keywords="利水 利湿 渗湿" data-section="excess">
+    <div class="term-card-top">
+      <div class="term-main">利水 /</span> 利湿 /</span> 渗湿</div>
+      <div class="term-badge badge-excess">实证治法</div>
+    </div>
+    <div class="term-def">利水：</strong>使水饮从小便排出（用于水肿/痰饮）。渗湿：</strong>用甘淡之品渗利湿邪（比利水轻）。利湿：</strong>使湿邪从小便分消（介于利水与渗湿之间）。</div>
+    <div class="term-breakdown">
+      <div class="breakdown-chip">利 →</span> 打开闸门放水</div>
+      <div class="breakdown-chip">渗 →</span> 慢慢渗出</div>
+      <div class="breakdown-chip">湿 →</span> 湿邪分消</div>
+    </div>
+    <div class="term-image">
+      辨：</strong>水肿（沉重明显）-> 利水（强，茯苓/泽泻）。
+      湿重（酸胀为主）-> 渗湿（缓，薏苡仁/茯苓）。
+      利水常用：茯苓/泽泻/猪苓。渗湿常用：薏苡仁/茯苓。
+    </div>
+    
+    <div class="term-446">
+      <div class="term-446-title">446定位</div>
+      <div class="term-446-line">证型：<span>痰湿(水饮)</span></div>
+      <div class="term-446-line">辨证要点：水肿/小便不利/舌胖苔润滑</div>
+    </div>
+<div class="term-formulas">
+      <div class="term-formula"><div class="f-num">29</div><div class="f-name">苓桂术甘汤</div><div class="f-role">利水·水气上逆冲肺</div></div>
+      <div class="term-formula"><div class="f-num">31</div><div class="f-name">五苓散</div><div class="f-role">利水渗湿·膀胱气化不利（水逆/口渴+小便不利）</div></div>
+      <div class="term-formula"><div class="f-num">32</div><div class="f-name">防己黄芪汤</div><div class="f-role">利水+固表·风水表虚</div></div>
+    </div>
+  </div>
+
+<div class="term-card bar-excess" data-keywords="化饮 温化水饮 消饮" data-section="excess">
+    <div class="term-card-top">
+      <div class="term-main">化饮</div>
+      <div class="term-badge badge-excess">实证治法</div>
+    </div>
+    <div class="term-def">把水饮（液态/稠浊的水液）化开，变成可代谢的气态或从小便排出。主治痰饮病。</div>
+    <div class="term-breakdown">
+      <div class="breakdown-chip">化 →</span> 冰块->水->蒸汽（形态转变）</div>
+      <div class="breakdown-chip">饮 →</span> 水饮（比痰稀薄）</div>
+    </div>
+    <div class="term-image">
+      画面：</strong>肺里有一盆冰水（寒饮）-> 用火加热 -> 冰->水->蒸汽消散（化饮）。
+      辨：</strong>"化饮"=治本（把饮邪化掉）。"利水"=治标（把水排出去）。苓桂术甘汤=化饮+平冲+利水，三管齐下。
+    </div>
+    
+    <div class="term-446">
+      <div class="term-446-title">446定位</div>
+      <div class="term-446-line">证型：<span>痰湿(饮)</span></div>
+      <div class="term-446-line">辨证要点：咳逆倚息/眩晕/心下悸</div>
+    </div>
+<div class="term-formulas">
+      <div class="term-formula"><div class="f-num">29</div><div class="f-name">苓桂术甘汤</div><div class="f-role">化饮平冲·苓桂系母方</div></div>
+      <div class="term-formula"><div class="f-num">30</div><div class="f-name">苓桂姜甘汤</div><div class="f-role">温化寒饮·水在胃（呕+眩）</div></div>
+      <div class="term-formula"><div class="f-num">67</div><div class="f-name">小青龙汤</div><div class="f-role">外寒内饮·温肺化饮</div></div>
+    </div>
+  </div>
+
+<div class="term-card bar-excess" data-keywords="燥湿 化痰 涤痰 豁痰" data-section="excess">
+    <div class="term-card-top">
+      <div class="term-main">燥湿 /</span> 化痰 /</span> 涤痰</div>
+      <div class="term-badge badge-excess">实证治法</div>
+    </div>
+    <div class="term-def">燥湿：</strong>用苦温/苦寒药把湿气干燥（偏于湿）。化痰：</strong>把稠浊的痰化开（偏于痰）。涤痰：</strong>强力洗刷清除顽痰。</div>
+    <div class="term-breakdown">
+      <div class="breakdown-chip">燥 →</span> 毛巾拧干</div>
+      <div class="breakdown-chip">化 →</span> 黏稠->稀释消散</div>
+      <div class="breakdown-chip">涤 →</span> 强力冲洗</div>
+    </div>
+    <div class="term-image">
+      辨：</strong>湿重->燥湿（苍术/白术）。痰稠->化痰（半夏/胆南星）。顽痰老痰->涤痰（皂荚/礞石）。
+      446体系：</strong>半夏家族是化痰降逆的核心。
+    </div>
+    
+    <div class="term-446">
+      <div class="term-446-title">446定位</div>
+      <div class="term-446-line">证型：<span>痰湿(湿浊)</span></div>
+      <div class="term-446-line">辨证要点：苔厚腻/脘痞/身体困重</div>
+    </div>
+<div class="term-formulas">
+      <div class="term-formula"><div class="f-num">25</div><div class="f-name">小半夏汤</div><div class="f-role">化痰止呕·呕逆代表方</div></div>
+      <div class="term-formula"><div class="f-num">26</div><div class="f-name">小半夏加茯苓汤</div><div class="f-role">化痰利水·呕+眩+悸</div></div>
+      <div class="term-formula"><div class="f-num">31</div><div class="f-name">五苓散</div><div class="f-role">燥湿利水·膀胱湿热</div></div>
+    </div>
+  </div>
+
+<div class="term-card bar-excess" data-keywords="攻下 通下 泻下 润下" data-section="excess">
+    <div class="term-card-top">
+      <div class="term-main">攻下 /</span> 通下 /</span> 润下</div>
+      <div class="term-badge badge-excess">实证治法</div>
+    </div>
+    <div class="term-def">攻下：</strong>用大黄/芒硝强力泻下（用于燥屎/热结）。润下：</strong>用油脂类药润肠通便（用于血虚/津亏便秘）。</div>
+    <div class="term-breakdown">
+      <div class="breakdown-chip">攻 →</span> 强行攻击（大力出奇迹）</div>
+      <div class="breakdown-chip">润 →</span> 润滑通道</div>
+    </div>
+    <div class="term-image">
+      辨：</strong>实热便秘->承气汤类（攻下）。血虚/阴虚便秘->麻子仁丸（润下）。
+      大承气汤(43)=大黄+芒硝+枳实+厚朴 -> 峻下热结。
+      麻子仁丸(19)=麻子仁+杏仁+芍药 -> 润肠通便。
+    </div>
+    
+    <div class="term-446">
+      <div class="term-446-title">446定位</div>
+      <div class="term-446-line">证型：<span>实火(燥屎)</span></div>
+      <div class="term-446-line">辨证要点：腹满痛/不大便/苔黄燥</div>
+    </div>
+<div class="term-formulas">
+      <div class="term-formula"><div class="f-num">43</div><div class="f-name">大承气汤</div><div class="f-role">峻下热结·阳明腑实</div></div>
+      <div class="term-formula"><div class="f-num">19</div><div class="f-name">麻子仁丸</div><div class="f-role">润下·脾约便秘</div></div>
+      <div class="term-formula"><div class="f-num">57</div><div class="f-name">保和丸</div><div class="f-role">消积化食·食积轻剂</div></div>
+    </div>
+  </div>
+
+<div class="term-card bar-excess" data-keywords="涌吐 吐法 催吐" data-section="excess">
+    <div class="term-card-top">
+      <div class="term-main">涌吐</div>
+      <div class="term-badge badge-excess">实证治法</div>
+    </div>
+    <div class="term-def">用瓜蒂等药催吐，把停留在胸膈/胃脘的痰涎/宿食/毒物从口中涌吐而出。主治痰食壅滞上焦。</div>
+    <div class="term-breakdown">
+      <div class="breakdown-chip">涌 →</span> 向上涌出</div>
+      <div class="breakdown-chip">吐 →</span> 从口中吐出</div>
+    </div>
+    <div class="term-image">
+      画面：</strong>食物堵在嗓子眼（食积/痰涎）-> 用羽毛捅嗓子 -> 吐出来。
+      辨：</strong>涌吐是"上越"之法——邪在高位（上焦/胸膈）用吐法。446体系：瓜蒂散(24)为涌吐代表方。
+    </div>
+    
+    <div class="term-446">
+      <div class="term-446-title">446定位</div>
+      <div class="term-446-line">证型：<span>痰湿(上焦实邪)</span></div>
+      <div class="term-446-line">辨证要点：胸膈痰食壅滞</div>
+    </div>
+<div class="term-formulas">
+      <div class="term-formula"><div class="f-num">24</div><div class="f-name">瓜蒂散</div><div class="f-role">涌吐痰食·痰涎宿食停聚胸膈</div></div>
+    </div>
+  </div>
+
+<div class="term-card bar-excess" data-keywords="固涩 涩肠 止泻 止痢 止脱" data-section="excess">
+    <div class="term-card-top">
+      <div class="term-main">固涩 /</span> 涩肠 /</span> 止脱</div>
+      <div class="term-badge badge-excess">实证治法</div>
+    </div>
+    <div class="term-def">固涩：</strong>把已经流失的津液/精微固摄住（用于久泻/遗精/遗尿/带下）。涩肠：</strong>专指固涩肠道。止脱：</strong>止住滑脱不禁。</div>
+    <div class="term-breakdown">
+      <div class="breakdown-chip">固 →</span> 收紧不漏</div>
+      <div class="breakdown-chip">涩 →</span> 抹上泥巴堵漏</div>
+    </div>
+    <div class="term-image">
+      画面：</strong>水坝裂缝漏水（久痢滑脱）-> 用水泥封住（固涩）。
+      辨：</strong>固涩是"亡羊补牢"——正气已虚，邪已去，只剩滑脱。用赤石脂/禹余粮等药。
+    </div>
+    
+    <div class="term-446">
+      <div class="term-446-title">446定位</div>
+      <div class="term-446-line">证型：<span>虚证滑脱</span></div>
+      <div class="term-446-line">辨证要点：久泻/遗精/遗尿/带下</div>
+    </div>
+<div class="term-formulas">
+      <div class="term-formula"><div class="f-num">22</div><div class="f-name">桃花汤</div><div class="f-role">固涩大肠·久痢脓血滑脱（偏浅）</div></div>
+      <div class="term-formula"><div class="f-num">23</div><div class="f-name">赤石脂禹余粮汤</div><div class="f-role">固涩肾气·久泻无脓血不禁（偏深）</div></div>
+    </div>
+  </div>
+
+<div class="term-card bar-excess" data-keywords="祛风湿 祛湿 利湿 痹证 痹痛" data-section="excess">
+    <div class="term-card-top">
+      <div class="term-main">祛风湿</div>
+      <div class="term-badge badge-excess">实证治法</div>
+    </div>
+    <div class="term-def">祛除体表/肌肉层的风湿之邪，主治痹证（关节疼痛/肿胀/重着）。风寒湿三气杂至，合而为痹。</div>
+    <div class="term-breakdown">
+      <div class="breakdown-chip">祛 →</span> 驱赶出去</div>
+      <div class="breakdown-chip">风湿 →</span> 风+湿侵袭经络</div>
+    </div>
+    <div class="term-image">
+      辨：</strong>寒湿痹（痛甚）→ 麻黄(温通)+苍术(燥湿)。
+      湿痹（肿胀重着）→ 防己黄芪汤(32)=利水渗湿+固表。
+      湿重肿胀→ 三仁汤(70)=宣上/畅中/渗下，三焦分消。
+    </div>
+    
+    <div class="term-446">
+      <div class="term-446-title">446定位</div>
+      <div class="term-446-line">证型：<span>痰湿(风湿)</span></div>
+      <div class="term-446-line">辨证要点：关节疼痛/重着/屈伸不利</div>
+    </div>
+<div class="term-formulas">
+      <div class="term-formula"><div class="f-num">68</div><div class="f-name">麻黄汤加术</div><div class="f-role">祛寒湿痹·湿家身烦痛（寒湿痹证）</div></div>
+      <div class="term-formula"><div class="f-num">32</div><div class="f-name">防己黄芪汤</div><div class="f-role">利水固表·风水/风湿（表虚汗出+浮肿）</div></div>
+      <div class="term-formula"><div class="f-num">31</div><div class="f-name">五苓散</div><div class="f-role">利水渗湿·膀胱气化不利</div></div>
+    </div>
+  </div>
+
+<div class="term-card bar-excess" data-keywords="行气 破气 疏肝" data-section="excess">
+    <div class="term-card-top">
+      <div class="term-main">行气 /</span> 破气</div>
+      <div class="term-badge badge-excess">实证治法</div>
+    </div>
+    <div class="term-def">行气：</strong>让阻滞的气重新流动起来（轻症）。破气：</strong>强力打开郁结（重症/气结成块）。</div>
+    <div class="term-breakdown">
+      <div class="breakdown-chip">行 →</span> 轻轻推一把，让它走</div>
+      <div class="breakdown-chip">破 →</span> 砸开石头，疏通道路</div>
+    </div>
+    <div class="term-image">
+      辨：</strong>胀痛走窜（气滞轻）-> 行气（香附/陈皮）。
+      胸胁苦满严重（气郁成结）-> 破气（青皮/枳实）。
+      四逆散(52)=柴胡+枳实 -> 推肝气外出。
+    </div>
+    
+    <div class="term-446">
+      <div class="term-446-title">446定位</div>
+      <div class="term-446-line">证型：<span>气滞</span></div>
+      <div class="term-446-line">辨证要点：胀痛走窜/嗳气/脉弦</div>
+    </div>
+<div class="term-formulas">
+      <div class="term-formula"><div class="f-num">52</div><div class="f-name">四逆散</div><div class="f-role">行气解郁·阳气内郁</div></div>
+      <div class="term-formula"><div class="f-num">53</div><div class="f-name">厚朴生姜半夏甘草人参汤</div><div class="f-role">行气消胀·中焦气滞腹胀</div></div>
+      <div class="term-formula"><div class="f-num">57</div><div class="f-name">保和丸</div><div class="f-role">莱菔子行气（消食兼行气）</div></div>
+    </div>
+  </div>
+
+<div class="term-card bar-excess" data-keywords="活血 祛瘀 破瘀 逐瘀" data-section="excess">
+    <div class="term-card-top">
+      <div class="term-main">活血 /</span> 祛瘀 /</span> 破瘀 /</span> 逐瘀</div>
+      <div class="term-badge badge-excess">实证治法</div>
+    </div>
+    <div class="term-def">活血：</strong>促进血液运行（轻症瘀血）。祛瘀：</strong>祛除瘀血。破瘀：</strong>强力破开顽固瘀血包块。逐瘀：</strong>驱逐瘀血下行。</div>
+    <div class="term-breakdown">
+      <div class="breakdown-chip">活 →</span> 让血流起来（清道夫）</div>
+      <div class="breakdown-chip">祛 →</span> 赶走</div>
+      <div class="breakdown-chip">破 →</span> 砸开</div>
+      <div class="breakdown-chip">逐 →</span> 赶跑+推走</div>
+    </div>
+    <div class="term-image">
+      辨：</strong>瘀血三方三层次：
+      ①桃核承气汤(54)=破瘀下瘀（少腹急结）
+      ②桂枝茯苓丸(55)=化瘀消癥（胞宫包块）
+      ③血府逐瘀汤(56)=行气活血（胸中刺痛）
+      口诀：急结要破，癥块要化，胸痛要行。
+    </div>
+    
+    <div class="term-446">
+      <div class="term-446-title">446定位</div>
+      <div class="term-446-line">证型：<span>血瘀</span></div>
+      <div class="term-446-line">辨证要点：刺痛固定/舌紫暗/脉涩</div>
+    </div>
+<div class="term-formulas">
+      <div class="term-formula"><div class="f-num">54</div><div class="f-name">桃核承气汤</div><div class="f-role">破瘀下瘀·下焦血瘀（少腹急结+如狂）</div></div>
+      <div class="term-formula"><div class="f-num">55</div><div class="f-name">桂枝茯苓丸</div><div class="f-role">化瘀消癥·胞宫瘀血（漏下/闭经）</div></div>
+      <div class="term-formula"><div class="f-num">56</div><div class="f-name">血府逐瘀汤</div><div class="f-role">行气活血·胸中血瘀（胸痛头痛）</div></div>
+    </div>
+  </div>
+
+<div class="term-card bar-excess" data-keywords="通络 舒筋 缓急" data-section="excess">
+    <div class="term-card-top">
+      <div class="term-main">通络 /</span> 舒筋 /</span> 缓急</div>
+      <div class="term-badge badge-excess">实证治法</div>
+    </div>
+    <div class="term-def">通络：</strong>让经络通畅（用于痹证/血痹/肢体麻木）。舒筋：</strong>缓解筋脉痉挛。缓急：</strong>缓解紧急/痉挛状态（腹痛/腿抽筋/肾绞痛）。</div>
+    <div class="term-breakdown">
+      <div class="breakdown-chip">通 →</span> 让路通开</div>
+      <div class="breakdown-chip">舒 →</span> 放松拉扯</div>
+      <div class="breakdown-chip">缓 →</span> 慢慢松下来</div>
+    </div>
+    <div class="term-image">
+      画面：</strong>绳子打结了（经络不通->疼痛/麻木）-> 慢慢解开（缓急/舒筋）。
+      辨：</strong>芍药甘草汤=缓急止痛基础方（脚挛急/腹痛）。黄芪桂枝五物=通络养血（血痹不仁）。
+    </div>
+    
+    <div class="term-446">
+      <div class="term-446-title">446定位</div>
+      <div class="term-446-line">证型：<span>血瘀/气滞(经络)</span></div>
+      <div class="term-446-line">辨证要点：麻木/疼痛/屈伸不利</div>
+    </div>
+<div class="term-formulas">
+      <div class="term-formula"><div class="f-num">14</div><div class="f-name">芍药甘草汤</div><div class="f-role">缓急止痛·血虚痉挛诸痛</div></div>
+      <div class="term-formula"><div class="f-num">07</div><div class="f-name">黄芪桂枝五物汤</div><div class="f-role">补气通络养血·血痹麻木</div></div>
+      <div class="term-formula"><div class="f-num">15</div><div class="f-name">芍药甘草附子汤</div><div class="f-role">缓急温阳·阳虚血痹（汗后恶寒+关节冷痛）</div></div>
+    </div>
+  </div>
+
+<div class="term-card bar-excess" data-keywords="平冲 降逆" data-section="excess">
+    <div class="term-card-top">
+      <div class="term-main">平冲 /</span> 降逆</div>
+      <div class="term-badge badge-excess">实证治法</div>
+    </div>
+    <div class="term-def">平冲：</strong>平息上逆的"冲气"（水气/寒气冲上胸口/咽喉）。降逆：</strong>降下上逆的气/痰/食。</div>
+    <div class="term-breakdown">
+      <div class="breakdown-chip">平冲 →</span> 压住往上冲的气</div>
+      <div class="breakdown-chip">降逆 →</span> 往下压</div>
+    </div>
+    <div class="term-image">
+      画面：</strong>管道里水往上喷（冲气/水逆）-> 用盖子压住（平冲）-> 水下去了。
+      核心药对：</strong>桂枝+茯苓=苓桂系的核心，桂枝平冲，茯苓利水。
+    </div>
+    
+    <div class="term-446">
+      <div class="term-446-title">446定位</div>
+      <div class="term-446-line">证型：<span>痰湿(水气上逆)</span></div>
+      <div class="term-446-line">辨证要点：气上冲胸/眩晕/心悸</div>
+    </div>
+<div class="term-formulas">
+      <div class="term-formula"><div class="f-num">29</div><div class="f-name">苓桂术甘汤</div><div class="f-role">化饮平冲·水气上逆冲肺（咳喘/眩晕/心悸）</div></div>
+      <div class="term-formula"><div class="f-num">25</div><div class="f-name">小半夏汤</div><div class="f-role">化痰降逆·呕逆代表方</div></div>
+      <div class="term-formula"><div class="f-num">48</div><div class="f-name">半夏泻心汤</div><div class="f-role">辛开苦降·胃气上逆（呕+痞）</div></div>
+    </div>
+  </div>
+
+<div class="term-card bar-excess" data-keywords="寒热错杂 苦降辛开" data-section="excess">
+    <div class="term-card-top">
+      <div class="term-main">寒热错杂 /</span> 苦降辛开</div>
+      <div class="term-badge badge-excess">实证治法</div>
+    </div>
+    <div class="term-def">寒热错杂：</strong>寒邪和热邪同时存在于同一病位（最典型在脾胃/胸膈）。苦降：</strong>用苦寒药（黄连/黄芩）降热止呕。辛开：</strong>用辛温药（半夏/干姜）散寒开痞。</div>
+    <div class="term-breakdown">
+      <div class="breakdown-chip">苦降 →</span> 黄连黄芩把热往下压</div>
+      <div class="breakdown-chip">辛开 →</span> 半夏干姜把寒往外散</div>
+    </div>
+    <div class="term-image">
+      画面：</strong>天平两端一边是冰块（寒），一边是火球（热），天平歪了（痞满）-> 同时拿走冰块（辛开）和火球（苦降）-> 天平归位。
+      辨：</strong>寒热错杂≠寒热往来。寒热往来是少阳（一阵冷一阵热交替），寒热错杂是同时存在。
+    </div>
+    <div class="term-formulas">
+      <div class="term-formula"><div class="f-num">48</div><div class="f-name">半夏泻心汤</div><div class="f-role">苦降辛开·寒热错杂痞证代表方</div></div>
+      <div class="term-formula"><div class="f-num">49</div><div class="f-name">生姜泻心汤</div><div class="f-role">苦降辛开+和胃消食·水饮食滞痞</div></div>
+      <div class="term-formula"><div class="f-num">50</div><div class="f-name">甘草泻心汤</div><div class="f-role">苦降辛开+补虚·下利急迫+口疮</div></div>
+      <div class="term-formula"><div class="f-num">51</div><div class="f-name">附子泻心汤</div><div class="f-role">苦降辛开+温阳·热痞+阳虚恶寒</div></div>
+    </div>
+  </div>
+
+<div class="term-card bar-excess" data-keywords="消痞 开痞 除满" data-section="excess">
+    <div class="term-card-top">
+      <div class="term-main">消痞 /</span> 开痞 /</span> 除满</div>
+      <div class="term-badge badge-excess">实证治法</div>
+    </div>
+    <div class="term-def">消除心下痞满（胃脘部胀满但不痛，按之柔软）。痞是因寒热错杂导致脾胃升降失常，气机壅塞而成。</div>
+    <div class="term-breakdown">
+      <div class="breakdown-chip">消 →</span> 消掉胀满</div>
+      <div class="breakdown-chip">开 →</span> 打开壅塞</div>
+      <div class="breakdown-chip">除满 →</span> 去掉胀感</div>
+    </div>
+    <div class="term-image">
+      辨：</strong>痞满 vs 胀满：
+      痞满=按之柔软不痛（气机壅塞，半夏泻心汤证）。
+      胀满=按之较硬/疼痛（实邪积滞，保和丸/承气汤证）。
+      核心药对：</strong>半夏+黄连=开痞降逆；干姜+黄连=辛开苦降。
+    </div>
+    
+    <div class="term-446">
+      <div class="term-446-title">446定位</div>
+      <div class="term-446-line">证型：<span>寒热错杂(痞证)</span></div>
+      <div class="term-446-line">辨证要点：心下痞满按之软</div>
+    </div>
+<div class="term-formulas">
+      <div class="term-formula"><div class="f-num">48</div><div class="f-name">半夏泻心汤</div><div class="f-role">消痞·基本方（呕+痞+下利三证并见）</div></div>
+      <div class="term-formula"><div class="f-num">49</div><div class="f-name">生姜泻心汤</div><div class="f-role">和胃消食·干噎食臭+嗳气酸腐</div></div>
+    </div>
+  </div>
+
+<div class="term-card bar-excess" data-keywords="干噎 食臭 嗳气 消化不良" data-section="excess">
+    <div class="term-card-top">
+      <div class="term-main">干噎食臭</div>
+      <div class="term-badge badge-excess">实证治法</div>
+    </div>
+    <div class="term-def">指消化不良导致的干呕（呕出未消化的食物）和嗳气有酸腐臭味。是生姜泻心汤(49)的专属指征。</div>
+    <div class="term-breakdown">
+      <div class="breakdown-chip">干噎 →</span> 干呕（无物吐出）</div>
+      <div class="breakdown-chip">食臭 →</span> 嗳气酸腐（食物不消化）</div>
+    </div>
+    <div class="term-image">
+      画面：</strong>胃里食物发酵了（食积）-> 打嗝带酸腐味（食臭）-> 胃气上逆干呕。
+      辨：</strong>干噎食臭=半夏泻心汤系列的专属升级症状，说明兼有食积。生姜泻心汤(49)=半夏泻心汤+生姜+和胃消食。
+    </div>
+    
+    <div class="term-446">
+      <div class="term-446-title">446定位</div>
+      <div class="term-446-line">证型：<span>寒热错杂(生姜泻心汤证)</span></div>
+      <div class="term-446-line">辨证要点：嗳气酸腐/消化不良</div>
+    </div>
+<div class="term-formulas">
+      <div class="term-formula"><div class="f-num">49</div><div class="f-name">生姜泻心汤</div><div class="f-role">和胃消食·干噎食臭+胁下有水气（呕逆+消化不良）</div></div>
+    </div>
+  </div>
+
+<div class="term-card bar-excess" data-keywords="口疮 口腔溃烂 复发性口疮 狐惑" data-section="excess">
+    <div class="term-card-top">
+      <div class="term-main">口疮 /</span> 狐惑</div>
+      <div class="term-badge badge-excess">实证治法</div>
+    </div>
+    <div class="term-def">口腔溃烂/口疮反复发作，舌边/舌尖/口腔黏膜赤烂。是甘草泻心汤(50)的专属指征。</div>
+    <div class="term-breakdown">
+      <div class="breakdown-chip">口疮 →</span> 口腔溃烂（赤烂为热）</div>
+      <div class="breakdown-chip">狐惑 →</span> 虫扰之证（神志不安+上下蚀）</div>
+    </div>
+    <div class="term-image">
+      辨：</strong>口疮≠虚火上炎。普通虚火口疮（舌红少苔）→ 知柏地黄丸。甘草泻心汤口疮=寒热错杂，口腔溃烂赤红明显。
+      鉴别口诀：</strong>"口腔溃烂用泻心，舌红少苔用地黄；赤斑白斑要分清，甘草泻心是主治。"
+    </div>
+    
+    <div class="term-446">
+      <div class="term-446-title">446定位</div>
+      <div class="term-446-line">证型：<span>寒热错杂(甘草泻心汤证)</span></div>
+      <div class="term-446-line">辨证要点：口腔溃疡/下利急迫</div>
+    </div>
+<div class="term-formulas">
+      <div class="term-formula"><div class="f-num">50</div><div class="f-name">甘草泻心汤</div><div class="f-role">补虚消痞·口疮+下利急迫（狐惑病主方）</div></div>
+
+    </div>
+  </div>
+
+</div>
+<div class="term-section" data-section="external">
+  <div class="term-section-header">
+    <div class="term-section-icon">🌀</div>
+    <div class="term-section-title">外感证治法</div>
+    <div class="term-section-sub">六外感：风/寒/湿/火/暑/燥</div>
+  </div>
+
+<div class="term-card bar-external" data-keywords="解表 发汗 散寒 透邪 达表 解肌" data-section="external">
+    <div class="term-card-top">
+      <div class="term-main">解表 /</span> 发汗 /</span> 解肌 /</span> 达表</div>
+      <div class="term-badge badge-external">外感证治法</div>
+    </div>
+    <div class="term-def">解表：</strong>解除在体表的邪气（风/寒/湿/热/燥）。发汗：</strong>打开毛孔->排汗->散热驱邪。解肌：</strong>解除肌肉层的邪（比发汗更深一层）。</div>
+    <div class="term-breakdown">
+      <div class="breakdown-chip">解表 →</span> 解除表的敌人</div>
+      <div class="breakdown-chip">发汗 →</span> 打开门（毛孔）让邪走</div>
+      <div class="breakdown-chip">解肌 →</span> 解除肌肉层</div>
+    </div>
+    <div class="term-image">
+      辨：</strong>麻黄汤->发汗（无汗表实->强行开门）。
+      桂枝汤->解肌（有汗表虚->轻轻推门）。
+      葛根汤->解肌+升津（项背强几几）。
+      口诀：</strong>无汗麻黄，有汗桂枝，项强葛根。
+    </div>
+    
+    <div class="term-446">
+      <div class="term-446-title">446定位</div>
+      <div class="term-446-line">证型：<span>六外感(表证)</span></div>
+      <div class="term-446-line">辨证要点：恶寒发热/头身痛/脉浮</div>
+    </div>
+<div class="term-formulas">
+      <div class="term-formula"><div class="f-num">58</div><div class="f-name">桂枝汤</div><div class="f-role">解肌调和营卫·风邪表虚</div></div>
+      <div class="term-formula"><div class="f-num">63</div><div class="f-name">麻黄汤</div><div class="f-role">发汗散寒·寒邪表实（无汗喘咳）</div></div>
+      <div class="term-formula"><div class="f-num">64</div><div class="f-name">葛根汤</div><div class="f-role">解肌升津·项背强几几</div></div>
+    </div>
+  </div>
+
+<div class="term-card bar-external" data-keywords="宣肺 平喘 止咳 肃降" data-section="external">
+    <div class="term-card-top">
+      <div class="term-main">宣肺 /</span> 平喘 /</span> 止咳</div>
+      <div class="term-badge badge-external">外感证治法</div>
+    </div>
+    <div class="term-def">宣肺：</strong>把肺气宣通开来（肺气郁闭->咳嗽/喘/胸闷）。肃降：</strong>使肺气向下收敛肃清（宣的反面，防气逆）。平喘：</strong>平息气逆喘急。止咳：</strong>止住咳嗽。</div>
+    <div class="term-breakdown">
+      <div class="breakdown-chip">宣 →</span> 把门打开让气出去</div>
+      <div class="breakdown-chip">肃 →</span> 收降，让气往下走</div>
+      <div class="breakdown-chip">平 →</span> 压下去</div>
+      <div class="breakdown-chip">止 →</span> 强行止住</div>
+    </div>
+    <div class="term-image">
+      辨：</strong>宣肺=打开肺门（麻黄/杏仁）。
+      肃降=收降肺气（杏仁/紫菀），防气上逆。
+      平喘=镇压气逆到喘的程度。
+      麻杏石甘汤(38)=麻黄宣肺+石膏清热+杏仁平喘 -> 肺热咳喘。
+    </div>
+    
+    <div class="term-446">
+      <div class="term-446-title">446定位</div>
+      <div class="term-446-line">证型：<span>六外感(肺)</span></div>
+      <div class="term-446-line">辨证要点：咳嗽/胸闷/肺气闭</div>
+    </div>
+<div class="term-formulas">
+      <div class="term-formula"><div class="f-num">38</div><div class="f-name">麻杏石甘汤</div><div class="f-role">宣肺清热平喘·肺热咳喘</div></div>
+      <div class="term-formula"><div class="f-num">67</div><div class="f-name">小青龙汤</div><div class="f-role">外寒内饮·麻黄宣肺+干姜温肺</div></div>
+    </div>
+  </div>
+
+<div class="term-card bar-external" data-keywords="调和 和胃 消痞" data-section="external">
+    <div class="term-card-top">
+      <div class="term-main">调和 /</span> 和胃 /</span> 消痞</div>
+      <div class="term-badge badge-external">外感证治法</div>
+    </div>
+    <div class="term-def">调和：</strong>调节失衡的脏腑关系（营卫/脾胃/寒热）。和胃：</strong>调和胃气止呕。消痞：</strong>消除心下痞满（胀满但不痛）。</div>
+    <div class="term-breakdown">
+      <div class="breakdown-chip">调和 →</span> 两边吵架->调解</div>
+      <div class="breakdown-chip">和胃 →</span> 胃气顺了，呕就停了</div>
+      <div class="breakdown-chip">消痞 →</span> 胀满消掉</div>
+    </div>
+    <div class="term-image">
+      画面：</strong>脾胃像天平，寒热不平衡了 -> 天平歪了（痞满）-> 调平天平（辛开苦降=半夏泻心汤）。
+    </div>
+    <div class="term-formulas">
+      <div class="term-formula"><div class="f-num">48</div><div class="f-name">半夏泻心汤</div><div class="f-role">消痞·寒热错杂（呕+痞满+下利）</div></div>
+      <div class="term-formula"><div class="f-num">58</div><div class="f-name">桂枝汤</div><div class="f-role">调和营卫·营卫不和（时发热自汗）</div></div>
+      <div class="term-formula"><div class="f-num">67</div><div class="f-name">小青龙汤</div><div class="f-role">外寒内饮·麻黄散寒+干姜温肺</div></div>
+    </div>
+  </div>
+
+<div class="term-card bar-external" data-keywords="安神 定志 清热除烦 虚烦" data-section="external">
+    <div class="term-card-top">
+      <div class="term-main">安神 /</span> 清热除烦</div>
+      <div class="term-badge badge-external">外感证治法</div>
+    </div>
+    <div class="term-def">安神：</strong>安定心神（用于心悸/失眠/虚烦）。定志：</strong>安定神志，止惊定悸。清热除烦：</strong>清除郁热，解除烦躁。虚烦：</strong>热邪不重，但因阴虚/气郁导致的烦躁。</div>
+    <div class="term-breakdown">
+      <div class="breakdown-chip">安 →</span> 让心安定下来</div>
+      <div class="breakdown-chip">除烦 →</span> 去掉烦躁</div>
+    </div>
+    <div class="term-image">
+      辨：</strong>实热烦躁（黄连阿胶汤证）-> 舌红苔黄+彻夜不眠。
+      虚烦-> 舌微红苔少+心烦不得眠+反覆颠倒。
+      虚烦属阴虚/气郁者，滋阴清热+行气解郁方能除烦。
+    </div>
+    
+    <div class="term-446">
+      <div class="term-446-title">446定位</div>
+      <div class="term-446-line">证型：<span>脏腑(心)</span></div>
+      <div class="term-446-line">辨证要点：心悸/失眠/虚烦</div>
+    </div>
+<div class="term-formulas">
+      <div class="term-formula"><div class="f-num">21</div><div class="f-name">黄连阿胶汤</div><div class="f-role">滋阴安神·阴虚火旺失眠（虚烦重证）</div></div>
+      <div class="term-formula"><div class="f-num">20</div><div class="f-name">百合地黄汤</div><div class="f-role">养阴润燥·百合病神志恍惚</div></div>
+    </div>
+  </div>
+
+<div class="term-card bar-external" data-keywords="疏风 润燥 温燥 凉燥" data-section="external">
+    <div class="term-card-top">
+      <div class="term-main">疏风润燥 /</span> 清燥</div>
+      <div class="term-badge badge-external">外感证治法</div>
+    </div>
+    <div class="term-def">疏风润燥：</strong>疏散外燥之邪+滋润肺津。温燥：</strong>初秋之燥（热而干）→ 清燥救肺汤。凉燥：</strong>深秋之燥（寒而干）→ 杏苏散。</div>
+    <div class="term-breakdown">
+      <div class="breakdown-chip">温燥 →</span> 热燥伤肺（干咳无痰+舌红）</div>
+      <div class="breakdown-chip">凉燥 →</span> 凉燥袭肺（干咳痰稀+脉弦）</div>
+    </div>
+    <div class="term-image">
+      辨：</strong>秋天干燥=燥邪伤肺。
+      温燥（热象重）→ 清燥救肺汤(71)=沙参+麦冬+石膏+阿胶。
+      凉燥（寒象重）→ 杏苏散(72)=苏叶+杏仁+半夏+茯苓。
+      口诀：</strong>干咳无痰热象重，清燥救肺沙参冬；干咳痰稀寒象重，杏苏苏叶半夏从。
+    </div>
+    
+    <div class="term-446">
+      <div class="term-446-title">446定位</div>
+      <div class="term-446-line">证型：<span>六外感(燥邪)</span></div>
+      <div class="term-446-line">辨证要点：干咳/咽干/皮肤干燥</div>
+    </div>
+<div class="term-formulas">
+      <div class="term-formula"><div class="f-num">71</div><div class="f-name">清燥救肺汤</div><div class="f-role">滋阴润燥·温燥伤肺（干咳/气逆/咽干）</div></div>
+      <div class="term-formula"><div class="f-num">72</div><div class="f-name">杏苏散</div><div class="f-role">疏风润燥·凉燥袭肺（干咳痰稀+微恶寒）</div></div>
+    </div>
+  </div>
+
+</div>
+</main></main>
+<button id="jump-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+<script>
+function applyFilter() {
+  const cat = document.querySelector('.cat-btn.active').dataset.cat;
+  const q = (document.getElementById('search-input').value || '').trim().toLowerCase();
+
+  // 1. 过滤卡片
+  document.querySelectorAll('.term-card').forEach(card => {
+    const sectionMatch = cat === 'all' || card.dataset.section === cat;
+    const text = (card.textContent || '').toLowerCase();
+    const keywords = (card.dataset.keywords || '').toLowerCase();
+    const searchMatch = !q || text.includes(q) || keywords.includes(q);
+    card.classList.toggle('hidden', !(sectionMatch && searchMatch));
+  });
+
+  // 2. 处理 section 整体显示
+  document.querySelectorAll('.term-section').forEach(sec => {
+    const sectionMatch = cat === 'all' || sec.dataset.section === cat;
+    const hasVisible = sec.querySelector('.term-card:not(.hidden)');
+    sec.style.display = (sectionMatch && hasVisible) ? '' : 'none';
+  });
+
+  // 3. 孤立 group-label 隐藏（搜到只剩空组时）
+  document.querySelectorAll('.group-label').forEach(label => {
+    const next = label.nextElementSibling;
+    const visible = next && !next.classList.contains('hidden');
+    label.style.display = visible ? '' : 'none';
+  });
+
+  // 4. 搜索计数
+  const total = document.querySelectorAll('.term-card').length;
+  const visible = document.querySelectorAll('.term-card:not(.hidden)').length;
+  const countEl = document.getElementById('search-count');
+  if (q) {
+    countEl.textContent = `显示 ${visible} / ${total} 条`;
+  } else {
+    countEl.textContent = '';
+  }
+}
+
+document.querySelectorAll('.cat-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('search-input').value = '';
+    applyFilter();
+  });
+});
+
+document.getElementById('search-input').addEventListener('input', applyFilter);
+
+window.addEventListener('scroll', () => {
+  document.getElementById('jump-top').classList.toggle('show', window.scrollY > 300);
+});
+</script>
+</body>
+</html>
