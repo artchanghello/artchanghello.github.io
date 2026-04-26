@@ -271,89 +271,6 @@ body {
   }
   .navbar .home-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
 
-  /* ===== Floating Action Buttons ===== */
-  .fab-group {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    z-index: 999;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    align-items: flex-end;
-  }
-  .fab-btn {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    color: white;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    transition: transform 0.2s, opacity 0.3s;
-    opacity: 0;
-    transform: scale(0.8);
-    pointer-events: none;
-  }
-  .fab-btn.show {
-    opacity: 1;
-    transform: scale(1);
-    pointer-events: auto;
-  }
-  .fab-btn:hover { transform: scale(1.1); }
-  .fab-btn.top-btn { background: var(--accent); }
-  .fab-btn.font-btn { background: #555; font-weight: 700; font-size: 14px; }
-
-  /* Font size popup */
-  .font-popup {
-    position: fixed;
-    bottom: 80px;
-    right: 24px;
-    z-index: 1000;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-    padding: 8px 0;
-    display: none;
-    min-width: 120px;
-  }
-  .font-popup.show { display: block; }
-  .font-option {
-    display: block;
-    width: 100%;
-    padding: 10px 20px;
-    border: none;
-    background: none;
-    text-align: left;
-    cursor: pointer;
-    font-family: inherit;
-    transition: background 0.15s;
-    color: #333;
-  }
-  .font-option:hover { background: #f0f0f0; }
-  .font-option.active { color: var(--accent); font-weight: 700; }
-
-  /* Font size classes */
-  body.font-small  { font-size: 13px; }
-  body.font-small .herb-name { font-size: 18px; }
-  body.font-small .herb-desc { font-size: 12px; }
-  body.font-normal { font-size: 14px; }
-  body.font-large  { font-size: 16px; }
-  body.font-large .herb-name { font-size: 22px; }
-  body.font-large .herb-desc { font-size: 15px; }
-  body.font-xlarge { font-size: 18px; }
-  body.font-xlarge .herb-name { font-size: 24px; }
-  body.font-xlarge .herb-desc { font-size: 16px; }
-
-  @media (max-width: 768px) {
-    .fab-group { bottom: 16px; right: 16px; }
-    .font-popup { right: 16px; }
-  }
-
 </style>
 </head>
 <body>
@@ -424,13 +341,6 @@ body {
 </footer>
 
 <script>
-// 错误捕获：方便调试卡片不显示的问题
-window.onerror = function(msg, src, line, col, err) {
-  document.body.insertAdjacentHTML('afterbegin',
-    '<div style="background:#c0392b;color:white;padding:12px 20px;font-size:14px;position:fixed;top:0;left:0;right:0;z-index:99999">' +
-    'JS错误: ' + msg + ' (行' + line + ')' +
-    '<button style="margin-left:20px;color:white" onclick="this.parentNode.remove()">✕</button></div>');
-};
 // ========== 数据：用药表 ==========
 
 // ========== 渲染逻辑 ==========
@@ -552,11 +462,10 @@ const HERBS = [
 ];
 
 function renderHerbs() {
-    const container = document.getElementById("herbContainer");
-  console.log('[DEBUG] her-bContainer 元素:', container);
+  const container = document.getElementById("herbContainer");
   const emptyState = document.getElementById("emptyState");
   const filtered = filterHerbs();
-  
+
   if (filtered.length === 0) {
     container.innerHTML = "";
     emptyState.style.display = "block";
@@ -577,15 +486,17 @@ function renderHerbs() {
     html += `<div class="herb-grid">`;
     grouped[subcat].forEach((h, i) => {
       const globalIdx = HERBS.indexOf(h);
-      html += `<div class="herb-card" onclick="openModal(` + globalIdx + `)" role="button" tabindex="0" onkeydown="if(event.key==='Enter')openModal(` + globalIdx + `)">` +
-        `<div class="card-header">` +
-          `<div class="herb-name">` + h.name + `</div>` +
-          `<div class="herb-cat">` + h.subcat + `</div>` +
-        `</div>` +
-        `<div class="herb-xingwei">性味：` + h.xingwei + ` ｜ 归经：` + h.guijing + `</div>` +
-        `<div class="herb-gongxiao">` + h.gongxiao + `</div>` +
-        (h.daibiao ? `<div class="herb-daibiao"><span class="daibiao-label">代表方：</span>` + h.daibiao + `</div>` : ``) +
-      `</div>`;
+      html += `
+        <div class="herb-card" onclick="openModal(${globalIdx})" role="button" tabindex="0"
+             onkeydown="if(event.key==='Enter')openModal(${globalIdx})">
+          <div class="card-header">
+            <div class="herb-name">${h.name}</div>
+            <div class="herb-cat">${h.subcat}</div>
+          </div>
+          <div class="herb-xingwei">性味：${h.xingwei} ｜ 归经：${h.guijing}</div>
+          <div class="herb-gongxiao">${h.gongxiao}</div>
+          ${h.daibiao ? `<div class="herb-daibiao"><span class="daibiao-label">代表方：</span>${h.daibiao}</div>` : ""}
+        </div>`;
     });
     html += `</div>`;
   });
@@ -641,66 +552,7 @@ document.addEventListener("keydown", e => {
   if (e.key === "Escape") closeModal();
 });
 
-document.addEventListener('DOMContentLoaded', renderHerbs);
-<script>
-  /* ===== Floating Buttons & Font Size ===== */
-  (function() {
-    // Back to top
-    const topBtn = document.getElementById('jumpTopBtn');
-    window.addEventListener('scroll', function() {
-      topBtn.classList.toggle('show', window.scrollY > 300);
-    }, { passive: true });
-
-    // Font size
-    const fontBtn = document.getElementById('fontSizeBtn');
-    const fontPopup = document.getElementById('fontPopup');
-    const sizes = ['font-small', 'font-normal', 'font-large', 'font-xlarge'];
-
-    function applySize(size) {
-      sizes.forEach(function(s) { document.body.classList.remove(s); });
-      if (size !== 'font-normal') document.body.classList.add(size);
-      try { localStorage.setItem('446-font-size', size); } catch(e){}
-      document.querySelectorAll('.font-option').forEach(function(el) {
-        el.classList.toggle('active', el.dataset.size === size);
-      });
-    }
-
-    fontBtn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      fontPopup.classList.toggle('show');
-    });
-
-    document.querySelectorAll('.font-option').forEach(function(el) {
-      el.addEventListener('click', function() {
-        applySize(this.dataset.size);
-        fontPopup.classList.remove('show');
-      });
-    });
-
-    document.addEventListener('click', function(e) {
-      if (!fontPopup.contains(e.target) && e.target !== fontBtn) {
-        fontPopup.classList.remove('show');
-      }
-    });
-
-    try {
-      var saved = localStorage.getItem('446-font-size');
-      if (saved && sizes.indexOf(saved) > -1) applySize(saved);
-    } catch(e){}
-  })();
-  </script>
-
-<!-- Floating Buttons -->
-<div class="fab-group">
-  <button id="jumpTopBtn" class="fab-btn top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
-  <button id="fontSizeBtn" class="fab-btn font-btn">A</button>
-  <div id="fontPopup" class="font-popup">
-    <button class="font-option" data-size="font-small">小</button>
-    <button class="font-option active" data-size="font-normal">中</button>
-    <button class="font-option" data-size="font-large">大</button>
-    <button class="font-option" data-size="font-xlarge">特大</button>
-  </div>
-</div>
-
+renderHerbs();
+</script>
 </body>
 </html>
