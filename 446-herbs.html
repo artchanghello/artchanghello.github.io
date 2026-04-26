@@ -451,7 +451,6 @@ function filterHerbs() {
     return catMatch && searchMatch;
   });
 }
-console.log('[DEBUG] HERBS 数据开始加载...');
 const HERBS = [
   // ========== 四虚 ==========
   { name: "生黄芪", cat: "四虚", subcat: "气虚", xingwei: "甘，温", guijing: "脾、肺经", gongxiao: "补气固表、利水消肿、托毒排脓、敛疮生肌、行滞通痹、生津养血、升阳举陷。", daibiao: "黄芪甘草汤、黄芪糯米粥、补阳还五汤、黄芪桂枝五物汤、补中益气汤",  yi: "单用重用", ji: "寒凉、辛、咸、苦、淡" },
@@ -553,13 +552,11 @@ const HERBS = [
 ];
 
 function renderHerbs() {
-  console.log('[DEBUG] renderHerbs() 被调用');
-  const container = document.getElementById("herbContainer");
+    const container = document.getElementById("herbContainer");
   console.log('[DEBUG] her-bContainer 元素:', container);
   const emptyState = document.getElementById("emptyState");
   const filtered = filterHerbs();
-  console.log('[DEBUG] 过滤结果:', filtered.length, '味药');
-
+  
   if (filtered.length === 0) {
     container.innerHTML = "";
     emptyState.style.display = "block";
@@ -644,7 +641,7 @@ document.addEventListener("keydown", e => {
   if (e.key === "Escape") closeModal();
 });
 
-renderHerbs();
+document.addEventListener('DOMContentLoaded', renderHerbs);
 <script>
   /* ===== Floating Buttons & Font Size ===== */
   (function() {
