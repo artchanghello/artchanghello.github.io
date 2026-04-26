@@ -424,6 +424,13 @@ body {
 </footer>
 
 <script>
+// 错误捕获：方便调试卡片不显示的问题
+window.onerror = function(msg, src, line, col, err) {
+  document.body.insertAdjacentHTML('afterbegin',
+    '<div style="background:#c0392b;color:white;padding:12px 20px;font-size:14px;position:fixed;top:0;left:0;right:0;z-index:99999">' +
+    'JS错误: ' + msg + ' (行' + line + ')' +
+    '<button style="margin-left:20px;color:white" onclick="this.parentNode.remove()">✕</button></div>');
+};
 // ========== 数据：用药表 ==========
 
 // ========== 渲染逻辑 ==========
