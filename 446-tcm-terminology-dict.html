@@ -88,8 +88,85 @@
     .how-to { background: rgba(180,83,9,0.05); border: 1px solid rgba(180,83,9,0.15); border-radius: 12px; padding: 16px 20px; margin-bottom: 28px; font-size: 13px; color: var(--text2); line-height: 1.9; }
     .how-to-title { font-size: 11px; letter-spacing: 2px; color: var(--accent-gold); font-weight: 700; margin-bottom: 8px; }
     .how-to strong { color: var(--accent-gold); }
-    #jump-top { position: fixed; bottom: 24px; right: 24px; width: 40px; height: 40px; border-radius: 50%; background: var(--accent-gold); color: white; border: none; cursor: pointer; font-size: 18px; display: none; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(180,83,9,0.3); transition: opacity 0.2s; }
-    #jump-top.show { display: flex; }
+  /* ===== Floating Action Buttons ===== */
+  .fab-group {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-end;
+  }
+  .fab-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    transition: transform 0.2s, opacity 0.3s;
+    opacity: 0;
+    transform: scale(0.8);
+    pointer-events: none;
+  }
+  .fab-btn.show {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+  }
+  .fab-btn:hover { transform: scale(1.1); }
+  .fab-btn.top-btn { background: var(--accent-gold); }
+  .fab-btn.font-btn { background: #555; font-weight: 700; font-size: 14px; }
+
+  /* Font size popup */
+  .font-popup {
+    position: fixed;
+    bottom: 80px;
+    right: 24px;
+    z-index: 1000;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    padding: 8px 0;
+    display: none;
+    min-width: 120px;
+  }
+  .font-popup.show { display: block; }
+  .font-option {
+    display: block;
+    width: 100%;
+    padding: 10px 20px;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s;
+    color: #333;
+  }
+  .font-option:hover { background: #f0f0f0; }
+  .font-option.active { color: var(--accent-gold); font-weight: 700; }
+
+  /* Font size classes */
+  body.font-small  { font-size: 12px; }
+  body.font-small .term-card { font-size: 13px; }
+  body.font-normal { font-size: 14px; }
+  body.font-large  { font-size: 16px; }
+  body.font-large .term-card { font-size: 17px; }
+  body.font-xlarge { font-size: 18px; }
+  body.font-xlarge .term-card { font-size: 19px; }
+
+  @media (max-width: 768px) {
+    .fab-group { bottom: 16px; right: 16px; }
+    .font-popup { right: 16px; }
+  }
 
   /* ===== Home Button (unified) ===== */
   /* ===== Navbar (unified) ===== */
@@ -1284,7 +1361,16 @@
 
 </div>
 </main></main>
-<button id="jump-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+<div class="fab-group">
+  <button id="jumpTopBtn" class="fab-btn top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+  <button id="fontSizeBtn" class="fab-btn font-btn">A</button>
+  <div id="fontPopup" class="font-popup">
+    <button class="font-option" data-size="font-small">小</button>
+    <button class="font-option active" data-size="font-normal">中</button>
+    <button class="font-option" data-size="font-large">大</button>
+    <button class="font-option" data-size="font-xlarge">特大</button>
+  </div>
+</div>
 <script>
 function applyFilter() {
   const cat = document.querySelector('.cat-btn.active').dataset.cat;
@@ -1336,8 +1422,47 @@ document.querySelectorAll('.cat-btn').forEach(btn => {
 document.getElementById('search-input').addEventListener('input', applyFilter);
 
 window.addEventListener('scroll', () => {
-  document.getElementById('jump-top').classList.toggle('show', window.scrollY > 300);
+  document.getElementById('jumpTopBtn').classList.toggle('show', window.scrollY > 300);
 });
+/* ===== Font Size Adjustment ===== */
+(function() {
+  const fontBtn = document.getElementById('fontSizeBtn');
+  const fontPopup = document.getElementById('fontPopup');
+  const sizes = ['font-small', 'font-normal', 'font-large', 'font-xlarge'];
+  
+  function applySize(size) {
+    sizes.forEach(function(s) { document.body.classList.remove(s); });
+    if (size !== 'font-normal') document.body.classList.add(size);
+    try { localStorage.setItem('446-font-size', size); } catch(e){}
+    document.querySelectorAll('.font-option').forEach(function(el) {
+      el.classList.toggle('active', el.dataset.size === size);
+    });
+  }
+
+  fontBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    fontPopup.classList.toggle('show');
+  });
+
+  document.querySelectorAll('.font-option').forEach(function(el) {
+    el.addEventListener('click', function() {
+      applySize(this.dataset.size);
+      fontPopup.classList.remove('show');
+    });
+  });
+
+  document.addEventListener('click', function(e) {
+    if (!fontPopup.contains(e.target) && e.target !== fontBtn) {
+      fontPopup.classList.remove('show');
+    }
+  });
+
+  try {
+    var saved = localStorage.getItem('446-font-size');
+    if (saved && sizes.indexOf(saved) > -1) applySize(saved);
+  } catch(e){}
+})();
+
 </script>
 </body>
 </html>

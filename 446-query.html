@@ -642,6 +642,91 @@
   }
   .navbar .home-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
 
+  /* ===== Floating Action Buttons ===== */
+  .fab-group {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-end;
+  }
+  .fab-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    transition: transform 0.2s, opacity 0.3s;
+    opacity: 0;
+    transform: scale(0.8);
+    pointer-events: none;
+  }
+  .fab-btn.show {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+  }
+  .fab-btn:hover { transform: scale(1.1); }
+  .fab-btn.top-btn { background: var(--accent); }
+  .fab-btn.font-btn { background: #555; font-weight: 700; font-size: 14px; }
+
+  /* Font size popup */
+  .font-popup {
+    position: fixed;
+    bottom: 80px;
+    right: 24px;
+    z-index: 1000;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    padding: 8px 0;
+    display: none;
+    min-width: 120px;
+  }
+  .font-popup.show { display: block; }
+  .font-option {
+    display: block;
+    width: 100%;
+    padding: 10px 20px;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s;
+    color: #333;
+  }
+  .font-option:hover { background: #f0f0f0; }
+  .font-option.active { color: var(--accent); font-weight: 700; }
+
+  /* Font size classes */
+  body.font-small  { font-size: 13px; }
+  body.font-small .card h3 { font-size: 15px; }
+  body.font-small .card .desc { font-size: 12px; }
+  body.font-normal { font-size: 14px; }
+  body.font-large  { font-size: 16px; }
+  body.font-large .card h3 { font-size: 19px; }
+  body.font-large .card .desc { font-size: 15px; }
+  body.font-large .modal { font-size: 15px; }
+  body.font-xlarge { font-size: 18px; }
+  body.font-xlarge .card h3 { font-size: 21px; }
+  body.font-xlarge .card .desc { font-size: 16px; }
+  body.font-xlarge .modal { font-size: 17px; }
+
+  @media (max-width: 768px) {
+    .fab-group { bottom: 16px; right: 16px; }
+    .font-popup { right: 16px; }
+  }
+
   </style>
 </head>
 <body>
@@ -4599,4 +4684,76 @@
 
   document.addEventListener('DOMContentLoaded', initMemoryUI);
 
+  /* ===== Floating Buttons & Font Size ===== */
+  (function() {
+    // Back to top
+    const topBtn = document.getElementById('jumpTopBtn');
+    window.addEventListener('scroll', function() {
+      topBtn.classList.toggle('show', window.scrollY > 300);
+    }, { passive: true });
+
+    // Font size
+    const fontBtn = document.getElementById('fontSizeBtn');
+    const fontPopup = document.getElementById('fontPopup');
+    const sizes = ['font-small', 'font-normal', 'font-large', 'font-xlarge'];
+    const labels = { 'font-small':'小','font-normal':'中','font-large':'大','font-xlarge':'特大' };
+
+    function getCur() {
+      for (var i = 0; i < sizes.length; i++) {
+        if (document.body.classList.contains(sizes[i])) return sizes[i];
+      }
+      return 'font-normal';
+    }
+
+    function applySize(size) {
+      sizes.forEach(function(s) { document.body.classList.remove(s); });
+      if (size !== 'font-normal') document.body.classList.add(size);
+      try { localStorage.setItem('446-font-size', size); } catch(e){}
+      // update active state
+      document.querySelectorAll('.font-option').forEach(function(el) {
+        el.classList.toggle('active', el.dataset.size === size);
+      });
+    }
+
+    fontBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      fontPopup.classList.toggle('show');
+    });
+
+    document.querySelectorAll('.font-option').forEach(function(el) {
+      el.addEventListener('click', function() {
+        applySize(this.dataset.size);
+        fontPopup.classList.remove('show');
+      });
+    });
+
+    // Close popup on outside click
+    document.addEventListener('click', function(e) {
+      if (!fontPopup.contains(e.target) && e.target !== fontBtn) {
+        fontPopup.classList.remove('show');
+      }
+    });
+
+    // Init from localStorage
+    try {
+      var saved = localStorage.getItem('446-font-size');
+      if (saved && sizes.indexOf(saved) > -1) applySize(saved);
+    } catch(e){}
+  })();
+
   </script>
+
+<!-- Floating Buttons -->
+<div class="fab-group">
+  <button id="jumpTopBtn" class="fab-btn top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+  <button id="fontSizeBtn" class="fab-btn font-btn">A</button>
+  <div id="fontPopup" class="font-popup">
+    <button class="font-option" data-size="font-small">小</button>
+    <button class="font-option active" data-size="font-normal">中</button>
+    <button class="font-option" data-size="font-large">大</button>
+    <button class="font-option" data-size="font-xlarge">特大</button>
+  </div>
+</div>
+
+</body>
+</html>
