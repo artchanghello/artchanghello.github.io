@@ -576,17 +576,15 @@ function renderHerbs() {
     html += `<div class="herb-grid">`;
     grouped[subcat].forEach((h, i) => {
       const globalIdx = HERBS.indexOf(h);
-      html += `
-        <div class="herb-card" onclick="openModal(${globalIdx})" role="button" tabindex="0"
-             onkeydown="if(event.key==='Enter')openModal(${globalIdx})">
-          <div class="card-header">
-            <div class="herb-name">${h.name}</div>
-            <div class="herb-cat">${h.subcat}</div>
-          </div>
-          <div class="herb-xingwei">性味：${h.xingwei} ｜ 归经：${h.guijing}</div>
-          <div class="herb-gongxiao">${h.gongxiao}</div>
-          ${h.daibiao ? `<div class="herb-daibiao"><span class="daibiao-label">代表方：</span>${h.daibiao}</div>` : ""}
-        </div>`;
+      html += `<div class="herb-card" onclick="openModal(` + globalIdx + `)" role="button" tabindex="0" onkeydown="if(event.key==='Enter')openModal(` + globalIdx + `)">` +
+        `<div class="card-header">` +
+          `<div class="herb-name">` + h.name + `</div>` +
+          `<div class="herb-cat">` + h.subcat + `</div>` +
+        `</div>` +
+        `<div class="herb-xingwei">性味：` + h.xingwei + ` ｜ 归经：` + h.guijing + `</div>` +
+        `<div class="herb-gongxiao">` + h.gongxiao + `</div>` +
+        (h.daibiao ? `<div class="herb-daibiao"><span class="daibiao-label">代表方：</span>` + h.daibiao + `</div>` : ``) +
+      `</div>`;
     });
     html += `</div>`;
   });
