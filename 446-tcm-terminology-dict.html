@@ -92,36 +92,59 @@
     #jump-top.show { display: flex; }
 
   /* ===== Home Button (unified) ===== */
-  .home-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
+  /* ===== Navbar (unified) ===== */
+  .navbar {
+    position: sticky; top: 0; z-index: 200;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 32px; height: 56px;
+    background: rgba(255,255,255,0.90);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+  }
+  .navbar .logo {
+    font-family: Georgia, "Songti SC", "Noto Serif SC", serif;
+    font-size: 18px; font-weight: 700;
+    color: var(--accent-gold);
+    text-decoration: none;
+  }
+  .navbar .nav-links {
+    display: flex; align-items: center; gap: 12px;
+  }
+  .navbar .home-btn {
+    display: inline-flex; align-items: center; gap: 6px;
     padding: 7px 18px;
     background: #40916C;
     color: white !important;
     border-radius: 8px;
     text-decoration: none;
-    font-size: 14px;
-    font-weight: 600;
+    font-size: 14px; font-weight: 600;
     transition: background 0.2s, transform 0.15s;
-    font-family: inherit;
-    cursor: pointer;
+    font-family: inherit; cursor: pointer;
   }
-  .home-btn:hover {
-    background: #2D6A4F;
-    transform: translateY(-1px);
+  .navbar .home-btn:hover {
+    background: #2D6A4F; transform: translateY(-1px);
   }
-  .home-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+  .navbar .home-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+  @media (max-width: 768px) {
+    .navbar { padding: 0 16px; }
+    .navbar .home-text { display: none; }
+    .navbar .home-btn { padding: 8px 10px; border-radius: 8px; }
+    .navbar .logo { font-size: 15px; }
+  }
 
   </style>
 </head>
 <body>
 
-<nav style="position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:0 32px;height:56px;background:rgba(255,255,255,0.90);backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,0,0,0.08);">
-  <a href="446-index.html" class="home-btn">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1V9.5z"/></svg>
-    首页
-  </a>
+<nav class="navbar" role="navigation" aria-label="主导航">
+  <a href="446-index.html" class="logo">446<span>·术语词典</span></a>
+  <div class="nav-links">
+    <a href="446-index.html" class="home-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1V9.5z"/></svg>
+      <span class="home-text">首页</span>
+    </a>
+  </div>
 </nav>
 
 <header>
