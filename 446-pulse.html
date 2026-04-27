@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>446辨证体系 · 脉象学习</title>
+  <meta name="description" content="基于446辨证体系的脉象诊断学习工具，覆盖14个证型的脉诊特征，动态脉搏波形可视化，支持分类筛选、自测模式。">
+  <link rel="icon" href="446-logo-og.png" type="image/png">
+
+  <!-- Open Graph / 微信分享 -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="446辨证体系 · 脉象学习">
+  <meta property="og:description" content="基于446辨证体系的脉象诊断学习工具，覆盖14个证型，动态波形可视化。">
+  <meta property="og:image" content="https://artchanghello.github.io/446-logo-og.png">
+  <meta property="og:locale" content="zh_CN">
+
+<style>
+  :root {
+    /* 紫色系主题 */
+    --primary: #5B2C6F;
+    --primary-light: #7D3C98;
+    --accent: #9B59B6;
+    --accent-light: #BB8FCE;
+    --bg: #F8F5FB;
+    --card-bg: #FFFFFF;
+    --text: #1A1A1A;
+    --text-secondary: #555;
+    --border: #D7C4E0;
+    --shadow: 0 2px 12px rgba(155,89,182,0.12);
+    --radius: 12px;
+
+    /* 脉象色系 */
+    --pulse-normal: #9B59B6;      /* 平脉 */
+    --pulse-float: #E67E22;        /* 浮脉 */
+    --pulse-deep: #2980B9;         /* 沉脉 */
+    --pulse-slow: #27AE60;         /* 迟脉 */
+    --pulse-fast: #C0392B;         /* 数脉 */
+    --pulse-weak: #95A5A6;         /* 虚/弱脉 */
+    --pulse-strong: #E74C3C;       /* 洪/实脉 */
+    --pulse-stringy: #3498DB;      /* 弦脉 */
+    --pulse-smooth: #F39C12;       /* 滑脉 */
+    --pulse-rough: #8E44AD;        /* 涩脉 */
+    --pulse-thin: #1ABC9C;         /* 细脉 */
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .skip-link {
+    position: absolute; top: -40px; left: 0;
+    background: var(--primary); color: white; padding: 8px 16px;
+    z-index: 10000; text-decoration: none; border-radius: 0 0 4px 0; transition: top 0.2s;
+  }
+  .skip-link:focus { top: 0; }
+  :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+  /* ===== Navbar ===== */
+  .navbar {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 24px; height: 60px;
+    background: rgba(255,255,255,0.88); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .navbar .logo {
+    font-family: Georgia, "Songti SC", serif; font-size: 18px; font-weight: 700;
+    color: var(--primary); text-decoration: none;
+  }
+  .navbar .logo span { color: var(--accent); }
+  .navbar .nav-links { display: flex; gap: 20px; }
+  .navbar .nav-links a {
+    color: var(--text-secondary); text-decoration: none; font-size: 14px;
+    transition: color 0.2s;
+  }
+  .navbar .nav-links a:hover { color: var(--accent); }
+  .navbar .home-btn {
+    padding: 7px 18px; border-radius: 8px;
+    background: var(--primary); color: white !important;
+    text-decoration: none; font-size: 13px; font-weight: 600;
+    transition: all 0.2s;
+  }
+  .navbar .home-btn:hover { background: var(--primary-light); transform: translateY(-1px); }
+
+  /* ===== Hero ===== */
+  .hero {
+    background: linear-gradient(135deg, #5B2C6F 0%, #7D3C98 35%, #9B59B6 70%, #AF7AC5 100%);
+    padding: 48px 24px 40px; text-align: center; position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; top: -50%; left: -20%;
+    width: 140%; height: 200%;
+    background: radial-gradient(ellipse, rgba(187,143,206,0.2) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero h1 {
+    font-family: Georgia, "Songti SC", serif; font-size: clamp(26px,5vw,36px);
+    color: white; margin-bottom: 12px; position: relative;
+  }
+  .hero p {
+    color: rgba(255,255,255,0.88); font-size: 15px; max-width: 520px; margin: 0 auto 28px;
+    position: relative;
+  }
+  .search-bar {
+    max-width: 480px; margin: 0 auto; position: relative; display: flex;
+  }
+  .search-bar input {
+    width: 100%; padding: 14px 44px 14px 20px; border-radius: 30px; border: 1.5px solid rgba(255,255,255,0.35);
+    background: rgba(255,255,255,0.15); backdrop-filter: blur(6px);
+    color: white; font-size: 15px; outline: none; transition: all 0.25s;
+  }
+  .search-bar input::placeholder { color: rgba(255,255,255,0.55); }
+  .search-bar input:focus {
+    border-color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.22);
+    box-shadow: 0 0 0 4px rgba(155,89,182,0.25);
+  }
+  .search-icon {
+    position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+    width: 20px; height: 20px; opacity: 0.5;
+  }
+
+  /* ===== Filters ===== */
+  .filters-section {
+    padding: 24px 24px 16px; max-width: 1100px; margin: 0 auto;
+  }
+  .filter-row {
+    display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px;
+  }
+  .filter-chip {
+    padding: 8px 18px; border-radius: 20px; border: 1.5px solid var(--border);
+    background: white; cursor: pointer; font-size: 14px; transition: all 0.2s;
+    user-select: none;
+  }
+  .filter-chip:hover { border-color: var(--accent); color: var(--accent-light); }
+  .filter-chip.active {
+    background: var(--primary); color: white; border-color: var(--primary);
+  }
+  .filter-label {
+    font-size: 13px; color: var(--text-secondary); font-weight: 600;
+    line-height: 34px; min-width: 56px; letter-spacing: 0.02em;
+  }
+  .sub-filters { display: none; animation: fadeIn 0.25s ease; }
+  .sub-filters.show { display: flex; }
+
+  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+  /* ===== Stats & Mode Toggle ===== */
+  .stats-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 24px; max-width: 1100px; margin: 0 auto;
+  }
+  .stats-text { font-size: 13px; color: var(--text-secondary); }
+  .mode-toggle {
+    display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+    user-select: none;
+  }
+  .toggle-switch {
+    width: 44px; height: 24px; background: #ddd; border-radius: 12px;
+    position: relative; transition: background 0.3s;
+  }
+  .toggle-switch.on { background: var(--accent); }
+  .toggle-switch::after {
+    content: ''; position: absolute; width: 20px; height: 20px;
+    background: white; border-radius: 50%; top: 2px; left: 2px;
+    transition: transform 0.3s; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .toggle-switch.on::after { transform: translateX(20px); }
+  .mode-toggle label { font-size: 13px; color: var(--text-secondary); cursor: pointer; }
+
+  /* ===== Pulse Grid ===== */
+  .grid-container { padding: 8px 24px 48px; max-width: 1100px; margin: 0 auto; }
+  .pulse-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 20px;
+  }
+
+  /* ===== Pulse Card ===== */
+  .pulse-card {
+    background: var(--card-bg); border-radius: var(--radius);
+    overflow: hidden; cursor: pointer; transition: all 0.3s ease;
+    border: 1px solid var(--border); position: relative;
+  }
+  .pulse-card:hover {
+    transform: translateY(-4px); box-shadow: var(--shadow), 0 8px 24px rgba(155,89,182,0.15);
+  }
+  .card-body { padding: 20px; }
+
+  .card-header {
+    display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px;
+  }
+  .card-title-group { display: flex; align-items: center; gap: 10px; }
+  .syndrome-name {
+    font-family: Georgia, "Songti SC", serif; font-size: 22px; font-weight: 700; color: var(--primary);
+  }
+  .category-tag {
+    display: inline-block; padding: 3px 10px; border-radius: 6px; font-size: 11px; font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+  .cat-xu { background: #EBF5FB; color: #2980B9; }      /* 四虚 - 蓝 */
+  .cat-shi { background: #FDEDEC; color: #C0392B; }     /* 四实 - 红 */
+  .cat-wai { background: #FEF9E7; color: #B7950B; }     /* 六外感 - 金 */
+
+  /* ===== 脉象 Canvas 可视化区域 ===== */
+  .pulse-visual {
+    background: linear-gradient(180deg, #F5EEF8 0%, #FAF5FC 50%, #FFFFFF 100%);
+    border-radius: 10px; padding: 16px; margin: 14px 0;
+    border: 1px solid #E8D4EE; position: relative;
+  }
+  .pulse-canvas-wrap {
+    display: flex; justify-content: center; align-items: center;
+    width: 100%;
+  }
+  .pulse-canvas-wrap canvas {
+    border-radius: 8px;
+    background: transparent;
+  }
+
+  /* 脉象信息网格 */
+  .pulse-info {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 14px;
+  }
+  .pulse-info-item {
+    background: white; border-radius: 8px; padding: 10px 12px;
+    font-size: 13px; border: 1px solid #f0eef8;
+  }
+  .info-label { color: #888; font-size: 11px; margin-bottom: 3px; }
+  .info-value { font-weight: 600; color: var(--text); }
+
+  /* 脉象类型标签 */
+  .pulse-type-tag {
+    display: inline-block; padding: 2px 10px; border-radius: 10px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.03em;
+    color: white;
+  }
+
+  /* ===== Card Features ===== */
+  .feature-list { list-style: none; margin-top: 12px; }
+  .feature-list li {
+    padding: 6px 0; font-size: 13px; color: var(--text-secondary);
+    border-bottom: 1px solid #f8f6fc; display: flex; align-items: start; gap: 8px;
+  }
+  .feature-list li:last-child { border-bottom: none; }
+  .feature-bullet {
+    width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 7px;
+  }
+
+  .card-footer {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 14px; padding-top: 12px; border-top: 1px solid #f0eef8;
+  }
+  .syndrome-tag {
+    font-size: 12px; padding: 3px 10px; border-radius: 12px; background: #F5EEF8; color: var(--accent); font-weight: 600;
+  }
+
+  /* Quiz mode overlay on card */
+  .quiz-overlay {
+    position: absolute; inset: 0; background: rgba(91,44,111,0.94);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s; border-radius: var(--radius);
+  }
+  .quiz-overlay.show { opacity: 1; pointer-events: auto; }
+  .quiz-overlay .question { color: white; font-size: 17px; margin-bottom: 16px; font-weight: 600; }
+  .quiz-overlay .reveal-btn {
+    padding: 10px 28px; border: 2px solid white; background: transparent;
+    color: white; border-radius: 24px; font-size: 14px; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .quiz-overlay .reveal-btn:hover { background: white; color: var(--primary); }
+
+  /* ===== Modal ===== */
+  .modal-backdrop {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px; opacity: 0; visibility: hidden; transition: all 0.3s;
+  }
+  .modal-backdrop.open { opacity: 1; visibility: visible; }
+  .modal {
+    background: white; border-radius: 16px; width: 100%; max-width: 620px;
+    max-height: 85vh; overflow-y: auto; padding: 32px; position: relative;
+    transform: translateY(20px); transition: transform 0.3s;
+  }
+  .modal-backdrop.open .modal { transform: translateY(0); }
+  .modal-close {
+    position: absolute; top: 16px; right: 16px; width: 32px; height: 32px;
+    border: none; background: #f5f5f5; border-radius: 50%; cursor: pointer;
+    font-size: 18px; display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s; color: #666;
+  }
+  .modal-close:hover { background: #e8e8e8; }
+
+  .modal-header { margin-bottom: 24px; }
+  .modal-syndrome-name {
+    font-family: Georgia, "Songti SC", serif; font-size: 28px; font-weight: 700;
+    color: var(--primary); margin-bottom: 6px;
+  }
+  .modal-category-row { display: flex; gap: 8px; align-items: center; }
+
+  .modal-section { margin-bottom: 22px; }
+  .section-title {
+    font-size: 15px; font-weight: 700; color: var(--primary);
+    margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+  }
+  .section-title::before {
+    content: ''; width: 4px; height: 18px; border-radius: 2px; background: var(--accent);
+  }
+
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .detail-item {
+    background: var(--bg); border-radius: 10px; padding: 14px;
+  }
+  .detail-label { font-size: 12px; color: #888; margin-bottom: 4px; }
+  .detail-value { font-size: 15px; font-weight: 600; color: var(--text); }
+
+  .symptom-list { list-style: none; }
+  .symptom-list li {
+    padding: 8px 0; border-bottom: 1px solid #f0eef8; font-size: 14px; color: var(--text-secondary);
+    display: flex; align-items: start; gap: 8px;
+  }
+  .symptom-list li:last-child { border-bottom: none; }
+  .sym-icon {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 7px;
+  }
+
+  /* ===== 正常脉象参考区 ===== */
+  .normal-ref {
+    background: linear-gradient(135deg, #F5EEF8 0%, #FAF5FC 40%, #FDF8FF 100%);
+    border: 1px solid #E8D4EE; border-radius: var(--radius);
+    padding: 24px; margin: 0 24px 32px; max-width: 1100px;
+    margin-left: auto; margin-right: auto;
+  }
+  .normal-ref h3 {
+    font-family: Georgia, "Songti SC", serif; color: var(--primary);
+    margin-bottom: 14px; font-size: 18px;
+  }
+  .normal-pulse-grid {
+    display: grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap: 16px;
+  }
+  .normal-item {
+    background: white; border-radius: 10px; padding: 16px;
+  }
+  .normal-item h4 { font-size: 14px; color: var(--accent); margin-bottom: 6px; }
+  .normal-item p { font-size: 13px; color: var(--text-secondary); line-height: 1.65; }
+
+  /* ===== Empty State ===== */
+  .empty-state { text-align: center; padding: 60px 20px; color: #aaa; }
+  .empty-state svg { width: 80px; height: 80px; margin-bottom: 16px; opacity: 0.4; }
+
+  /* ===== Footer ===== */
+  footer {
+    text-align: center; padding: 32px 20px; color: #999; font-size: 13px;
+    border-top: 1px solid var(--border); margin-top: 40px;
+  }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 768px) {
+    .navbar { padding: 0 16px; height: 54px; }
+    .navbar .nav-links { display: none; }
+    .hero { padding: 36px 16px 32px; }
+    .hero h1 { font-size: 24px; }
+    .hero p { font-size: 14px; }
+    .filters-section { padding: 16px 16px 12px; }
+    .stats-row { padding: 10px 16px; flex-direction: row; gap: 12px; }
+    .grid-container { padding: 8px 16px 32px; }
+    .pulse-grid { grid-template-columns: 1fr; gap: 14px; }
+    .modal { padding: 20px; max-height: 90vh; }
+    .normal-ref { margin: 0 16px 24px; padding: 18px; }
+    .pulse-info { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (max-width: 380px) {
+    .filter-chip { padding: 6px 12px; font-size: 13px; }
+    .pulse-info { grid-template-columns: 1fr; }
+    .detail-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">跳转到主内容</a>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <a class="logo" href="446-index.html"><span>446</span>·脉象学习</a>
+  <div class="nav-links">
+    <a href="446-query.html" class="home-btn">🏠 首页</a>
+    <a href="446-tongue.html">舌象</a>
+    <a href="446-herbs.html">用药表</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <h1>446辨证体系 · 脉象学习</h1>
+  <p>切脉之道——通过脉象辨识四虚、四实、六外感共14个证型的特征<br>动态脉搏波形可视化，点击卡片查看详情，开启自测检验掌握程度</p>
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="搜索证型名称、脉象、症状..." autocomplete="off">
+    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+      <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+    </svg>
+  </div>
+</section>
+
+<!-- Filters -->
+<div class="filters-section" id="main-content">
+  <div class="filter-row">
+    <span class="filter-label">大类：</span>
+    <button class="filter-chip active" data-cat="all">全部</button>
+    <button class="filter-chip" data-cat="xu">四虚</button>
+    <button class="filter-chip" data-cat="shi">四实</button>
+    <button class="filter-chip" data-cat="wai">六外感</button>
+  </div>
+  <!-- 子类筛选 -->
+  <div class="sub-filters" id="subFiltersXu">
+    <span class="filter-label">证型：</span>
+    <button class="filter-chip sub active" data-sub="qixu">气虚</button>
+    <button class="filter-chip sub" data-sub="yangxu">阳虚</button>
+    <button class="filter-chip sub" data-sub="xuexu">血虚</button>
+    <button class="filter-chip sub" data-sub="yinxu">阴虚</button>
+  </div>
+  <div class="sub-filters" id="subFiltersShi">
+    <span class="filter-label">证型：</span>
+    <button class="filter-chip sub active" data-sub="qizhi">气滞</button>
+    <button class="filter-chip sub" data-sub="xueyu">血瘀</button>
+    <button class="filter-chip sub" data-sub="tanyin">痰饮</button>
+    <button class="filter-chip sub" data-sub="shihuo">实火</button>
+  </div>
+  <div class="sub-filters" id="subFiltersWai">
+    <span class="filter-label">证型：</span>
+    <button class="filter-chip sub active" data-sub="feng">风</button>
+    <button class="filter-chip sub" data-sub="han">寒</button>
+    <button class="filter-chip sub" data-sub="shi_w">湿</button>
+    <button class="filter-chip sub" data-sub="huo_w">火</button>
+    <button class="filter-chip sub" data-sub="shu">暑</button>
+    <button class="filter-chip sub" data-sub="zao">燥</button>
+  </div>
+</div>
+
+<!-- Stats & Quiz Toggle -->
+<div class="stats-row">
+  <div class="stats-text" id="statsText">共 14 个证型</div>
+  <div class="mode-toggle" id="modeToggle">
+    <div class="toggle-switch" id="switch"></div>
+    <label>自测模式</label>
+  </div>
+</div>
+
+<!-- Normal Pulse Reference -->
+<div class="normal-ref">
+  <h3>💜 正常脉象参考（平脉）</h3>
+  <div class="normal-pulse-grid">
+    <div class="normal-item">
+      <h4>脉位</h4>
+      <p><strong>不浮不沉，中取即得</strong>——轻按不应，中按应指清楚，重按不减。</p>
+    </div>
+    <div class="normal-item">
+      <h4>频率</h4>
+      <p><strong>一息四至（60-90次/分）</strong>——节律均匀整齐，无间歇。</p>
+    </div>
+    <div class="normal-item">
+      <h4>形态</h4>
+      <p><strong>和缓有力，从容不迫</strong>——不大不小，不快不慢，柔和有力。</p>
+    </div>
+    <div class="normal-item">
+      <h4>特点</h4>
+      <p>有胃（和缓）、有神（有力）、有根（尺部沉取有力）。<br>四季有春弦夏洪秋浮冬沉之微变。</p>
+    </div>
+  </div>
+</div>
+
+<!-- Pulse Grid -->
+<div class="grid-container">
+  <div class="pulse-grid" id="pulseGrid"></div>
+  <div class="empty-state" id="emptyState" style="display:none">
+    <svg viewBox="0 0 64 64" fill="currentColor"><circle cx="32" cy="32" r="28" stroke-dasharray="4 3"/><line x1="42" y1="42" x2="56" y2="56"/></svg>
+    <p style="margin-top:12px;font-size:15px;">未找到匹配的脉象记录</p>
+    <p style="font-size:13px;">试试其他关键词？</p>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal" role="dialog" aria-labelledby="modalTitle">
+    <button class="modal-close" aria-label="关闭" onclick="closeModal()">&times;</button>
+    <div class="modal-header">
+      <div class="modal-syndrome-name" id="modalTitle"></div>
+      <div class="modal-category-row" id="modalCategoryRow"></div>
+    </div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<footer>
+  <p>446辨证体系 · 脉象学习 | 基于《四虚四实六外感》教学资料整理</p>
+</footer>
+
+<script>
+// ========== 数据：14个证型的完整脉象数据 ==========
+const PULSE_DATA = [
+  // ======== 四虚 ========
+  {
+    id: "qixu", name: "气虚证", category: "四虚", subcategory: "气虚",
+    catClass: "cat-xu",
+    pulseName: "脉虚大无力 / 浮大但无力",
+    pulseType: "xu", // 虚脉
+    pulseProps: {
+      frequency: 0.85,   // 接近正常偏慢
+      amplitude: 0.55,    // 低振幅（无力）
+      baseline: 0.45,     // 偏上（浮大）
+      rhythm: "regular",
+      shape: "wide_weak", // 宽大无力
+      color: "#95A5A6"
+    },
+    depthLabel: "浮而无力",
+    rateLabel: "一息4-5至",
+    strengthLabel: "无力（重按空虚）",
+    rhythmLabel: "节律整齐",
+    features: [
+      "全身疲倦乏力，神疲懒言",
+      "动则气短，声音低微",
+      "自汗（活动后加重）",
+      "面色萎黄或㿠白"
+    ],
+    keyPoint: "气虚脉的核心是「无力」+「偏大」。脉管因气虚而弛张，故形大；推动力不足，故按之无力。",
+    relatedFormula: "补中益气汤、四君子汤、玉屏风散"
+  },
+  {
+    id: "yangxu", name: "阳虚证", category: "四虚", subcategory: "阳虚",
+    catClass: "cat-xu",
+    pulseName: "脉沉细无力 / 微弱",
+    pulseType: "xu_chen", // 沉虚
+    pulseProps: {
+      frequency: 0.75,    // 偏慢
+      amplitude: 0.4,     // 很弱
+      baseline: 0.65,     // 偏下（沉）
+      rhythm: "regular",
+      shape: "thin_weak", // 细而弱
+      color: "#7F8C8D"
+    },
+    depthLabel: "沉（重按始得）",
+    rateLabel: "一息3-4至（偏迟）",
+    strengthLabel: "极弱（微弱欲绝）",
+    rhythmLabel: "节律整齐",
+    features: [
+      "畏寒怕冷，四肢不温",
+      "喜热饮，体温常偏低",
+      "腰寒腿冷，小便清长",
+      "大便溏薄、完谷不化"
+    ],
+    keyPoint: "阳虚脉「沉细无力」——阳气不能鼓动血脉于表→沉；温煦推动不足→细弱。",
+    relatedFormula: "附子理中汤、真武汤、桂枝加附子汤"
+  },
+  {
+    id: "xuexu", name: "血虚证", category: "四虚", subcategory: "血虚",
+    catClass: "cat-xu",
+    pulseName: "脉细无力",
+    pulseType: "xi", // 细脉
+    pulseProps: {
+      frequency: 0.9,
+      amplitude: 0.35,   // 细如线
+      baseline: 0.5,     // 中位
+      rhythm: "regular",
+      shape: "thin",     // 细
+      color: "#1ABC9C"
+    },
+    depthLabel: "中取可得",
+    rateLabel: "一息4-5至",
+    strengthLabel: "细而无力（如丝线）",
+    rhythmLabel: "节律整齐",
+    features: [
+      "面色淡白或萎黄，眼睑唇色淡",
+      "头晕眼花，两目干涩",
+      "心悸失眠，多梦健忘",
+      "手足发麻，爪甲不荣",
+      "妇女月经量少色淡、后期或闭经"
+    ],
+    keyPoint: "血虚则脉道失充→「脉细」如丝线。与气虚区别：气虚脉大无力，血虚脉细无力。",
+    relatedFormula: "四物汤、当归补血汤、炙甘草汤"
+  },
+  {
+    id: "yinxu", name: "阴虚证", category: "四虚", subcategory: "阴虚",
+    catClass: "cat-xu",
+    pulseName: "脉细数",
+    pulseType: "xi_shu", // 细数
+    pulseProps: {
+      frequency: 1.4,    // 快（数）
+      amplitude: 0.45,   // 细
+      baseline: 0.5,
+      rhythm: "regular",
+      shape: "thin_fast", // 细而快
+      color: "#C0392B"
+    },
+    depthLabel: "中取可得",
+    rateLabel: "一息6-7至以上（数）",
+    strengthLabel: "细而偏有力",
+    rhythmLabel: "节律整齐但偏快",
+    features: [
+      "形体消瘦，腰膝酸软",
+      "五心烦热（手心脚心心胸）",
+      "午后潮热，夜间盗汗",
+      "颧红，咽喉口鼻干痛",
+      "大便干燥，尿少色黄"
+    ],
+    keyPoint: "阴虚内热→脉「数」（热）+「细」（阴伤津亏脉道失充）。核心组合：细+数。",
+    relatedFormula: "六味地黄丸、知柏地黄丸、百合固金汤"
+  },
+
+  // ======== 四实 ========
+  {
+    id: "qizhi", name: "气滞证", category: "四实", subcategory: "气滞",
+    catClass: "cat-shi",
+    pulseName: "脉弦（如琴弦）",
+    pulseType: "xian", // 弦脉
+    pulseProps: {
+      frequency: 1.0,
+      amplitude: 0.75,
+      baseline: 0.5,
+      rhythm: "regular",
+      shape: "stringy",  // 如琴弦挺直
+      color: "#3498DB"
+    },
+    depthLabel: "中取明显",
+    rateLabel: "一息4-5至",
+    strengthLabel: "端直而长，按之如琴弦",
+    rhythmLabel: "节律整齐",
+    features: [
+      "情志抑郁，情绪不宁",
+      "胸闷喜出长气（善太息）",
+      "胁肋胀痛，痛无定处",
+      "腹胀饮食减少",
+      "女子月事不行、经前乳房胀痛"
+    ],
+    keyPoint: "弦脉是气滞标志性脉象——「端直以长，如按琴弦」。气机不畅，脉管紧张度增高所致。",
+    relatedFormula: "柴胡疏肝散、逍遥散、越鞠丸"
+  },
+  {
+    id: "xueyu", name: "血瘀证", category: "四实", subcategory: "血瘀",
+    catClass: "cat-shi",
+    pulseName: "脉涩（往来艰涩）/ 结代",
+    pulseType: "se", // 涩脉
+    pulseProps: {
+      frequency: 0.8,
+      amplitude: 0.5,
+      baseline: 0.5,
+      rhythm: "irregular", // 不规则，可有停顿
+      shape: "rough",     // 往来艰涩
+      color: "#8E44AD"
+    },
+    depthLabel: "中取可得",
+    rateLabel: "一息4至或不匀",
+    strengthLabel: "往来艰涩，不畅利",
+    rhythmLabel: "不规则，可有结代",
+    features: [
+      "刺痛固定不移，拒按",
+      "疼痛夜间加重",
+      "肿块质硬色青紫",
+      "出血色黑（如黑色便血）",
+      "面色青黑不华"
+    ],
+    keyPoint: "涩脉特征：「往来艰涩，如轻刀刮竹」。血行不畅→脉流艰涩。严重者可见结代脉（停顿）。",
+    relatedFormula: "血府逐瘀汤、身痛逐瘀汤、桃红四物汤"
+  },
+  {
+    id: "tanyin", name: "痰饮证", category: "四实", subcategory: "痰饮",
+    catClass: "cat-shi",
+    pulseName: "脉滑 / 弦滑 / 沉弦",
+    pulseType: "hua", // 滑脉
+    pulseProps: {
+      frequency: 1.05,
+      amplitude: 0.85,
+      baseline: 0.48,
+      rhythm: "regular",
+      shape: "smooth",   // 圆滑流畅
+      color: "#F39C12"
+    },
+    depthLabel: "浮或中取",
+    rateLabel: "一息4-5至",
+    strengthLabel: "流利圆滑，如珠走盘",
+    rhythmLabel: "节律整齐",
+    features: [
+      "头晕目眩，恶心呕吐",
+      "胸闷痞满，心下痞硬",
+      "咳嗽痰多，痰稀白",
+      "口内清涎沫多，口淡不渴",
+      "肢体困重"
+    ],
+    keyPoint: "滑脉——「往来流利，如盘走珠」。痰湿内盛，气血涌盛于脉，故脉来流利圆滑。",
+    relatedFormula: "二陈汤、苓桂术甘汤、半夏厚朴汤"
+  },
+  {
+    id: "shihuo", name: "实火证（内火）", category: "四实", subcategory: "实火",
+    catClass: "cat-shi",
+    pulseName: "脉洪数有力 / 数实有力",
+    pulseType: "hong", // 洪脉
+    pulseProps: {
+      frequency: 1.5,    // 快（数）
+      amplitude: 1.1,    // 高振幅（洪）
+      baseline: 0.42,    // 偏浮
+      rhythm: "regular",
+      shape: "wide_strong", // 大而有力
+      color: "#E74C3C"
+    },
+    depthLabel: "浮中皆得",
+    rateLabel: "一息6-7至以上（数）",
+    strengthLabel: "洪大有力，来盛去衰",
+    rhythmLabel: "节律整齐",
+    features: [
+      "高热，恶热，面红目赤",
+      "口渴喜冷饮，烦躁不安",
+      "大便秘结或泻下臭秽",
+      "小便短赤",
+      "口腔溃疡、牙龈肿痛",
+      "或见神昏谵语、狂躁、出血发斑"
+    ],
+    keyPoint: "实火脉「洪数有力」——热邪亢盛→气血涌张→脉洪大（来盛去衰）；火热加速血流→数。",
+    relatedFormula: "黄连解毒汤、白虎汤、凉膈散"
+  },
+
+  // ======== 六外感 ========
+  {
+    id: "feng", name: "风（外感风邪）", category: "六外感", subcategory: "风",
+    catClass: "cat-wai",
+    pulseName: "脉浮数（风热）/ 浮紧（风寒）",
+    pulseType: "fu", // 浮脉为主
+    pulseProps: {
+      frequency: 1.25,   // 风热偏快
+      amplitude: 0.72,
+      baseline: 0.30,    // 浮（基线上移）
+      rhythm: "regular",
+      shape: "float_fast",
+      color: "#E67E22"
+    },
+    depthLabel: "轻按即得（浮）",
+    rateLabel: "一息5-6至（风热）或4-5至（风寒）",
+    strengthLabel: "表浅有力",
+    rhythmLabel: "节律整齐",
+    features: [
+      "头痛，发热微恶风寒",
+      "咽痛咳嗽，口干口渴（风热）",
+      "恶寒无汗，身痛骨节疼（风寒）",
+      "发病急，变化快",
+      "病位多在上部（头面部）"
+    ],
+    keyPoint: "浮脉为外感主脉——「轻取即得，重按反减」。风性轻扬，病在肌表卫分。风热兼数，风寒兼紧。",
+    relatedFormula: "银翘散（风热）、桂枝汤（风寒）、荆防败毒散"
+  },
+  {
+    id: "han", name: "寒（外感寒邪）", category: "六外感", subcategory: "寒",
+    catClass: "cat-wai",
+    pulseName: "脉浮紧 / 浮迟 / 沉迟",
+    pulseType: "jin", // 紧脉
+    pulseProps: {
+      frequency: 0.7,    // 迟（慢）
+      amplitude: 0.82,
+      baseline: 0.32,    // 浮
+      rhythm: "regular",
+      shape: "tight",    // 紧绷
+      color: "#2980B9"
+    },
+    depthLabel: "浮（轻取即得）",
+    rateLabel: "一息3-4至（迟）",
+    strengthLabel: "紧绷有力，如牵绳转索",
+    rhythmLabel: "节律整齐但偏慢",
+    features: [
+      "恶寒重，发热轻或不发热",
+      "无汗，头身疼痛剧烈",
+      "四肢冰凉（厥逆）",
+      "口不渴，喜热饮",
+      "鼻流清涕，咳吐稀痰"
+    ],
+    keyPoint: "寒主收引凝滞→脉「紧」（脉管拘急如绳索）+「迟」（寒凝血行减慢）。浮紧=表寒，沉迟=里寒。",
+    relatedFormula: "麻黄汤、桂枝汤、葛根汤"
+  },
+  {
+    id: "shi_w", name: "湿（外感湿邪）", category: "六外感", subcategory: "湿",
+    catClass: "cat-wai",
+    pulseName: "脉濡缓 / 弦细而濡 / 弦细",
+    pulseType: "ru", // 濡脉
+    pulseProps: {
+      frequency: 0.78,   // 缓
+      amplitude: 0.48,   // 软
+      baseline: 0.33,    // 浮而软
+      rhythm: "regular",
+      shape: "soft",     // 软而浮
+      color: "#16A085"
+    },
+    depthLabel: "浮而软（轻按软，重按无）",
+    rateLabel: "一息3-4至（缓）",
+    strengthLabel: "浮而细软，重按减弱",
+    rhythmLabel: "怠缓不整",
+    features: [
+      "头重如裹，身重困倦",
+      "胸闷不饥，脘腹痞满",
+      "肢体酸楚沉重",
+      "午后身热，身热不扬",
+      "大便溏泄或粘腻不爽"
+    ],
+    keyPoint: "濡脉特点——「浮而细软」，如棉絮在水面上。湿性黏滞重浊→脉气被遏，故浮而软。",
+    relatedFormula: "三仁汤、藿香正气散、平胃散"
+  },
+  {
+    id: "huo_w", name: "火（外感火热）", category: "六外感", subcategory: "火",
+    catClass: "cat-wai",
+    pulseName: "脉浮数",
+    pulseType: "fu_shu", // 浮数
+    pulseProps: {
+      frequency: 1.35,
+      amplitude: 0.70,
+      baseline: 0.32,
+      rhythm: "regular",
+      shape: "float_fast",
+      color: "#C0392B"
+    },
+    depthLabel: "浮（轻按即得）",
+    rateLabel: "一息6至左右（数）",
+    strengthLabel: "浮而偏有力",
+    rhythmLabel: "节律整齐偏快",
+    features: [
+      "发热心烦，不恶风寒或微恶风",
+      "头痛头胀，头面红肿痛",
+      "咽红肿痛，目赤胀痛畏光",
+      "口渴出汗，小便黄赤",
+      "皮肤疮疡红肿热痛"
+    ],
+    keyPoint: "外火初起在表→「浮数」：浮=病在表，数=有热。与内火（洪数有力）的区别在于脉位和力度。",
+    relatedFormula: "银翘散、桂枝白虎汤、黄连上清丸"
+  },
+  {
+    id: "shu", name: "暑（暑温）", category: "六外感", subcategory: "暑",
+    catClass: "cat-wai",
+    pulseName: "脉洪数 / 弦细而濡",
+    pulseType: "hong", // 洪数
+    pulseProps: {
+      frequency: 1.4,
+      amplitude: 1.0,
+      baseline: 0.45,
+      rhythm: "regular",
+      shape: "wide_strong",
+      color: "#E74C3C"
+    },
+    depthLabel: "浮中可得",
+    rateLabel: "一息6-7至（数）",
+    strengthLabel: "洪大或弦细而濡",
+    rhythmLabel: "节律整齐",
+    features: [
+      "高热心烦，口渴饮冷",
+      "汗出多（但人未必虚）",
+      "身重倦怠，胸闷呕恶",
+      "暑多夹湿：身热不扬、腹泻、苔腻",
+      "夏季发病，起病急骤"
+    ],
+    keyPoint: "暑性炎热升散→脉洪数（类似实火但多汗出）；若夹湿则可兼濡脉。「暑必耗气伤津」为其特殊之处。",
+    relatedFormula: "白虎加人参汤、六一散、新加香薷饮"
+  },
+  {
+    id: "zao", name: "燥（外感燥邪）", category: "六外感", subcategory: "燥",
+    catClass: "cat-wai",
+    pulseName: "脉浮数（温燥）/ 弦（凉燥）",
+    pulseType: "fu_shu", // 浮数为主
+    pulseProps: {
+      frequency: 1.2,
+      amplitude: 0.68,
+      baseline: 0.33,
+      rhythm: "regular",
+      shape: "float_medium",
+      color: "#D35400"
+    },
+    depthLabel: "浮（轻取可得）",
+    rateLabel: "一息5-6至",
+    strengthLabel: "浮而偏紧或数",
+    rhythmLabel: "节律整齐",
+    features: [
+      "口干咽燥，鼻干",
+      "干咳无痰或痰少黏稠",
+      "皮肤干燥，大便干结",
+      "温燥：身热头痛、心烦口渴",
+      "凉燥：恶寒无汗、头微痛、咳嗽痰稀"
+    ],
+    keyPoint: "温燥似风热→浮数；凉燥似风寒→浮弦。核心鉴别在于「干」的程度——咽鼻干、干咳、皮肤燥。",
+    relatedFormula: "清燥救肺汤（温燥）、杏苏散（凉燥）、桑杏汤"
+  }
+];
+
+// ========== 状态变量 ==========
+let currentCat = 'all';
+let currentSub = '';
+let searchQuery = '';
+let quizMode = false;
+let revealedCards = new Set();
+let canvasAnimFrames = {}; // 存储各 canvas 动画帧 ID
+
+// ========== DOM 引用 ==========
+const pulseGrid = document.getElementById('pulseGrid');
+const emptyState = document.getElementById('emptyState');
+const statsText = document.getElementById('statsText');
+const searchInput = document.getElementById('searchInput');
+const modalBackdrop = document.getElementById('modalBackdrop');
+
+// ========== 初始化 ==========
+function init() {
+  renderGrid();
+  bindEvents();
+}
+
+// ========== 绑定事件 ==========
+function bindEvents() {
+  document.querySelectorAll('.filter-chip[data-cat]').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.filter-chip[data-cat]').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      currentCat = chip.dataset.cat;
+      
+      hideAllSubFilters();
+      if (currentCat === 'xu') showSubFilters('subFiltersXu', 'qixu');
+      else if (currentCat === 'shi') showSubFilters('subFiltersShi', 'qizhi');
+      else if (currentCat === 'wai') showSubFilters('subFiltersWai', 'feng');
+      else { currentSub = ''; renderGrid(); }
+    });
+  });
+
+  document.querySelectorAll('.filter-chip.sub').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const parent = chip.parentElement;
+      parent.querySelectorAll('.filter-chip.sub').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      currentSub = chip.dataset.sub;
+      renderGrid();
+    });
+  });
+
+  let debounceTimer;
+  searchInput.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      searchQuery = searchInput.value.trim().toLowerCase();
+      renderGrid();
+    }, 250);
+  });
+
+  document.getElementById('modeToggle').addEventListener('click', toggleQuizMode);
+
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+  
+  modalBackdrop.addEventListener('click', e => { if (e.target === modalBackdrop) closeModal(); });
+}
+
+function hideAllSubFilters() {
+  ['subFiltersXu','subFiltersShi','subFiltersWai'].forEach(id => {
+    document.getElementById(id).classList.remove('show');
+  });
+}
+
+function showSubFilters(id, defaultSub) {
+  const el = document.getElementById(id);
+  el.classList.add('show');
+  currentSub = defaultSub;
+  el.querySelectorAll('.filter-chip.sub').forEach(c => c.classList.remove('active'));
+  const btn = el.querySelector('[data-sub="' + defaultSub + '"]');
+  if (btn) btn.classList.add('active');
+  renderGrid();
+}
+
+function toggleQuizMode() {
+  quizMode = !quizMode;
+  document.getElementById('switch').classList.toggle('on', quizMode);
+  revealedCards.clear();
+  stopAllAnimations();
+  renderGrid();
+}
+
+// ========== 过滤逻辑 ==========
+function filterData() {
+  return PULSE_DATA.filter(item => {
+    if (currentCat !== 'all') {
+      if (item.category !== (currentCat === 'xu' ? '四虚' : currentCat === 'shi' ? '四实' : '六外感')) return false;
+      if (currentSub && item.id !== currentSub) return false;
+    }
+    
+    if (searchQuery) {
+      const fields = [item.name, item.category, item.subcategory, 
+        item.pulseName, item.depthLabel, item.rateLabel, item.strengthLabel]
+        .join(' ') + ' ' + item.features.join(' ') + ' ' + (item.keyPoint || '');
+      if (fields.toLowerCase().indexOf(searchQuery) === -1) return false;
+    }
+    return true;
+  });
+}
+
+// ========== 渲染网格 ==========
+function renderGrid() {
+  stopAllAnimations();
+  const filtered = filterData();
+  statsText.textContent = '共 ' + filtered.length + ' 个证型';
+  
+  if (filtered.length === 0) {
+    pulseGrid.innerHTML = '';
+    emptyState.style.display = 'block';
+    return;
+  }
+  
+  emptyState.style.display = 'none';
+  pulseGrid.innerHTML = filtered.map(item => createCard(item)).join('');
+  
+  // 启动所有 canvas 动画
+  setTimeout(() => {
+    document.querySelectorAll('.pulse-canvas').forEach(canvas => {
+      const id = canvas.dataset.pulseId;
+      if (id && PULSE_DATA.find(p => p.id === id)) {
+        startPulseAnimation(canvas, PULSE_DATA.find(p => p.id === id));
+      }
+    });
+  }, 50);
+}
+
+// ========== 创建卡片 HTML ==========
+function createCard(item) {
+  const isRevealed = !quizMode || revealedCards.has(item.id);
+  const canvasId = 'canvas_' + item.id + '_' + Date.now();
+
+  function bulletColor(idx) {
+    return ['#9B59B6','#2980B9','#E67E22','#27AE60','#C0392B','#F39C12'][idx % 6];
+  }
+
+  return '<div class="pulse-card" onclick="openModal(\'' + item.id + '\')" tabindex="0" role="article" aria-label="' + item.name + '脉象">' +
+    '<div class="card-body">' +
+      '<div class="card-header">' +
+        '<div class="card-title-group">' +
+          '<span class="syndrome-name">' + item.name + '</span>' +
+          '<span class="category-tag ' + item.catClass + '">' + item.category + '·' + item.subcategory + '</span>' +
+        '</div>' +
+      '</div>' +
+
+      /* 脉象波形动画区 */
+      '<div class="pulse-visual">' +
+        '<div class="pulse-canvas-wrap">' +
+          '<canvas class="pulse-canvas" id="' + canvasId + '" data-pulse-id="' + item.id + '" width="300" height="120"></canvas>' +
+        '</div>' +
+        '<div class="pulse-info">' +
+          '<div class="pulse-info-item"><div class="info-label">📍 脉位</div><div class="info-value">' + item.depthLabel + '</div></div>' +
+          '<div class="pulse-info-item"><div class="info-label">⏱️ 频率</div><div class="info-value">' + item.rateLabel + '</div></div>' +
+          '<div class="pulse-info-item"><div class="info-label">💪 脉力</div><div class="info-value">' + item.strengthLabel + '</div></div>' +
+        '</div>' +
+      '</div>' +
+
+      /* 核心特征列表 */
+      (isRevealed ?
+        ('<ul class="feature-list">' +
+          item.features.map(function(f, idx) {
+            return '<li><span class="feature-bullet" style="background:' + bulletColor(idx) + ';"></span>' + f + '</li>';
+          }).join('') +
+        '</ul>') : ''
+      ) +
+
+      '<div class="card-footer">' +
+        '<span class="pulse-type-tag" style="background:' + item.pulseProps.color + ';">' + item.pulseName.split('/')[0].trim() + '</span>' +
+        (!isRevealed ? '<span style="font-size:12px;color:#9B59B6;font-weight:600;">点击揭晓 →</span>' : '') +
+      '</div>' +
+    '</div>' +
+
+    /* 自测模式遮罩 */
+    (quizMode && !isRevealed ?
+      '<div class="quiz-overlay show">' +
+        '<div class="question">这是什么证型的脉象？</div>' +
+        '<button class="reveal-btn" onclick="event.stopPropagation();revealCard(\'' + item.id + '\')">揭晓答案</button>' +
+      '</div>'
+      : ''
+    ) +
+  '</div>';
+}
+
+// ========== Canvas 脉搏波形动画引擎 ==========
+function startPulseAnimation(canvas, item) {
+  if (!canvas || !item) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width;
+  const H = canvas.height;
+  const props = item.pulseProps;
+
+  let time = Math.random() * 1000; // 随机起始相位，避免所有卡片同步
+  const baseSpeed = 0.08; // 基础滚动速度
+
+  function draw() {
+    const frameId = canvas.dataset.animFrameId;
+    if (!canvas.isConnected) { cancelAnimationFrame(frameId); return; }
+    
+    ctx.clearRect(0, 0, W, H);
+
+    // 绘制网格背景
+    drawGrid(ctx, W, H);
+
+    // 计算基线 Y 位置
+    const baseY = H * (1 - props.baseline);
+    const amp = H * 0.28 * props.amplitude;
+    const freq = props.frequency;
+    const speed = baseSpeed * freq * 1.5;
+    time += speed;
+
+    // 设置波形样式
+    ctx.strokeStyle = props.color;
+    ctx.lineWidth = 2.2;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    // 添加发光效果
+    ctx.shadowColor = props.color;
+    ctx.shadowBlur = 6;
+
+    // 绘制主波形
+    ctx.beginPath();
+    let started = false;
+
+    for (let x = 0; x <= W; x += 1.5) {
+      const t = (x / W) * 6 * Math.PI + time;
+      let y = baseY;
+
+      // 根据形状类型计算波形
+      switch (props.shape) {
+        case 'wide_weak': // 虚脉：宽大无力
+          y = baseY + amp * 0.7 * Math.sin(t) * (1 + 0.3 * Math.sin(t * 0.5));
+          break;
+        case 'thin_weak': // 沉细无力
+          y = baseY + amp * 0.6 * Math.sin(t) * 0.7;
+          break;
+        case 'thin': // 细脉
+          y = baseY + amp * 0.5 * Math.sin(t);
+          break;
+        case 'thin_fast': // 细数
+          y = baseY + amp * 0.5 * Math.sin(t * freq) + amp * 0.15 * Math.sin(t * freq * 2.5);
+          break;
+        case 'stringy': // 弦脉——挺直带锐角
+          y = baseY + amp * (Math.sin(t) * 0.5 + Math.pow(Math.abs(Math.sin(t)), 0.5) * 0.6 * Math.sign(Math.sin(t)));
+          break;
+        case 'rough': // 涩脉——不规则抖动
+          y = baseY + amp * (Math.sin(t) * 0.7 
+            + 0.25 * Math.sin(t * 3.7 + Math.random() * 0.1)
+            + 0.15 * ((Math.random() > 0.92) ? (Math.random() - 0.5) * amp : 0));
+          break;
+        case 'smooth': // 滑脉——圆润饱满
+          y = baseY + amp * Math.sin(t) + amp * 0.2 * Math.cos(t * 0.5);
+          // 滑脉更圆润
+          break;
+        case 'wide_strong': // 洪脉——大而有力
+          y = baseY + amp * 1.1 * Math.sin(t) * (1 + 0.2 * Math.exp(-Math.pow((t % (2*Math.PI) - Math.PI) / 2, 2)));
+          break;
+        case 'float_fast': // 浮数
+          y = (H * 0.38) + amp * 0.75 * Math.sin(t * freq);
+          break;
+        case 'float_medium': // 浮中
+          y = (H * 0.36) + amp * 0.68 * Math.sin(t * freq * 0.95);
+          break;
+        case 'tight': // 紧脉——绷直
+          y = (H * 0.36) + amp * 0.85 * (Math.abs(Math.sin(t)) * Math.sign(Math.sin(t)) + 0.15 * Math.sin(t * 2.3));
+          break;
+        case 'soft': // 濡脉——浮而软
+          y = (H * 0.35) + amp * 0.5 * Math.sin(t * 0.85) * (1 - 0.3 * Math.abs(Math.cos(t * 0.3)));
+          break;
+        default:
+          y = baseY + amp * Math.sin(t);
+      }
+
+      if (!started) { ctx.moveTo(x, y); started = true; }
+      else ctx.lineTo(x, y);
+    }
+
+    ctx.stroke();
+
+    // 重置阴影
+    ctx.shadowBlur = 0;
+
+    // 绘制基线（虚线）
+    ctx.strokeStyle = 'rgba(155,89,182,0.2)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(0, baseY);
+    ctx.lineTo(W, baseY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // 绘制脉名标签
+    ctx.fillStyle = props.color;
+    ctx.font = 'bold 11px -apple-system, sans-serif';
+    ctx.fillText(item.pulseName.split('/')[0].trim(), 6, 16);
+
+    // 存储帧 ID 用于停止
+    canvas.dataset.animFrameId = requestAnimationFrame(draw);
+  }
+
+  canvas.dataset.animFrameId = requestAnimationFrame(draw);
+  canvasAnimFrames[canvasId] = canvas;
+}
+
+function drawGrid(ctx, w, h) {
+  // 淡淡的水平网格线
+  ctx.strokeStyle = 'rgba(155,89,182,0.06)';
+  ctx.lineWidth = 0.5;
+  for (let y = h * 0.2; y < h; y += h * 0.2) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(w, y);
+    ctx.stroke();
+  }
+}
+
+// ========== 停止所有动画 ==========
+function stopAllAnimations() {
+  Object.values(canvasAnimFrames).forEach(canvas => {
+    if (canvas && canvas.dataset.animFrameId) {
+      cancelAnimationFrame(parseInt(canvas.dataset.animFrameId));
+    }
+  });
+  canvasAnimFrames = {};
+}
+
+// ========== 揭晓卡片 ==========
+function revealCard(id) {
+  revealedCards.add(id);
+  renderGrid();
+}
+
+// ========== 打开模态框 ==========
+function openModal(id) {
+  const item = PULSE_DATA.find(t => t.id === id);
+  if (!item) return;
+  
+  if (quizMode && !revealedCards.has(id)) {
+    revealCard(id);
+    return;
+  }
+
+  document.getElementById('modalTitle').textContent = item.name;
+  document.getElementById('modalCategoryRow').innerHTML =
+    '<span class="category-tag ' + item.catClass + '">' + item.category + '</span>' +
+    '<span style="font-size:13px;color:#888;margin-left:4px;">' + item.subcategory + '</span>';
+
+  let bodyHtml = '';
+
+  // 脉象波形区 — 大尺寸 Canvas
+  const modalCanvasId = 'modalCanvas_' + id;
+  bodyHtml += '<div class="modal-section">';
+  bodyHtml += '<div class="section-title">脉象波形</div>';
+  bodyHtml += '<div class="pulse-visual" style="margin-top:12px;">' +
+    '<div class="pulse-canvas-wrap" style="justify-content:center;">' +
+      '<canvas class="pulse-canvas" id="' + modalCanvasId + '" data-pulse-id="' + id + '" width="520" height="180"></canvas>' +
+    '</div>' +
+    '<div class="pulse-info" style="margin-top:14px;">' +
+      '<div class="pulse-info-item"><div class="info-label">📍 脉位</div><div class="info-value">' + item.depthLabel + '</div></div>' +
+      '<div class="pulse-info-item"><div class="info-label">⏱️ 频率</div><div class="info-value">' + item.rateLabel + '</div></div>' +
+      '<div class="pulse-info-item"><div class="info-label">💪 脉力</div><div class="info-value">' + item.strengthLabel + '</div></div>' +
+      '<div class="pulse-info-item"><div class="info-label">〰️ 节律</div><div class="info-value">' + item.rhythmLabel + '</div></div>' +
+    '</div>' +
+  '</div></div>';
+
+  // 脉象特征说明
+  bodyHtml += '<div class="modal-section">';
+  bodyHtml += '<div class="section-title">脉象特征</div>';
+  bodyHtml += '<div class="detail-grid">';
+  bodyHtml += '<div class="detail-item"><div class="detail-label">脉名</div><div class="detail-value"><span class="pulse-type-tag" style="background:' + item.pulseProps.color + ';padding:4px 12px;font-size:13px;">' + item.pulseName + '</span></div></div>';
+  bodyHtml += '<div class="detail-item"><div class="detail-label">波形形态</div><div class="detail-value">' + getShapeName(item.pulseProps.shape) + '</div></div>';
+  bodyHtml += '</div></div>';
+
+  // 临床特征
+  bodyHtml += '<div class="modal-section">';
+  bodyHtml += '<div class="section-title">临床特征</div>';
+  bodyHtml += '<ul class="symptom-list">';
+  item.features.forEach(function(f, i) {
+    const colors = ['#9B59B6','#2980B9','#E67E22','#27AE60','#C0392B','#F39C12'];
+    bodyHtml += '<li><span class="sym-icon" style="background:' + colors[i%colors.length] + ';"></span>' + f + '</li>';
+  });
+  bodyHtml += '</ul></div>';
+
+  // 辨证要点
+  if (item.keyPoint) {
+    bodyHtml += '<div class="modal-section">';
+    bodyHtml += '<div class="section-title">辨证要点</div>';
+    bodyHtml += '<div style="background:#F5EEF8;border-left:4px solid #9B59B6;padding:14px 16px;border-radius:0 8px 8px 0;font-size:14px;line-height:1.7;color:#5B2C6F;">' + item.keyPoint + '</div>';
+    bodyHtml += '</div>';
+  }
+
+  // 代表方剂
+  bodyHtml += '<div class="modal-section">';
+  bodyHtml += '<div class="section-title">代表方剂</div>';
+  bodyHtml += '<div style="font-size:14px;color:var(--text-secondary);background:var(--bg);padding:14px 16px;border-radius:10px;line-height:1.7;">' + item.relatedFormula + '</div>';
+  bodyHtml += '</div>';
+
+  document.getElementById('modalBody').innerHTML = bodyHtml;
+  modalBackdrop.classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  // 启动模态框中的 canvas 动画
+  setTimeout(() => {
+    const mCanvas = document.getElementById(modalCanvasId);
+    if (mCanvas) startPulseAnimation(mCanvas, item);
+  }, 100);
+}
+
+function getShapeName(shape) {
+  const map = {
+    'wide_weak': '宽大无力', 'thin_weak': '沉细无力', 'thin': '纤细',
+    'thin_fast': '细而快速', 'stringy': '挺直如弦', 'rough': '往来艰涩',
+    'smooth': '流利圆滑', 'wide_strong': '洪大有力', 'float_fast': '浮而数',
+    'float_medium': '浮而中', 'tight': '紧绷如索', 'soft': '浮软'
+  };
+  return map[shape] || shape;
+}
+
+// ========== 关闭模态框 ==========
+function closeModal() {
+  // 停止模态框内的动画
+  document.querySelectorAll('#modalBody .pulse-canvas').forEach(canvas => {
+    if (canvas.dataset.animFrameId) {
+      cancelAnimationFrame(parseInt(canvas.dataset.animFrameId));
+    }
+  });
+  modalBackdrop.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ========== 启动 ==========
+init();
+</script>
+</body>
+</html>

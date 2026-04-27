@@ -180,6 +180,19 @@
   .card-btn.green  { background: linear-gradient(160deg, #1B4332, #2D6A4F 50%, #40916C); }
   .card-btn.gold  { background: linear-gradient(160deg, #7C5E10, #9A7518 50%, #B8860B); }
   .card-btn.blue  { background: linear-gradient(160deg, #1a3a5c, #1d4ed8 50%, #2980B9); }
+  .card-btn.orange { background: linear-gradient(160deg, #A04000, #C85A17 50%, #E67E22); }
+  .card-btn.purple { background: linear-gradient(160deg, #5B2C6F, #7D3C98 50%, #9B59B6); }
+
+  /* 两行卡片布局 */
+  .cards.row-layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+    padding: 0 32px 80px;
+    max-width: 1000px;
+    margin: 0 auto;
+    width: 100%;
+  }
 
   /* ===== Footer ===== */
   .footer {
@@ -225,7 +238,7 @@
   <h2>选择工具</h2>
 </div>
 
-<div class="cards">
+<div class="cards row-layout">
   <a href="446-query.html" class="card-btn green animate-in">
     <div class="icon-wrap">
       <!-- 方剂图标：写实药碗（带蒸汽） -->
@@ -317,6 +330,67 @@
     </div>
     <div class="label">术语词典</div>
     <div class="sub">40 个核心术语</div>
+    <div class="arrow">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </div>
+  </a>
+
+  <a href="446-tongue.html" class="card-btn orange animate-in">
+    <div class="icon-wrap">
+      <!-- 舌象图标：写实舌头轮廓 + 舌苔示意 -->
+      <svg viewBox="0 0 64 64" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <!-- 舌体主体 -->
+        <path d="M22 12 Q26 6, 32 5 Q38 6, 42 12 Q48 22, 46 36 Q44 50, 38 54 Q32 57, 26 54 Q20 50, 18 36 Q16 22, 22 12 Z"
+          fill="rgba(255,255,255,0.10)" stroke-width="2"/>
+        <!-- 舌苔区域（中后部） -->
+        <ellipse cx="32" cy="38" rx="11" ry="10" fill="rgba(255,255,255,0.08)"/>
+        <!-- 舌中线 -->
+        <path d="M32 10 L32 53" opacity="0.25" stroke-width="1"/>
+        <!-- 舌尖红点 -->
+        <circle cx="32" cy="9" r="2.5" fill="rgba(255,180,170,0.35)" stroke="none"/>
+        <!-- 舌苔纹理线 -->
+        <path d="M25 34 Q32 37 39 34" opacity="0.15" stroke-width="0.8"/>
+        <path d="M24 40 Q32 43 40 40" opacity="0.12" stroke-width="0.8"/>
+        <path d="M26 46 Q32 49 38 46" opacity="0.1" stroke-width="0.8"/>
+        <!-- 味蕾小点示意 -->
+        <g opacity="0.2">
+          <circle cx="23" cy="20" r="0.8"/><circle cx="41" cy="20" r="0.8"/>
+          <circle cx="21" cy="28" r="0.8"/><circle cx="43" cy="28" r="0.8"/>
+          <circle cx="19" cy="36" r="0.8"/><circle cx="45" cy="36" r="0.8"/>
+        </g>
+      </svg>
+    </div>
+    <div class="label">舌象学习</div>
+    <div class="sub">14 个证型 · 真实图片</div>
+    <div class="arrow">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </div>
+  </a>
+
+  <a href="446-pulse.html" class="card-btn purple animate-in">
+    <div class="icon-wrap">
+      <!-- 脉象图标：脉搏波形 + 心跳 -->
+      <svg viewBox="0 0 64 64" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <!-- 心形/脉搏源 -->
+        <path d="M32 18 C32 18, 20 10, 16 16 C12 22, 20 30, 32 40 C44 30, 52 22, 48 16 C44 10, 32 18, 32 18 Z"
+          fill="rgba(255,255,255,0.12)"/>
+        <!-- 脉搏波形线 -->
+        <path d="M8 40 L18 40 L22 40 L24 28 L28 52 L32 24 L36 44 L38 40 L56 40"
+          stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- 波形发光效果 -->
+        <path d="M24 28 L28 52 L32 24 L36 44" 
+          stroke="rgba(255,255,255,0.25)" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <!-- 心跳节律点 -->
+        <circle cx="24" cy="28" r="2" fill="rgba(255,255,255,0.3)" stroke="none"/>
+        <circle cx="32" cy="24" r="2.5" fill="rgba(255,255,255,0.35)" stroke="none"/>
+        <circle cx="36" cy="44" r="1.8" fill="rgba(255,255,255,0.25)" stroke="none"/>
+        <!-- 小脉动波 -->
+        <path d="M8 48 L14 48 L16 44 L18 50 L20 46 L22 48 L56 48" 
+          opacity="0.2" stroke-width="1" fill="none"/>
+      </svg>
+    </div>
+    <div class="label">脉象学习</div>
+    <div class="sub">14 个证型 · 波形动画</div>
     <div class="arrow">
       <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
     </div>
