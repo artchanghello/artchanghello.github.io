@@ -207,6 +207,24 @@
   .tongue-svg-container {
     display: flex; justify-content: center; align-items: center;
   }
+  /* 真实舌象图片容器 */
+  .tongue-img-wrap {
+    display: flex; justify-content: center; align-items: center;
+    width: 100%; min-height: 120px;
+  }
+  .tongue-img-wrap img {
+    max-width: 100%; max-height: 160px;
+    border-radius: 10px; object-fit: cover;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .tongue-img-wrap img:hover {
+    transform: scale(1.03);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  }
+  .tongue-svg-fallback {
+    display: flex; justify-content: center; align-items: center;
+  }
   .tongue-info {
     display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px;
   }
@@ -489,6 +507,7 @@ const TONGUE_DATA = [
   {
     id: "qixu", name: "气虚证", category: "四虚", subcategory: "气虚",
     catClass: "cat-xu",
+    image: "https://raw.githubusercontent.com/Vemsky362/Image-example/main/tongue(1).jpg",
     tongueColor: "#FADBD8", tongueColorName: "淡白或略红",
     coating: "薄白",
     coatingDesc: "苔薄白润，或有少黄苔但不干燥",
@@ -506,6 +525,7 @@ const TONGUE_DATA = [
   {
     id: "yangxu", name: "阳虚证", category: "四虚", subcategory: "阳虚",
     catClass: "cat-xu",
+    image: "https://raw.githubusercontent.com/Vemsky362/Image-example/main/tongue(5).jpg",
     tongueColor: "#FADBD8", tongueColorName: "淡胖嫩，更甚于气虚",
     coating: "白滑",
     coatingDesc: "苔白滑腻，扪之湿而滑利，甚则伸舌涎液欲滴（滑苔）",
@@ -523,6 +543,7 @@ const TONGUE_DATA = [
   {
     id: "xuexu", name: "血虚证", category: "四虚", subcategory: "血虚",
     catClass: "cat-xu",
+    image: "https://raw.githubusercontent.com/Vemsky362/Image-example/main/tongue(10).jpg",
     tongueColor: "#FADBD8", tongueColorName: "淡白",
     coating: "薄白",
     coatingDesc: "苔薄白正常",
@@ -541,6 +562,7 @@ const TONGUE_DATA = [
   {
     id: "yinxu", name: "阴虚证", category: "四虚", subcategory: "阴虚",
     catClass: "cat-xu",
+    image: "https://raw.githubusercontent.com/Vemsky362/Image-example/main/tongue(15).jpg",
     tongueColor: "#EC7063", tongueColorName: "红/鲜红/草莓红",
     coating: "少苔或无苔（剥苔）",
     coatingDesc: "少苔、无苔或光剥，舌面干燥少津液",
@@ -562,6 +584,7 @@ const TONGUE_DATA = [
   {
     id: "qizhi", name: "气滞证", category: "四实", subcategory: "气滞",
     catClass: "cat-shi",
+    image: "https://raw.githubusercontent.com/Vemsky362/Image-example/main/tongue(20).jpg",
     tongueColor: "#F1948A", tongueColorName: "正常或稍暗",
     coating: "薄白",
     coatingDesc: "苔白正常",
@@ -580,6 +603,7 @@ const TONGUE_DATA = [
   {
     id: "xueyu", name: "血瘀证", category: "四实", subcategory: "血瘀",
     catClass: "cat-shi",
+    image: "https://raw.githubusercontent.com/Vemsky362/Image-example/main/tongue(25).jpg",
     tongueColor: "#8E44AD", tongueColorName: "紫暗（瘀点瘀斑）",
     coating: "薄白或灰",
     coatingDesc: "苔白或灰",
@@ -598,6 +622,7 @@ const TONGUE_DATA = [
   {
     id: "tanyin", name: "痰饮证", category: "四实", subcategory: "痰饮",
     catClass: "cat-shi",
+    image: "https://raw.githubusercontent.com/Vemsky362/Image-example/main/tongue(30).jpg",
     tongueColor: "#FADBD8", tongueColorName: "淡胖",
     coating: "白滑/厚白/腻",
     coatingDesc: "苔白滑腻或厚白，上覆水湿样物质",
@@ -616,6 +641,7 @@ const TONGUE_DATA = [
   {
     id: "shihuo", name: "实火证（内火）", category: "四实", subcategory: "实火",
     catClass: "cat-shi",
+    image: "https://raw.githubusercontent.com/Vemsky362/Image-example/main/tongue(35).jpg",
     tongueColor: "#C0392B", tongueColorName: "红或绛",
     coating: "黄干/起芒刺",
     coatingDesc: "苔黄干燥，甚至起芒刺（像草莓表面的颗粒）",
@@ -637,6 +663,7 @@ const TONGUE_DATA = [
   {
     id: "feng", name: "风（外感风邪）", category: "六外感", subcategory: "风",
     catClass: "cat-wai",
+    image: "https://raw.githubusercontent.com/Vemsky362/Image-example/main/tongue(40).jpg",
     tongueColor: "#F1948A", tongueColorName: "舌尖红",
     coating: "薄白或薄黄",
     coatingDesc: "风热则苔薄黄，风寒则苔薄白",
@@ -655,6 +682,7 @@ const TONGUE_DATA = [
   {
     id: "han", name: "寒（外感寒邪）", category: "六外感", subcategory: "寒",
     catClass: "cat-wai",
+    image: "https://raw.githubusercontent.com/Vemsky362/Image-example/main/tongue(45).jpg",
     tongueColor: "#FADBD8", tongueColorName: "淡白",
     coating: "薄白润",
     coatingDesc: "苔薄白而润，不干不燥",
@@ -673,6 +701,7 @@ const TONGUE_DATA = [
   {
     id: "shi_w", name: "湿（外感湿邪）", category: "六外感", subcategory: "湿",
     catClass: "cat-wai",
+    image: "https://raw.githubusercontent.com/Vemsky362/Image-example/main/tongue(50).jpg",
     tongueColor: "#FADBD8", tongueColorName: "淡或正常",
     coating: "白腻/厚腻",
     coatingDesc: "苔白腻或厚腻，如涂油状，紧贴舌面",
@@ -691,6 +720,7 @@ const TONGUE_DATA = [
   {
     id: "huo_w", name: "火（外感火热）", category: "六外感", subcategory: "火",
     catClass: "cat-wai",
+    image: "https://raw.githubusercontent.com/Vemsky362/Image-example/main/tongue(55).jpg",
     tongueColor: "#EC7063", tongueColorName: "红",
     coating: "薄黄",
     coatingDesc: "苔薄黄，较内火轻浅",
@@ -709,6 +739,7 @@ const TONGUE_DATA = [
   {
     id: "shu", name: "暑（暑温）", category: "六外感", subcategory: "暑",
     catClass: "cat-wai",
+    image: "https://raw.githubusercontent.com/Vemsky362/Image-example/main/tongue(60).jpg",
     tongueColor: "#EC7063", tongueColorName: "红",
     coating: "黄腻",
     coatingDesc: "苔黄腻（暑必夹湿），或薄黄",
@@ -727,6 +758,7 @@ const TONGUE_DATA = [
   {
     id: "zao", name: "燥（外感燥邪）", category: "六外感", subcategory: "燥",
     catClass: "cat-wai",
+    image: "https://raw.githubusercontent.com/Vemsky362/Image-example/main/tongue(70).jpg",
     tongueColor: "#F1948A", tongueColorName: "干红",
     coating: "少苔/干",
     coatingDesc: "舌干少苔，或苔薄白（凉燥）/薄黄（温燥）",
@@ -903,11 +935,20 @@ function createCard(item) {
         '</div>' +
       '</div>' +
 
-      /* 舌象可视化区域 */
+      /* 舌象可视化区域 — 真实图片优先，SVG 备用 */
       '<div class="tongue-visual">' +
-        '<div class="tongue-svg-container">' +
-          drawTongueSVG(item) +
-        '</div>' +
+        (item.image ?
+          '<div class="tongue-img-wrap">' +
+            '<img src="' + item.image + '" alt="' + item.name + '舌象" ' +
+            'loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\';" />' +
+            '<div class="tongue-svg-fallback" style="display:none;">' +
+              drawTongueSVG(item) +
+            '</div>' +
+          '</div>' :
+          '<div class="tongue-svg-container">' +
+            drawTongueSVG(item) +
+          '</div>'
+        ) +
         '<div class="tongue-info">' +
           '<div class="tongue-info-item"><div class="info-label">🎨 舌色</div><div class="info-value"><span class="color-dot" style="background:' + item.tongueColor + ';"></span>' + item.tongueColorName + '</div></div>' +
           '<div class="tongue-info-item"><div class="info-label">🍃 舌苔</div><div class="info-value">' + item.coating + '</div></div>' +
@@ -1064,10 +1105,18 @@ function openModal(id) {
 
   let bodyHtml = '';
 
-  // 舌象特征区
+  // 舌象特征区 — 真实图片优先
   bodyHtml += '<div class="modal-section">';
   bodyHtml += '<div class="section-title">舌象特征</div>';
-  bodyHtml += '<div class="tongue-visual" style="margin-top:12px;"><div class="tongue-svg-container">' + drawTongueSVG(item) + '</div>';
+  bodyHtml += '<div class="tongue-visual" style="margin-top:12px;">' +
+    (item.image ?
+      ('<div style="text-align:center;">' +
+        '<img src="' + item.image + '" alt="' + item.name + '真实舌象" ' +
+        'style="max-width:280px;max-height:240px;border-radius:12px;box-shadow:0 3px 16px rgba(0,0,0,0.12);object-fit:cover;" />' +
+        '<div style="font-size:11px;color:#aaa;margin-top:6px;">（参考图示）</div>' +
+      '</div>') :
+      ('<div class="tongue-svg-container">' + drawTongueSVG(item) + '</div>')
+    );
   bodyHtml += '<div class="tongue-info" style="margin-top:14px;">';
   bodyHtml += '<div class="tongue-info-item"><div class="info-label">🎨 舌色</div><div class="info-value"><span class="color-dot" style="background:' + item.tongueColor + ';"></span>' + item.tongueColorName + '</div></div>';
   bodyHtml += '<div class="tongue-info-item"><div class="info-label">🍃 舌苔</div><div class="info-value">' + item.coating + ' — ' + item.coatingDesc + '</div></div>';
