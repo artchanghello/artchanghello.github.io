@@ -271,43 +271,6 @@ body {
   }
   .navbar .home-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
 
-
-/* ===== 字体调节面板 ===== */
-.font-panel {
-  position: fixed;
-  top: 70px;
-  right: 16px;
-  z-index: 9999;
-  display: flex;
-  gap: 2px;
-  background: rgba(255,255,255,0.95);
-  backdrop-filter: blur(8px);
-  border: 1px solid #E8E0D0;
-  border-radius: 8px;
-  padding: 3px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-.font-btn {
-  padding: 4px 10px;
-  border: none;
-  border-radius: 6px;
-  background: transparent;
-  font-size: 13px;
-  cursor: pointer;
-  transition: all 0.15s;
-  color: #666;
-  font-family: inherit;
-}
-.font-btn:hover { background: #F5F0D0; }
-.font-btn.active {
-  background: #7C5E10;
-  color: white;
-}
-@media (max-width: 768px) {
-  .font-panel { top: 66px; right: 8px; }
-  .font-btn { padding: 3px 7px; font-size: 12px; }
-}
-
 </style>
 </head>
 <body>
@@ -519,21 +482,23 @@ function renderHerbs() {
 
   let html = "";
   Object.keys(grouped).forEach(subcat => {
-    html += '<div class="sub-title">' + subcat + '（' + grouped[subcat].length + '味）</div>';
-    html += '<div class="herb-grid">';
+    html += `<div class="sub-title">${subcat}（` + grouped[subcat].length + `味）</div>`;
+    html += `<div class="herb-grid">`;
     grouped[subcat].forEach((h, i) => {
       const globalIdx = HERBS.indexOf(h);
-      html += '<div class="herb-card" onclick="openModal(' + globalIdx + ')" role="button" tabindex="0" onkeydown="if(event.key===\'Enter\')openModal(' + globalIdx + ')">' +
-        '<div class="card-header">' +
-          '<div class="herb-name">' + h.name + '</div>' +
-          '<div class="herb-cat">' + h.subcat + '</div>' +
-        '</div>' +
-        '<div class="herb-xingwei">性味：' + h.xingwei + ' ｜ 归经：' + h.guijing + '</div>' +
-        '<div class="herb-gongxiao">' + h.gongxiao + '</div>' +
-        (h.daibiao ? '<div class="herb-daibiao"><span class="daibiao-label">代表方：</span>' + h.daibiao + '</div>' : '') +
-      '</div>';
+      html += `
+        <div class="herb-card" onclick="openModal(${globalIdx})" role="button" tabindex="0"
+             onkeydown="if(event.key==='Enter')openModal(${globalIdx})">
+          <div class="card-header">
+            <div class="herb-name">${h.name}</div>
+            <div class="herb-cat">${h.subcat}</div>
+          </div>
+          <div class="herb-xingwei">性味：${h.xingwei} ｜ 归经：${h.guijing}</div>
+          <div class="herb-gongxiao">${h.gongxiao}</div>
+          ${h.daibiao ? `<div class="herb-daibiao"><span class="daibiao-label">代表方：</span>${h.daibiao}</div>` : ""}
+        </div>`;
     });
-    html += '</div>';
+    html += `</div>`;
   });
   container.innerHTML = html;
 }
@@ -589,33 +554,5 @@ document.addEventListener("keydown", e => {
 
 renderHerbs();
 </script>
-
-<div class="font-panel" role="group" aria-label="字体大小调节">
-  <button class="font-btn" data-size="sm">小</button>
-  <button class="font-btn active" data-size="md">中</button>
-  <button class="font-btn" data-size="lg">大</button>
-  <button class="font-btn" data-size="xl">特大</button>
-</div>
-<script>
-(function() {
-  const sizeMap = { sm: '14px', md: '16px', lg: '18px', xl: '20px' };
-  const htmlEl = document.documentElement;
-  function apply(size) {
-    htmlEl.style.fontSize = sizeMap[size] || '16px';
-    document.querySelectorAll('.font-btn').forEach(function(b) {
-      b.classList.toggle('active', b.dataset.size === size);
-    });
-  }
-  var saved = localStorage.getItem('446-font-size') || 'md';
-  apply(saved);
-  document.querySelectorAll('.font-btn').forEach(function(b) {
-    b.addEventListener('click', function() {
-      apply(this.dataset.size);
-      localStorage.setItem('446-font-size', this.dataset.size);
-    });
-  });
-})();
-</script>
-
 </body>
 </html>
