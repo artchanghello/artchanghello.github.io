@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>446辨证体系 · 舌象学习</title>
+  <meta name="description" content="基于446辨证体系的舌象诊断学习工具，覆盖14个证型的舌象特征，支持分类筛选、自测模式。">
+  <link rel="icon" href="446-logo-og.png" type="image/png">
+
+  <!-- Open Graph / 微信分享 -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="446辨证体系 · 舌象学习">
+  <meta property="og:description" content="基于446辨证体系的舌象诊断学习工具，覆盖14个证型。">
+  <meta property="og:image" content="https://artchanghello.github.io/446-logo-og.png">
+  <meta property="og:locale" content="zh_CN">
+
+<style>
+  :root {
+    --primary: #1B4332;
+    --primary-light: #2D6A4F;
+    --accent: #40916C;
+    --accent-light: #52B788;
+    --bg: #F8F9F7;
+    --card-bg: #FFFFFF;
+    --text: #1A1A1A;
+    --text-secondary: #555;
+    --border: #E0E4E0;
+    --shadow: 0 2px 12px rgba(0,0,0,0.08);
+    --radius: 12px;
+
+    /* 舌色系 */
+    --tongue-pale: #FADBD8;      /* 淡白舌 */
+    --tongue-red: #EC7063;       /* 红舌 */
+    --tongue-crimson: #C0392B;   /* 绛红舌 */
+    --tongue-purple: #8E44AD;     /* 紫暗舌 */
+    --tongue-normal: #F1948A;    /* 淡红（正常） */
+
+    /* 苔色系 */
+    --coating-white: #FEF9E7;     /* 白苔 */
+    --coating-yellow: #F9E79F;    /* 黄苔 */
+    --coating-black: #D5DBDB;     /* 灰黑苔 */
+    --coating-none: transparent;   /* 无苔 */
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .skip-link {
+    position: absolute; top: -40px; left: 0;
+    background: var(--primary); color: white; padding: 8px 16px;
+    z-index: 10000; text-decoration: none; border-radius: 0 0 4px 0; transition: top 0.2s;
+  }
+  .skip-link:focus { top: 0; }
+  :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+  /* ===== Navbar ===== */
+  .navbar {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 24px; height: 60px;
+    background: rgba(255,255,255,0.88); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .navbar .logo {
+    font-family: Georgia, "Songti SC", serif; font-size: 18px; font-weight: 700;
+    color: var(--primary); text-decoration: none;
+  }
+  .navbar .logo span { color: var(--accent); }
+  .navbar .nav-links { display: flex; gap: 20px; }
+  .navbar .nav-links a {
+    color: var(--text-secondary); text-decoration: none; font-size: 14px;
+    transition: color 0.2s;
+  }
+  .navbar .nav-links a:hover { color: var(--accent); }
+
+  /* ===== Hero ===== */
+  .hero {
+    background: linear-gradient(135deg, #1B4332 0%, #2D6A4F 50%, #40916C 100%);
+    padding: 48px 24px 40px; text-align: center; position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; top: -50%; left: -20%;
+    width: 140%; height: 200%;
+    background: radial-gradient(ellipse, rgba(82,183,136,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero h1 {
+    font-family: Georgia, "Songti SC", serif; font-size: clamp(26px,5vw,36px);
+    color: white; margin-bottom: 12px; position: relative;
+  }
+  .hero p {
+    color: rgba(255,255,255,0.85); font-size: 15px; max-width: 500px; margin: 0 auto 28px;
+    position: relative;
+  }
+  .search-bar {
+    max-width: 480px; margin: 0 auto; position: relative; display: flex;
+  }
+  .search-bar input {
+    width: 100%; padding: 14px 44px 14px 20px; border-radius: 30px; border: 1.5px solid rgba(255,255,255,0.35);
+    background: rgba(255,255,255,0.15); backdrop-filter: blur(6px);
+    color: white; font-size: 15px; outline: none; transition: all 0.25s;
+  }
+  .search-bar input::placeholder { color: rgba(255,255,255,0.55); }
+  .search-bar input:focus {
+    border-color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.22);
+    box-shadow: 0 0 0 4px rgba(82,183,136,0.2);
+  }
+  .search-icon {
+    position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+    width: 20px; height: 20px; opacity: 0.5;
+  }
+
+  /* ===== Filters ===== */
+  .filters-section {
+    padding: 24px 24px 16px; max-width: 1100px; margin: 0 auto;
+  }
+  .filter-row {
+    display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px;
+  }
+  .filter-chip {
+    padding: 8px 18px; border-radius: 20px; border: 1.5px solid var(--border);
+    background: white; cursor: pointer; font-size: 14px; transition: all 0.2s;
+    user-select: none;
+  }
+  .filter-chip:hover { border-color: var(--accent); color: var(--accent-light); }
+  .filter-chip.active {
+    background: var(--primary); color: white; border-color: var(--primary);
+  }
+  .filter-label {
+    font-size: 13px; color: var(--text-secondary); font-weight: 600;
+    line-height: 34px; min-width: 56px; letter-spacing: 0.02em;
+  }
+  .sub-filters { display: none; animation: fadeIn 0.25s ease; }
+  .sub-filters.show { display: flex; }
+
+  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+  /* ===== Stats & Mode Toggle ===== */
+  .stats-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 24px; max-width: 1100px; margin: 0 auto;
+  }
+  .stats-text { font-size: 13px; color: var(--text-secondary); }
+  .mode-toggle {
+    display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+    user-select: none;
+  }
+  .toggle-switch {
+    width: 44px; height: 24px; background: #ddd; border-radius: 12px;
+    position: relative; transition: background 0.3s;
+  }
+  .toggle-switch.on { background: var(--accent); }
+  .toggle-switch::after {
+    content: ''; position: absolute; width: 20px; height: 20px;
+    background: white; border-radius: 50%; top: 2px; left: 2px;
+    transition: transform 0.3s; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .toggle-switch.on::after { transform: translateX(20px); }
+  .mode-toggle label { font-size: 13px; color: var(--text-secondary); cursor: pointer; }
+
+  /* ===== Tongue Grid ===== */
+  .grid-container { padding: 8px 24px 48px; max-width: 1100px; margin: 0 auto; }
+  .tongue-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+  }
+
+  /* ===== Tongue Card ===== */
+  .tongue-card {
+    background: var(--card-bg); border-radius: var(--radius);
+    overflow: hidden; cursor: pointer; transition: all 0.3s ease;
+    border: 1px solid var(--border); position: relative;
+  }
+  .tongue-card:hover {
+    transform: translateY(-4px); box-shadow: var(--shadow), 0 8px 24px rgba(0,0,0,0.1);
+  }
+  .card-body { padding: 20px; }
+
+  .card-header {
+    display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px;
+  }
+  .card-title-group { display: flex; align-items: center; gap: 10px; }
+  .syndrome-name {
+    font-family: Georgia, "Songti SC", serif; font-size: 22px; font-weight: 700; color: var(--primary);
+  }
+  .category-tag {
+    display: inline-block; padding: 3px 10px; border-radius: 6px; font-size: 11px; font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+  .cat-xu { background: #EBF5FB; color: #2980B9; }      /* 四虚 - 蓝 */
+  .cat-shi { background: #FDEDEC; color: #C0392B; }     /* 四实 - 红 */
+  .cat-wai { background: #FEF9E7; color: #B7950B; }     /* 六外感 - 金 */
+
+  /* ===== 舌象可视化区域 ===== */
+  .tongue-visual {
+    background: linear-gradient(180deg, #FFF5F5 0%, #FFFFFF 100%);
+    border-radius: 10px; padding: 20px; margin: 14px 0;
+    border: 1px solid #FADBD8; position: relative; min-height: 120px;
+  }
+  .tongue-svg-container {
+    display: flex; justify-content: center; align-items: center;
+  }
+  .tongue-info {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px;
+  }
+  .tongue-info-item {
+    background: white; border-radius: 8px; padding: 10px 12px;
+    font-size: 13px; border: 1px solid #f0eee8;
+  }
+  .info-label { color: #888; font-size: 11px; margin-bottom: 3px; }
+  .info-value { font-weight: 600; color: var(--text); }
+
+  /* 舌色标签颜色映射 */
+  .color-dot {
+    display: inline-block; width: 14px; height: 14px; border-radius: 50%;
+    vertical-align: middle; margin-right: 5px; border: 1px solid rgba(0,0,0,0.1);
+  }
+
+  /* ===== Card Features ===== */
+  .feature-list { list-style: none; margin-top: 12px; }
+  .feature-list li {
+    padding: 6px 0; font-size: 13px; color: var(--text-secondary);
+    border-bottom: 1px solid #f8f8f6; display: flex; align-items: flex-start; gap: 8px;
+  }
+  .feature-list li:last-child { border-bottom: none; }
+  .feature-bullet {
+    width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 7px;
+  }
+
+  .card-footer {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 14px; padding-top: 12px; border-top: 1px solid #f0eee8;
+  }
+  .pulse-tag {
+    font-size: 12px; padding: 3px 10px; border-radius: 12px; background: #f5f5f5; color: #777;
+  }
+
+  /* Quiz mode overlay on card */
+  .quiz-overlay {
+    position: absolute; inset: 0; background: rgba(27,67,50,0.94);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s; border-radius: var(--radius);
+  }
+  .quiz-overlay.show { opacity: 1; pointer-events: auto; }
+  .quiz-overlay .question { color: white; font-size: 17px; margin-bottom: 16px; font-weight: 600; }
+  .quiz-overlay .reveal-btn {
+    padding: 10px 28px; border: 2px solid white; background: transparent;
+    color: white; border-radius: 24px; font-size: 14px; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .quiz-overlay .reveal-btn:hover { background: white; color: var(--primary); }
+
+  /* ===== Modal ===== */
+  .modal-backdrop {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px; opacity: 0; visibility: hidden; transition: all 0.3s;
+  }
+  .modal-backdrop.open { opacity: 1; visibility: visible; }
+  .modal {
+    background: white; border-radius: 16px; width: 100%; max-width: 600px;
+    max-height: 85vh; overflow-y: auto; padding: 32px; position: relative;
+    transform: translateY(20px); transition: transform 0.3s;
+  }
+  .modal-backdrop.open .modal { transform: translateY(0); }
+  .modal-close {
+    position: absolute; top: 16px; right: 16px; width: 32px; height: 32px;
+    border: none; background: #f5f5f5; border-radius: 50%; cursor: pointer;
+    font-size: 18px; display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s; color: #666;
+  }
+  .modal-close:hover { background: #e8e8e8; }
+
+  .modal-header { margin-bottom: 24px; }
+  .modal-syndrome-name {
+    font-family: Georgia, "Songti SC", serif; font-size: 28px; font-weight: 700;
+    color: var(--primary); margin-bottom: 6px;
+  }
+  .modal-category-row { display: flex; gap: 8px; align-items: center; }
+
+  .modal-section { margin-bottom: 22px; }
+  .section-title {
+    font-size: 15px; font-weight: 700; color: var(--primary);
+    margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+  }
+  .section-title::before {
+    content: ''; width: 4px; height: 18px; border-radius: 2px; background: var(--accent);
+  }
+
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .detail-item {
+    background: var(--bg); border-radius: 10px; padding: 14px;
+  }
+  .detail-label { font-size: 12px; color: #888; margin-bottom: 4px; }
+  .detail-value { font-size: 15px; font-weight: 600; color: var(--text); }
+
+  .symptom-list { list-style: none; }
+  .symptom-list li {
+    padding: 8px 0; border-bottom: 1px solid #f0eee8; font-size: 14px; color: var(--text-secondary);
+    display: flex; align-items: flex-start; gap: 8px;
+  }
+  .symptom-list li:last-child { border-bottom: none; }
+  .sym-icon {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 7px;
+  }
+
+  /* ===== Normal tongue reference section ===== */
+  .normal-ref {
+    background: linear-gradient(135deg, #E8F8F5 0%, #F4FDF9 100%);
+    border: 1px solid #D5EDE8; border-radius: var(--radius);
+    padding: 24px; margin: 0 24px 32px; max-width: 1100px;
+    margin-left: auto; margin-right: auto;
+  }
+  .normal-ref h3 {
+    font-family: Georgia, "Songti SC", serif; color: var(--primary);
+    margin-bottom: 14px; font-size: 18px;
+  }
+  .normal-tongue-grid {
+    display: grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap: 16px;
+  }
+  .normal-item {
+    background: white; border-radius: 10px; padding: 16px;
+  }
+  .normal-item h4 { font-size: 14px; color: var(--accent); margin-bottom: 6px; }
+  .normal-item p { font-size: 13px; color: var(--text-secondary); line-height: 1.65; }
+
+  /* ===== Empty State ===== */
+  .empty-state { text-align: center; padding: 60px 20px; color: #aaa; }
+  .empty-state svg { width: 80px; height: 80px; margin-bottom: 16px; opacity: 0.4; }
+
+  /* ===== Footer ===== */
+  footer {
+    text-align: center; padding: 32px 20px; color: #999; font-size: 13px;
+    border-top: 1px solid var(--border); margin-top: 40px;
+  }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 768px) {
+    .navbar { padding: 0 16px; height: 54px; }
+    .navbar .nav-links { display: none; }
+    .hero { padding: 36px 16px 32px; }
+    .hero h1 { font-size: 24px; }
+    .hero p { font-size: 14px; }
+    .filters-section { padding: 16px 16px 12px; }
+    .stats-row { padding: 10px 16px; flex-direction: row; gap: 12px; }
+    .grid-container { padding: 8px 16px 32px; }
+    .tongue-grid { grid-template-columns: 1fr; gap: 14px; }
+    .modal { padding: 20px; max-height: 90vh; }
+    .normal-ref { margin: 0 16px 24px; padding: 18px; }
+  }
+
+  @media (max-width: 380px) {
+    .filter-chip { padding: 6px 12px; font-size: 13px; }
+    .tongue-info { grid-template-columns: 1fr; }
+    .detail-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">跳转到主内容</a>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <a class="logo" href="446-index.html"><span>446</span>·舌象学习</a>
+  <div class="nav-links">
+    <a href="446-query.html">方剂查询</a>
+    <a href="446-herbs.html">用药表</a>
+    <a href="446-tcm-terminology-dict.html">术语词典</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <h1>446辨证体系 · 舌象学习</h1>
+  <p>望诊之首——通过舌象辨识四虚、四实、六外感共14个证型<br>点击卡片查看详情，开启自测模式检验掌握程度</p>
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="搜索证型名称、舌色、舌苔、症状..." autocomplete="off">
+    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+      <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+    </svg>
+  </div>
+</section>
+
+<!-- Filters -->
+<div class="filters-section" id="main-content">
+  <div class="filter-row">
+    <span class="filter-label">大类：</span>
+    <button class="filter-chip active" data-cat="all">全部</button>
+    <button class="filter-chip" data-cat="xu">四虚</button>
+    <button class="filter-chip" data-cat="shi">四实</button>
+    <button class="filter-chip" data-cat="wai">六外感</button>
+  </div>
+  <!-- 子类筛选：动态显示 -->
+  <div class="sub-filters" id="subFiltersXu">
+    <span class="filter-label">证型：</span>
+    <button class="filter-chip sub active" data-sub="qixu">气虚</button>
+    <button class="filter-chip sub" data-sub="yangxu">阳虚</button>
+    <button class="filter-chip sub" data-sub="xuexu">血虚</button>
+    <button class="filter-chip sub" data-sub="yinxu">阴虚</button>
+  </div>
+  <div class="sub-filters" id="subFiltersShi">
+    <span class="filter-label">证型：</span>
+    <button class="filter-chip sub active" data-sub="qizhi">气滞</button>
+    <button class="filter-chip sub" data-sub="xueyu">血瘀</button>
+    <button class="filter-chip sub" data-sub="tanyin">痰饮</button>
+    <button class="filter-chip sub" data-sub="shihuo">实火</button>
+  </div>
+  <div class="sub-filters" id="subFiltersWai">
+    <span class="filter-label">证型：</span>
+    <button class="filter-chip sub active" data-sub="feng">风</button>
+    <button class="filter-chip sub" data-sub="han">寒</button>
+    <button class="filter-chip sub" data-sub="shi_w">湿</button>
+    <button class="filter-chip sub" data-sub="huo_w">火</button>
+    <button class="filter-chip sub" data-sub="shu">暑</button>
+    <button class="filter-chip sub" data-sub="zao">燥</button>
+  </div>
+</div>
+
+<!-- Stats & Quiz Toggle -->
+<div class="stats-row">
+  <div class="stats-text" id="statsText">共 14 个证型</div>
+  <div class="mode-toggle" id="modeToggle">
+    <div class="toggle-switch" id="switch"></div>
+    <label>自测模式</label>
+  </div>
+</div>
+
+<!-- Normal Tongue Reference -->
+<div class="normal-ref">
+  <h3>👅 正常舌象参考</h3>
+  <div class="normal-tongue-grid">
+    <div class="normal-item">
+      <h4>舌体形态</h4>
+      <p>运动自如，柔软灵活，大小适中，不胖不瘦，不老不嫩，无齿痕，无裂纹，无异常形态。</p>
+    </div>
+    <div class="normal-item">
+      <h4>舌色</h4>
+      <p><strong>淡红而鲜明润泽</strong>——红色适度，既非苍白也非深红，有光泽感。</p>
+    </div>
+    <div class="normal-item">
+      <h4>舌苔</h4>
+      <p><strong>薄白而润</strong>——薄而均匀地平铺在舌面，中部、根部稍厚，湿润有津。</p>
+    </div>
+    <div class="normal-item">
+      <h4>舌下络脉</h4>
+      <p>仅隐隐可见，呈紫红色线状，绝不粗胀。直径不超过2.7mm，长度不超过舌尖与舌下肉阜连线3/5。</p>
+    </div>
+  </div>
+</div>
+
+<!-- Tongue Grid -->
+<div class="grid-container">
+  <div class="tongue-grid" id="tongueGrid"></div>
+  <div class="empty-state" id="emptyState" style="display:none">
+    <svg viewBox="0 0 64 64" fill="currentColor"><circle cx="32" cy="32" r="28" stroke-dasharray="4 3"/><line x1="42" y1="42" x2="56" y2="56"/></svg>
+    <p style="margin-top:12px;font-size:15px;">未找到匹配的舌象记录</p>
+    <p style="font-size:13px;">试试其他关键词？</p>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal" role="dialog" aria-labelledby="modalTitle">
+    <button class="modal-close" aria-label="关闭" onclick="closeModal()">&times;</button>
+    <div class="modal-header">
+      <div class="modal-syndrome-name" id="modalTitle"></div>
+      <div class="modal-category-row" id="modalCategoryRow"></div>
+    </div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<footer>
+  <p>446辨证体系 · 舌象学习 | 基于《四虚四实六外感》教学资料整理</p>
+</footer>
+
+<script>
+// ========== 数据：14个证型的完整舌象数据 ==========
+const TONGUE_DATA = [
+  // ======== 四虚 ========
+  {
+    id: "qixu", name: "气虚证", category: "四虚", subcategory: "气虚",
+    catClass: "cat-xu",
+    tongueColor: "#FADBD8", tongueColorName: "淡白或略红",
+    coating: "薄白",
+    coatingDesc: "苔薄白润，或有少黄苔但不干燥",
+    tongueShape: "边尖齿痕，舌体偏胖嫩",
+    pulse: "脉虚大无力 / 浮大但无力",
+    features: [
+      "全身疲倦乏力，神疲懒言",
+      "动则气短，声音低微",
+      "自汗（活动后加重）",
+      "面色萎黄或㿠白"
+    ],
+    keyPoint: "气虚发热时舌质可呈略红或浮红（因浮热），但仍以淡白为底色",
+    relatedFormula: "补中益气汤、四君子汤、玉屏风散"
+  },
+  {
+    id: "yangxu", name: "阳虚证", category: "四虚", subcategory: "阳虚",
+    catClass: "cat-xu",
+    tongueColor: "#FADBD8", tongueColorName: "淡胖嫩，更甚于气虚",
+    coating: "白滑",
+    coatingDesc: "苔白滑腻，扪之湿而滑利，甚则伸舌涎液欲滴（滑苔）",
+    tongueShape: "舌体胖大明显，齿痕显著；舌体比气虚更显淡胖嫩",
+    pulse: "脉沉细无力 / 微弱",
+    features: [
+      "畏寒怕冷，四肢不温",
+      "喜热饮，体温常偏低",
+      "腰寒腿冷，小便清长",
+      "大便溏薄、完谷不化"
+    ],
+    keyPoint: "阳虚不能蒸腾水液→多余水分蓄积体内→舌体胖大+滑苔。这是与气虚的关键区别。",
+    relatedFormula: "附子理中汤、真武汤、桂枝加附子汤"
+  },
+  {
+    id: "xuexu", name: "血虚证", category: "四虚", subcategory: "血虚",
+    catClass: "cat-xu",
+    tongueColor: "#FADBD8", tongueColorName: "淡白",
+    coating: "薄白",
+    coatingDesc: "苔薄白正常",
+    tongueShape: "舌体瘦小，质淡无华",
+    pulse: "脉细无力",
+    features: [
+      "面色淡白或萎黄，眼睑唇色淡",
+      "头晕眼花，两目干涩",
+      "心悸失眠，多梦健忘",
+      "手足发麻，爪甲不荣",
+      "妇女月经量少色淡、后期或闭经"
+    ],
+    keyPoint: "血虚的核心是「失养」→面色、眼睑、口唇、舌体、爪甲均少血色，呈淡白色。",
+    relatedFormula: "四物汤、当归补血汤、炙甘草汤"
+  },
+  {
+    id: "yinxu", name: "阴虚证", category: "四虚", subcategory: "阴虚",
+    catClass: "cat-xu",
+    tongueColor: "#EC7063", tongueColorName: "红/鲜红/草莓红",
+    coating: "少苔或无苔（剥苔）",
+    coatingDesc: "少苔、无苔或光剥，舌面干燥少津液",
+    tongueShape: "舌体瘦小干燥，少水分",
+    pulse: "脉细数",
+    features: [
+      "形体消瘦，腰膝酸软",
+      "五心烦热（手心脚心心胸）",
+      "午后潮热，夜间盗汗",
+      "颧红，咽喉口鼻干痛",
+      "大便干燥，尿少色黄",
+      "性情急躁易怒，动不动来'火气'"
+    ],
+    keyPoint: "阴虚的核心是「燥」+「内热」→舌红少苔是标志性表现，如草莓般鲜红。",
+    relatedFormula: "六味地黄丸、知柏地黄丸、百合固金汤"
+  },
+
+  // ======== 四实 ========
+  {
+    id: "qizhi", name: "气滞证", category: "四实", subcategory: "气滞",
+    catClass: "cat-shi",
+    tongueColor: "#F1948A", tongueColorName: "正常或稍暗",
+    coating: "薄白",
+    coatingDesc: "苔白正常",
+    tongueShape: "无明显异常",
+    pulse: "脉弦（如琴弦）",
+    features: [
+      "情志抑郁，情绪不宁",
+      "胸闷喜出长气（善太息）",
+      "胁肋胀痛，痛无定处",
+      "腹胀饮食减少",
+      "女子月事不行、经前乳房胀痛"
+    ],
+    keyPoint: "气滞的舌象变化不明显，主要靠「脉弦+情绪+胀痛」三联症判断。若化火则舌红苔黄。",
+    relatedFormula: "柴胡疏肝散、逍遥散、越鞠丸"
+  },
+  {
+    id: "xueyu", name: "血瘀证", category: "四实", subcategory: "血瘀",
+    catClass: "cat-shi",
+    tongueColor: "#8E44AD", tongueColorName: "紫暗（瘀点瘀斑）",
+    coating: "薄白或灰",
+    coatingDesc: "苔白或灰",
+    tongueShape: "舌质紫黯，边有瘀点瘀斑，舌底络脉粗胀青紫",
+    pulse: "脉涩（往来艰涩）/ 结代",
+    features: [
+      "刺痛固定不移，拒按",
+      "疼痛夜间加重",
+      "肿块质硬色青紫",
+      "出血色黑（如黑色便血）",
+      "面色青黑不华"
+    ],
+    keyPoint: "血瘀舌象最具特征性——紫暗舌+瘀点瘀斑+粗胀舌下络脉，是其他证型不具备的表现。",
+    relatedFormula: "血府逐瘀汤、身痛逐瘀汤、桃红四物汤"
+  },
+  {
+    id: "tanyin", name: "痰饮证", category: "四实", subcategory: "痰饮",
+    catClass: "cat-shi",
+    tongueColor: "#FADBD8", tongueColorName: "淡胖",
+    coating: "白滑/厚白/腻",
+    coatingDesc: "苔白滑腻或厚白，上覆水湿样物质",
+    tongueShape: "舌体淡胖，或有齿痕",
+    pulse: "脉滑 / 弦滑 / 沉弦",
+    features: [
+      "头晕目眩，恶心呕吐",
+      "胸闷痞满，心下痞硬",
+      "咳嗽痰多，痰稀白",
+      "口内清涎沫多，口淡不渴",
+      "肢体困重"
+    ],
+    keyPoint: "痰饮舌象特点：「胖+腻/滑苔」。腻苔像油垢一样紧贴舌面，刮之不去。",
+    relatedFormula: "二陈汤、苓桂术甘汤、半夏厚朴汤"
+  },
+  {
+    id: "shihuo", name: "实火证（内火）", category: "四实", subcategory: "实火",
+    catClass: "cat-shi",
+    tongueColor: "#C0392B", tongueColorName: "红或绛",
+    coating: "黄干/起芒刺",
+    coatingDesc: "苔黄干燥，甚至起芒刺（像草莓表面的颗粒）",
+    tongueShape: "舌红绛，起芒刺",
+    pulse: "脉洪数有力 / 数实有力",
+    features: [
+      "高热，恶热，面红目赤",
+      "口渴喜冷饮，烦躁不安",
+      "大便秘结或泻下臭秽",
+      "小便短赤",
+      "口腔溃疡、牙龈肿痛",
+      "或见神昏谵语、狂躁、出血发斑"
+    ],
+    keyPoint: "实火舌象最鲜明——红/绛舌 + 黄干苔 + 芒刺。芒刺是实火独有体征！",
+    relatedFormula: "黄连解毒汤、白虎汤、凉膈散"
+  },
+
+  // ======== 六外感 ========
+  {
+    id: "feng", name: "风（外感风邪）", category: "六外感", subcategory: "风",
+    catClass: "cat-wai",
+    tongueColor: "#F1948A", tongueColorName: "舌尖红",
+    coating: "薄白或薄黄",
+    coatingDesc: "风热则苔薄黄，风寒则苔薄白",
+    tongueShape: "舌尖偏红",
+    pulse: "脉浮数（风热）/ 浮紧（风寒）",
+    features: [
+      "头痛，发热微恶风寒",
+      "咽痛咳嗽，口干口渴（风热）",
+      "恶寒无汗，身痛骨节疼（风寒）",
+      "发病急，变化快",
+      "病位多在上部（头面部）"
+    ],
+    keyPoint: "风邪为百病之长，多兼他邪。「浮脉+发病急+上部症状」是其核心特征。",
+    relatedFormula: "银翘散（风热）、桂枝汤（风寒）、荆防败毒散"
+  },
+  {
+    id: "han", name: "寒（外感寒邪）", category: "六外感", subcategory: "寒",
+    catClass: "cat-wai",
+    tongueColor: "#FADBD8", tongueColorName: "淡白",
+    coating: "薄白润",
+    coatingDesc: "苔薄白而润，不干不燥",
+    tongueShape: "舌淡，舌体正常或略紧缩",
+    pulse: "脉浮紧 / 浮迟 / 沉迟",
+    features: [
+      "恶寒重，发热轻或不发热",
+      "无汗，头身疼痛剧烈",
+      "四肢冰凉（厥逆）",
+      "口不渴，喜热饮",
+      "鼻流清涕，咳吐稀痰"
+    ],
+    keyPoint: "外感寒邪关键鉴别：胸腹冷则为真寒，胸腹热则可能为真热假寒（阴盛格阳）。",
+    relatedFormula: "麻黄汤、桂枝汤、葛根汤"
+  },
+  {
+    id: "shi_w", name: "湿（外感湿邪）", category: "六外感", subcategory: "湿",
+    catClass: "cat-wai",
+    tongueColor: "#FADBD8", tongueColorName: "淡或正常",
+    coating: "白腻/厚腻",
+    coatingDesc: "苔白腻或厚腻，如涂油状，紧贴舌面",
+    tongueShape: "舌体胖大有齿痕，或舌体正常",
+    pulse: "脉濡缓 / 弦细而濡 / 弦细",
+    features: [
+      "头重如裹，身重困倦",
+      "胸闷不饥，脘腹痞满",
+      "肢体酸楚沉重",
+      "午后身热，身热不扬",
+      "大便溏泄或粘腻不爽"
+    ],
+    keyPoint: "湿邪最典型的舌象是「腻苔」+「身重」。「身热不扬」——摸着皮肤发热但不烫手，是湿温特征性表现。",
+    relatedFormula: "三仁汤、藿香正气散、平胃散"
+  },
+  {
+    id: "huo_w", name: "火（外感火热）", category: "六外感", subcategory: "火",
+    catClass: "cat-wai",
+    tongueColor: "#EC7063", tongueColorName: "红",
+    coating: "薄黄",
+    coatingDesc: "苔薄黄，较内火轻浅",
+    tongueShape: "舌尖红，舌质红",
+    pulse: "脉浮数",
+    features: [
+      "发热心烦，不恶风寒或微恶风",
+      "头痛头胀，头面红肿痛",
+      "咽红肿痛，目赤胀痛畏光",
+      "口渴出汗，小便黄赤",
+      "皮肤疮疡红肿热痛"
+    ],
+    keyPoint: "外火 vs 内火的区别：外火初起在表（浮数），内火已入里（洪数有力）。外火舌红苔薄黄，内火舌绛苔黄干起芒刺。",
+    relatedFormula: "银翘散、桂枝白虎汤、黄连上清丸"
+  },
+  {
+    id: "shu", name: "暑（暑温）", category: "六外感", subcategory: "暑",
+    catClass: "cat-wai",
+    tongueColor: "#EC7063", tongueColorName: "红",
+    coating: "黄腻",
+    coatingDesc: "苔黄腻（暑必夹湿），或薄黄",
+    tongueShape: "舌红，舌体偏胖",
+    pulse: "脉洪数 / 弦细而濡",
+    features: [
+      "高热心烦，口渴饮冷",
+      "汗出多（但人未必虚）",
+      "身重倦怠，胸闷呕恶",
+      "暑多夹湿：身热不扬、腹泻、苔腻",
+      "夏季发病，起病急骤"
+    ],
+    keyPoint: "暑邪三大特性：①炎热（高热）②升散耗气伤津（汗出多）③多夹湿（苔腻）。纯暑证少见，多为暑湿夹杂。",
+    relatedFormula: "白虎加人参汤、六一散、新加香薷饮"
+  },
+  {
+    id: "zao", name: "燥（外感燥邪）", category: "六外感", subcategory: "燥",
+    catClass: "cat-wai",
+    tongueColor: "#F1948A", tongueColorName: "干红",
+    coating: "少苔/干",
+    coatingDesc: "舌干少苔，或苔薄白（凉燥）/薄黄（温燥）",
+    tongueShape: "舌干少津液",
+    pulse: "脉浮数（温燥）/ 弦（凉燥）",
+    features: [
+      "口干咽燥，鼻干",
+      "干咳无痰或痰少黏稠",
+      "皮肤干燥，大便干结",
+      "温燥：身热头痛、心烦口渴",
+      "凉燥：恶寒无汗、头微痛、咳嗽痰稀"
+    ],
+    keyPoint: "燥分两种：温燥（秋初，类似风热但更干）vs 凉燥（深秋，类似风寒但干）。核心都是「干」——舌干、咽干、鼻干、干咳。",
+    relatedFormula: "清燥救肺汤（温燥）、杏苏散（凉燥）、桑杏汤"
+  }
+];
+
+// ========== 状态变量 ==========
+let currentCat = 'all';
+let currentSub = '';
+let searchQuery = '';
+let quizMode = false;
+let revealedCards = new Set();
+
+// ========== DOM 引用 ==========
+const tongueGrid = document.getElementById('tongueGrid');
+const emptyState = document.getElementById('emptyState');
+const statsText = document.getElementById('statsText');
+const searchInput = document.getElementById('searchInput');
+const modalBackdrop = document.getElementById('modalBackdrop');
+
+// ========== 初始化 ==========
+function init() {
+  renderGrid();
+  bindEvents();
+}
+
+// ========== 绑定事件 ==========
+function bindEvents() {
+  // 大类筛选
+  document.querySelectorAll('.filter-chip[data-cat]').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.filter-chip[data-cat]').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      currentCat = chip.dataset.cat;
+      
+      // 显示/隐藏子类
+      hideAllSubFilters();
+      if (currentCat === 'xu') {
+        showSubFilters('subFiltersXu', 'qixu');
+      } else if (currentCat === 'shi') {
+        showSubFilters('subFiltersShi', 'qizhi');
+      } else if (currentCat === 'wai') {
+        showSubFilters('subFiltersWai', 'feng');
+      } else {
+        currentSub = '';
+        renderGrid();
+      }
+    });
+  });
+
+  // 子类筛选
+  document.querySelectorAll('.filter-chip.sub').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const parent = chip.parentElement;
+      parent.querySelectorAll('.filter-chip.sub').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      currentSub = chip.dataset.sub;
+      renderGrid();
+    });
+  });
+
+  // 搜索
+  let debounceTimer;
+  searchInput.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+      searchQuery = searchInput.value.trim().toLowerCase();
+      renderGrid();
+    }, 250);
+  });
+
+  // 自测模式切换
+  document.getElementById('modeToggle').addEventListener('click', toggleQuizMode);
+
+  // ESC 关闭模态框
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeModal();
+  });
+  
+  // 点击遮罩层关闭模态框
+  modalBackdrop.addEventListener('click', e => {
+    if (e.target === modalBackdrop) closeModal();
+  });
+}
+
+function hideAllSubFilters() {
+  ['subFiltersXu','subFiltersShi','subFiltersWai'].forEach(id => {
+    document.getElementById(id).classList.remove('show');
+  });
+}
+
+function showSubFilters(id, defaultSub) {
+  const el = document.getElementById(id);
+  el.classList.add('show');
+  currentSub = defaultSub;
+  // 重置子类按钮状态
+  el.querySelectorAll('.filter-chip.sub').forEach(c => c.classList.remove('active'));
+  const defaultBtn = el.querySelector('[data-sub="' + defaultSub + '"]');
+  if (defaultBtn) defaultBtn.classList.add('active');
+  renderGrid();
+}
+
+function toggleQuizMode() {
+  quizMode = !quizMode;
+  const sw = document.getElementById('switch');
+  sw.classList.toggle('on', quizMode);
+  revealedCards.clear();
+  renderGrid();
+}
+
+// ========== 过滤逻辑 ==========
+function filterData() {
+  return TONGUE_DATA.filter(item => {
+    // 大类过滤
+    if (currentCat !== 'all') {
+      if (item.category !== (currentCat === 'xu' ? '四虚' : currentCat === 'shi' ? '四实' : '六外感')) return false;
+      // 子类过滤
+      if (currentSub && item.id !== currentSub) return false;
+    }
+    
+    // 搜索过滤
+    if (searchQuery) {
+      const fields = [item.name, item.category, item.subcategory, 
+        item.tongueColorName, item.coating, item.tongueShape, 
+        item.pulse].join(' ') + ' ' + item.features.join(' ') + ' ' + (item.keyPoint || '');
+      if (fields.toLowerCase().indexOf(searchQuery) === -1) return false;
+    }
+    return true;
+  });
+}
+
+// ========== 渲染网格 ==========
+function renderGrid() {
+  const filtered = filterData();
+  statsText.textContent = '共 ' + filtered.length + ' 个证型';
+  
+  if (filtered.length === 0) {
+    tongueGrid.innerHTML = '';
+    emptyState.style.display = 'block';
+    return;
+  }
+  
+  emptyState.style.display = 'none';
+  tongueGrid.innerHTML = filtered.map((item, i) => createCard(item)).join('');
+}
+
+// ========== 创建卡片 HTML ==========
+function createCard(item) {
+  const isRevealed = !quizMode || revealedCards.has(item.id);
+  
+  // 特征颜色点
+  function bulletColor(idx) {
+    const colors = ['#40916C','#2980B9','#8E44AD','#E67E22','#C0392B','#27AE60'];
+    return colors[idx % colors.length];
+  }
+
+  return '<div class="tongue-card" onclick="openModal(\'' + item.id + '\')" tabindex="0" role="article" aria-label="' + item.name + '舌象">' +
+    '<div class="card-body">' +
+      '<div class="card-header">' +
+        '<div class="card-title-group">' +
+          '<span class="syndrome-name">' + item.name + '</span>' +
+          '<span class="category-tag ' + item.catClass + '">' + item.category + '·' + item.subcategory + '</span>' +
+        '</div>' +
+      '</div>' +
+
+      /* 舌象可视化区域 */
+      '<div class="tongue-visual">' +
+        '<div class="tongue-svg-container">' +
+          drawTongueSVG(item) +
+        '</div>' +
+        '<div class="tongue-info">' +
+          '<div class="tongue-info-item"><div class="info-label">🎨 舌色</div><div class="info-value"><span class="color-dot" style="background:' + item.tongueColor + ';"></span>' + item.tongueColorName + '</div></div>' +
+          '<div class="tongue-info-item"><div class="info-label">🍃 舌苔</div><div class="info-value">' + item.coating + '</div></div>' +
+          '<div class="tongue-info-item"><div class="info-label">💓 脉象</div><div class="info-value">' + item.pulse + '</div></div>' +
+          '<div class="tongue-info-item"><div class="info-label">✋ 形态</div><div class="info-value">' + (item.tongueShape.length > 12 ? item.tongueShape.substring(0,12)+'…' : item.tongueShape) + '</div></div>' +
+        '</div>' +
+      '</div>' +
+
+      /* 核心特征列表 */
+      (isRevealed ?
+        ('<ul class="feature-list">' +
+          item.features.map(function(f, idx) {
+            return '<li><span class="feature-bullet" style="background:' + bulletColor(idx) + ';"></span>' + f + '</li>';
+          }).join('') +
+        '</ul>') :
+        ''
+      ) +
+
+      '<div class="card-footer">' +
+        '<span class="pulse-tag">' + item.pulse.split('/')[0] + '</span>' +
+        (!isRevealed ? '<span style="font-size:12px;color:#40916C;font-weight:600;">点击揭晓 →</span>' : '') +
+      '</div>' +
+    '</div>' +
+
+    /* 自测模式遮罩 */
+    (quizMode && !isRevealed ?
+      '<div class="quiz-overlay show">' +
+        '<div class="question">这是什么证型的舌象？</div>' +
+        '<button class="reveal-btn" onclick="event.stopPropagation();revealCard(\'' + item.id + '\')">揭晓答案</button>' +
+      '</div>'
+      : ''
+    ) +
+  '</div>';
+}
+
+// ========== SVG 舌形绘制 ==========
+function drawTongueSVG(item) {
+  // 根据舌色设置填充色
+  const tc = item.tongueColor;
+  
+  // 根据舌苔类型绘制不同效果
+  let coatingEl = '';
+  if (item.coating.indexOf('黄') >= 0) {
+    // 黄苔
+    coatingEl = '<rect x="52" y="45" width="96" height="38" rx="18" fill="#F9E79F" opacity="0.75"/>';
+  } else if (item.coating.indexOf('白') >= 0 && (item.coating.indexOf('腻') >= 0 || item.coating.indexOf('滑') >= 0 || item.coating.indexOf('厚') >= 0)) {
+    // 厚白/腻/滑苔
+    coatingEl = '<rect x="52" y="45" width="96" height="38" rx="18" fill="#FCF3CF" opacity="0.85"/>';
+  } else if (item.coating.indexOf('白') >= 0) {
+    // 薄白苔（默认）
+    coatingEl = '<rect x="52" y="48" width="96" height="30" rx="16" fill="rgba(254,249,231,0.5)"/>';
+  } else if (item.coating.indexOf('少') >= 0 || item.coating.indexOf('无') >= 0 || item.coating.indexOf('剥') >= 0) {
+    // 少苔/无苔/剥苔 - 中后部裸露
+    coatingEl = '';
+  }
+  
+  // 齿痕
+  let toothMarks = '';
+  if (item.tongueShape.indexOf('齿痕') >= 0) {
+    toothMarks = '' +
+      '<path d="M48 62 q-4 4,-4 10 q0 6,4 8" stroke="#E6B0AA" stroke-width="1.5" fill="none"/>' +
+      '<path d="M152 62 q4 4,4 10 q0 6,-4 8" stroke="#E6B0AA" stroke-width="1.5" fill="none"/>';
+  }
+  
+  // 瘀斑（血瘀）
+  let spots = '';
+  if (item.id === 'xueyu') {
+    spots = '<ellipse cx="80" cy="58" rx="6" ry="4" fill="#6C3483" opacity="0.5"/>' +
+            '<ellipse cx="125" cy="72" rx="5" ry="3" fill="#6C3483" opacity="0.4"/>';
+  }
+  
+  // 芒刺（实火）
+  let thorns = '';
+  if (item.id === 'shihuo' || item.tongueShape.indexOf('芒刺') >= 0) {
+    thorns = '<g fill="#C0392B" opacity="0.7">' +
+      '<circle cx="90" cy="48" r="2"/><circle cx="105" cy="47" r="2"/>' +
+      '<circle cx="78" cy="53" r="1.5"/><circle cx="118" cy="51" r="1.5"/>' +
+      '</g>';
+  }
+  
+  // 裂纹（阴虚）
+  let cracks = '';
+  if (item.id === 'yinxu' || (item.tongueShape.indexOf('干') >= 0 && item.tongueShape.indexOf('瘦') >= 0)) {
+    cracks = '<path d="M95 46 L92 76 M102 48 L106 74 M84 56 L112 58" stroke="#D98880" stroke-width="0.8" fill="none" opacity="0.6"/>';
+  }
+  
+  // 胖大程度
+  let scale = 1;
+  if (item.id === 'yangxu' || (item.tongueShape.indexOf('胖') >= 0 && item.tongueShape.indexOf('大') >= 0)) {
+    scale = 1.08;
+  }
+  const w = Math.round(140 * scale);
+  const offsetX = (140 - w) / 2;
+  
+  return '<svg width="200" height="110" viewBox="-10 -5 160 115" xmlns="http://www.w3.org/2000/svg">' +
+    '<defs>' +
+      '<linearGradient id="tg_' + item.id + '" x1="0%" y1="0%" x2="0%" y2="100%">' +
+        '<stop offset="0%" stop-color="' + adjustColor(tc, 20) + '"/>' +
+        '<stop offset="100%" stop-color="' + tc + '"/>' +
+      '</linearGradient>' +
+    '</defs>' +
+    '<g transform="translate(' + offsetX + ',0)">' +
+      /* 舌主体 */ +
+      '<path d="M' + (70-w/2) + ' 20 Q' + (70-w/2+8) + ' 10,' + '70 8 Q' + (70+w/2-8) + ' 10,' + (70+w/2) + ' 20' +
+           ' Q' + (70+w/2+6) + ' 35,' + (70+w/2+4) + ' 55 Q' + (70+w/2-2) + ' 80,' + (70+w/2-10) + ' 95' +
+           ' Q70 102,' + (70-w/2+10) + ' 95 Q' + (70-w/2+2) + ' 80,' + (70-w/2-4) + ' 55 Q' + (70-w/2-6) + ' 35,' + (70-w/2) + ' 20 Z"' +
+        'fill="url(#tg_' + item.id + ')" stroke="#D98880" stroke-width="1.2"/>' +
+      /* 舌苔 */ +
+      coatingEl +
+      /* 齿痕 */ +
+      toothMarks +
+      /* 瘀斑 */ +
+      spots +
+      /* 芒刺 */ +
+      thorns +
+      /* 裂纹 */ +
+      cracks +
+      /* 舌中线（自然纹理） */ +
+      '<path d="M70 18 L70 94" stroke="rgba(180,130,120,0.15)" stroke-width="1" fill="none"/>' +
+    '</g>' +
+  '</svg>';
+}
+
+// 颜色调整辅助函数
+function adjustColor(hex, amount) {
+  hex = hex.replace('#','');
+  const num = parseInt(hex,16);
+  const r = Math.min(255,(num>>16)+amount);
+  const g = Math.min(255,((num>>8)&0xFF)+amount);
+  const b = Math.min(255,(num&0xFF)+amount);
+  return '#' + ((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);
+}
+
+// ========== 揭晓卡片 ==========
+function revealCard(id) {
+  revealedCards.add(id);
+  renderGrid();
+}
+
+// ========== 打开模态框 ==========
+function openModal(id) {
+  const item = TONGUE_DATA.find(t => t.id === id);
+  if (!item) return;
+  
+  if (quizMode && !revealedCards.has(id)) {
+    revealCard(id);
+    return;
+  }
+
+  document.getElementById('modalTitle').textContent = item.name;
+  document.getElementById('modalCategoryRow').innerHTML =
+    '<span class="category-tag ' + item.catClass + '">' + item.category + '</span>' +
+    '<span style="font-size:13px;color:#888;margin-left:4px;">' + item.subcategory + '</span>';
+
+  let bodyHtml = '';
+
+  // 舌象特征区
+  bodyHtml += '<div class="modal-section">';
+  bodyHtml += '<div class="section-title">舌象特征</div>';
+  bodyHtml += '<div class="tongue-visual" style="margin-top:12px;"><div class="tongue-svg-container">' + drawTongueSVG(item) + '</div>';
+  bodyHtml += '<div class="tongue-info" style="margin-top:14px;">';
+  bodyHtml += '<div class="tongue-info-item"><div class="info-label">🎨 舌色</div><div class="info-value"><span class="color-dot" style="background:' + item.tongueColor + ';"></span>' + item.tongueColorName + '</div></div>';
+  bodyHtml += '<div class="tongue-info-item"><div class="info-label">🍃 舌苔</div><div class="info-value">' + item.coating + ' — ' + item.coatingDesc + '</div></div>';
+  bodyHtml += '<div class="tongue-info-item"><div class="info-label">✋ 舌形</div><div class="info-value">' + item.tongueShape + '</div></div>';
+  bodyHtml += '<div class="tongue-info-item"><div class="info-label">💓 脉象</div><div class="info-value">' + item.pulse + '</div></div>';
+  bodyHtml += '</div></div></div>';
+
+  // 临床特征
+  bodyHtml += '<div class="modal-section">';
+  bodyHtml += '<div class="section-title">临床特征</div>';
+  bodyHtml += '<ul class="symptom-list">';
+  item.features.forEach(function(f, i) {
+    const colors = ['#40916C','#2980B9','#8E44AD','#E67E22','#C0392B','#27AE60','#F39C12'];
+    bodyHtml += '<li><span class="sym-icon" style="background:' + colors[i%colors.length] + ';"></span>' + f + '</li>';
+  });
+  bodyHtml += '</ul></div>';
+
+  // 辨证要点
+  if (item.keyPoint) {
+    bodyHtml += '<div class="modal-section">';
+    bodyHtml += '<div class="section-title">辨证要点</div>';
+    bodyHtml += '<div style="background:#FFFAF0;border-left:4px solid #F39C12;padding:14px 16px;border-radius:0 8px 8px 0;font-size:14px;line-height:1.7;color:#7D6608;">' + item.keyPoint + '</div>';
+    bodyHtml += '</div>';
+  }
+
+  // 代表方剂
+  bodyHtml += '<div class="modal-section">';
+  bodyHtml += '<div class="section-title">代表方剂</div>';
+  bodyHtml += '<div style="font-size:14px;color:var(--text-secondary);background:var(--bg);padding:14px 16px;border-radius:10px;line-height:1.7;">' + item.relatedFormula + '</div>';
+  bodyHtml += '</div>';
+
+  document.getElementById('modalBody').innerHTML = bodyHtml;
+  modalBackdrop.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+// ========== 关闭模态框 ==========
+function closeModal() {
+  modalBackdrop.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ========== 启动 ==========
+init();
+</script>
+</body>
+</html>
