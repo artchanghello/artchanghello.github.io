@@ -273,6 +273,15 @@
   }
   .quiz-overlay .reveal-btn:hover { background: white; color: var(--primary); }
 
+  /* 自测模式底部提示条 —— 不遮挡卡片内容 */
+  .quiz-banner {
+    background: linear-gradient(135deg, #9B59B6, #8E44AD);
+    color: white; font-size: 13px; font-weight: 600;
+    text-align: center; padding: 10px 16px;
+    border-radius: 0 0 var(--radius) var(--radius);
+    margin-top: 4px;
+  }
+
   /* ===== Modal ===== */
   .modal-backdrop {
     position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999;
@@ -510,8 +519,8 @@ const PULSE_DATA = [
     pulseType: "xu", // 虚脉
     pulseProps: {
       frequency: 0.85,   // 接近正常偏慢
-      amplitude: 0.55,    // 低振幅（无力）
-      baseline: 0.45,     // 偏上（浮大）
+      amplitude: 0.7,     // 振幅较大（形大）
+      baseline: 0.65,     // 浮大——脉管弛张，浮而显大
       rhythm: "regular",
       shape: "wide_weak", // 宽大无力
       color: "#95A5A6"
@@ -527,7 +536,7 @@ const PULSE_DATA = [
       "面色萎黄或㿠白"
     ],
     keyPoint: "气虚脉的核心是「无力」+「偏大」。脉管因气虚而弛张，故形大；推动力不足，故按之无力。",
-    relatedFormula: "补中益气汤、四君子汤、玉屏风散"
+    relatedFormula: "补中益气汤、黄芪甘草汤、小建中汤"
   },
   {
     id: "yangxu", name: "阳虚证", category: "四虚", subcategory: "阳虚",
@@ -536,8 +545,8 @@ const PULSE_DATA = [
     pulseType: "xu_chen", // 沉虚
     pulseProps: {
       frequency: 0.75,    // 偏慢
-      amplitude: 0.4,     // 很弱
-      baseline: 0.65,     // 偏下（沉）
+      amplitude: 0.35,    // 极弱
+      baseline: 0.30,     // 沉——阳气不能鼓动于表
       rhythm: "regular",
       shape: "thin_weak", // 细而弱
       color: "#7F8C8D"
@@ -553,7 +562,7 @@ const PULSE_DATA = [
       "大便溏薄、完谷不化"
     ],
     keyPoint: "阳虚脉「沉细无力」——阳气不能鼓动血脉于表→沉；温煦推动不足→细弱。",
-    relatedFormula: "附子理中汤、真武汤、桂枝加附子汤"
+    relatedFormula: "真武汤、桂枝加附子汤、四逆汤"
   },
   {
     id: "xuexu", name: "血虚证", category: "四虚", subcategory: "血虚",
@@ -580,7 +589,7 @@ const PULSE_DATA = [
       "妇女月经量少色淡、后期或闭经"
     ],
     keyPoint: "血虚则脉道失充→「脉细」如丝线。与气虚区别：气虚脉大无力，血虚脉细无力。",
-    relatedFormula: "四物汤、当归补血汤、炙甘草汤"
+    relatedFormula: "炙甘草汤、小建中汤、当归四逆汤"
   },
   {
     id: "yinxu", name: "阴虚证", category: "四虚", subcategory: "阴虚",
@@ -607,7 +616,7 @@ const PULSE_DATA = [
       "大便干燥，尿少色黄"
     ],
     keyPoint: "阴虚内热→脉「数」（热）+「细」（阴伤津亏脉道失充）。核心组合：细+数。",
-    relatedFormula: "六味地黄丸、知柏地黄丸、百合固金汤"
+    relatedFormula: "百合地黄汤、黄连阿胶汤、猪苓汤"
   },
 
   // ======== 四实 ========
@@ -636,7 +645,7 @@ const PULSE_DATA = [
       "女子月事不行、经前乳房胀痛"
     ],
     keyPoint: "弦脉是气滞标志性脉象——「端直以长，如按琴弦」。气机不畅，脉管紧张度增高所致。",
-    relatedFormula: "柴胡疏肝散、逍遥散、越鞠丸"
+    relatedFormula: "四逆散、桂枝茯苓丸、芍药甘草汤"
   },
   {
     id: "xueyu", name: "血瘀证", category: "四实", subcategory: "血瘀",
@@ -663,7 +672,7 @@ const PULSE_DATA = [
       "面色青黑不华"
     ],
     keyPoint: "涩脉特征：「往来艰涩，如轻刀刮竹」。血行不畅→脉流艰涩。严重者可见结代脉（停顿）。",
-    relatedFormula: "血府逐瘀汤、身痛逐瘀汤、桃红四物汤"
+    relatedFormula: "血府逐瘀汤、桃核承气汤、大黄附子细辛汤"
   },
   {
     id: "tanyin", name: "痰饮证", category: "四实", subcategory: "痰饮",
@@ -690,7 +699,7 @@ const PULSE_DATA = [
       "肢体困重"
     ],
     keyPoint: "滑脉——「往来流利，如盘走珠」。痰湿内盛，气血涌盛于脉，故脉来流利圆滑。",
-    relatedFormula: "二陈汤、苓桂术甘汤、半夏厚朴汤"
+    relatedFormula: "苓桂术甘汤、小半夏汤、小半夏加茯苓汤"
   },
   {
     id: "shihuo", name: "实火证（内火）", category: "四实", subcategory: "实火",
@@ -718,7 +727,7 @@ const PULSE_DATA = [
       "或见神昏谵语、狂躁、出血发斑"
     ],
     keyPoint: "实火脉「洪数有力」——热邪亢盛→气血涌张→脉洪大（来盛去衰）；火热加速血流→数。",
-    relatedFormula: "黄连解毒汤、白虎汤、凉膈散"
+    relatedFormula: "白虎汤、大黄黄连泻心汤、栀子豉汤"
   },
 
   // ======== 六外感 ========
@@ -747,7 +756,7 @@ const PULSE_DATA = [
       "病位多在上部（头面部）"
     ],
     keyPoint: "浮脉为外感主脉——「轻取即得，重按反减」。风性轻扬，病在肌表卫分。风热兼数，风寒兼紧。",
-    relatedFormula: "银翘散（风热）、桂枝汤（风寒）、荆防败毒散"
+    relatedFormula: "银翘散、桂枝汤、葛根汤"
   },
   {
     id: "han", name: "寒（外感寒邪）", category: "六外感", subcategory: "寒",
@@ -801,7 +810,7 @@ const PULSE_DATA = [
       "大便溏泄或粘腻不爽"
     ],
     keyPoint: "濡脉特点——「浮而细软」，如棉絮在水面上。湿性黏滞重浊→脉气被遏，故浮而软。",
-    relatedFormula: "三仁汤、藿香正气散、平胃散"
+    relatedFormula: "三仁汤、防己黄芪汤、麻杏石甘汤"
   },
   {
     id: "huo_w", name: "火（外感火热）", category: "六外感", subcategory: "火",
@@ -828,7 +837,7 @@ const PULSE_DATA = [
       "皮肤疮疡红肿热痛"
     ],
     keyPoint: "外火初起在表→「浮数」：浮=病在表，数=有热。与内火（洪数有力）的区别在于脉位和力度。",
-    relatedFormula: "银翘散、桂枝白虎汤、黄连上清丸"
+    relatedFormula: "银翘散、白虎汤、白虎加人参汤"
   },
   {
     id: "shu", name: "暑（暑温）", category: "六外感", subcategory: "暑",
@@ -855,7 +864,7 @@ const PULSE_DATA = [
       "夏季发病，起病急骤"
     ],
     keyPoint: "暑性炎热升散→脉洪数（类似实火但多汗出）；若夹湿则可兼濡脉。「暑必耗气伤津」为其特殊之处。",
-    relatedFormula: "白虎加人参汤、六一散、新加香薷饮"
+    relatedFormula: "白虎加人参汤、竹叶石膏汤、五苓散"
   },
   {
     id: "zao", name: "燥（外感燥邪）", category: "六外感", subcategory: "燥",
@@ -882,7 +891,7 @@ const PULSE_DATA = [
       "凉燥：恶寒无汗、头微痛、咳嗽痰稀"
     ],
     keyPoint: "温燥似风热→浮数；凉燥似风寒→浮弦。核心鉴别在于「干」的程度——咽鼻干、干咳、皮肤燥。",
-    relatedFormula: "清燥救肺汤（温燥）、杏苏散（凉燥）、桑杏汤"
+    relatedFormula: "清燥救肺汤、杏苏散、百合地黄汤"
   }
 ];
 
@@ -1035,19 +1044,14 @@ function createCard(item) {
         '</div>' +
       '</div>' +
 
-      /* 脉象波形动画区 */
-      '<div class="pulse-visual">' +
-        '<div class="pulse-canvas-wrap">' +
-          '<canvas class="pulse-canvas" id="' + canvasId + '" data-pulse-id="' + item.id + '" width="300" height="120"></canvas>' +
-        '</div>' +
-        '<div class="pulse-info">' +
-          '<div class="pulse-info-item"><div class="info-label">📍 脉位</div><div class="info-value">' + item.depthLabel + '</div></div>' +
-          '<div class="pulse-info-item"><div class="info-label">⏱️ 频率</div><div class="info-value">' + item.rateLabel + '</div></div>' +
-          '<div class="pulse-info-item"><div class="info-label">💪 脉力</div><div class="info-value">' + item.strengthLabel + '</div></div>' +
-        '</div>' +
+      /* 脉象信息文字 —— 始终显示，不显示波形 */
+      '<div class="pulse-info">' +
+        '<div class="pulse-info-item"><div class="info-label">📍 脉位</div><div class="info-value">' + item.depthLabel + '</div></div>' +
+        '<div class="pulse-info-item"><div class="info-label">⏱️ 频率</div><div class="info-value">' + item.rateLabel + '</div></div>' +
+        '<div class="pulse-info-item"><div class="info-label">💪 脉力</div><div class="info-value">' + item.strengthLabel + '</div></div>' +
       '</div>' +
 
-      /* 核心特征列表 */
+      /* 核心特征列表 —— 仅揭晓后显示 */
       (isRevealed ?
         ('<ul class="feature-list">' +
           item.features.map(function(f, idx) {
@@ -1062,12 +1066,9 @@ function createCard(item) {
       '</div>' +
     '</div>' +
 
-    /* 自测模式遮罩 */
+    /* 自测模式未揭晓：半透明提示条（不遮挡脉象信息） */
     (quizMode && !isRevealed ?
-      '<div class="quiz-overlay show">' +
-        '<div class="question">这是什么证型的脉象？</div>' +
-        '<button class="reveal-btn" onclick="event.stopPropagation();revealCard(\'' + item.id + '\')">揭晓答案</button>' +
-      '</div>'
+      '<div class="quiz-banner">这是什么证型的脉象？</div>'
       : ''
     ) +
   '</div>';
@@ -1092,6 +1093,31 @@ function startPulseAnimation(canvas, item) {
 
     // 绘制网格背景
     drawGrid(ctx, W, H);
+
+    // 绘制病位参考线：表（浮）/ 半表半里 / 里（沉）
+    const depthLines = [
+      { y: H * 0.28, label: '表', color: '#27AE60', dash: [5, 4] },
+      { y: H * 0.50, label: '中取', color: '#F39C12', dash: [] },
+      { y: H * 0.72, label: '里', color: '#E74C3C', dash: [5, 4] }
+    ];
+    depthLines.forEach(function(dl) {
+      ctx.strokeStyle = dl.color;
+      ctx.globalAlpha = 0.35;
+      ctx.lineWidth = (dl.dash.length === 0) ? 1.2 : 1;
+      if (dl.dash.length > 0) ctx.setLineDash(dl.dash);
+      else ctx.setLineDash([]);
+      ctx.beginPath();
+      ctx.moveTo(0, dl.y);
+      ctx.lineTo(W, dl.y);
+      ctx.stroke();
+      // 右侧标签
+      ctx.globalAlpha = 0.45;
+      ctx.fillStyle = dl.color;
+      ctx.font = '10px -apple-system, sans-serif';
+      ctx.fillText(dl.label, W - 20, dl.y - 4);
+    });
+    ctx.globalAlpha = 1;
+    ctx.setLineDash([]);
 
     // 计算基线 Y 位置
     const baseY = H * (1 - props.baseline);
@@ -1132,8 +1158,13 @@ function startPulseAnimation(canvas, item) {
         case 'thin_fast': // 细数
           y = baseY + amp * 0.5 * Math.sin(t * freq) + amp * 0.15 * Math.sin(t * freq * 2.5);
           break;
-        case 'stringy': // 弦脉——挺直带锐角
-          y = baseY + amp * (Math.sin(t) * 0.5 + Math.pow(Math.abs(Math.sin(t)), 0.5) * 0.6 * Math.sign(Math.sin(t)));
+        case 'stringy': // 弦脉——挺直如琴弦，端直以长
+          // 组合波：基波+三次谐波→形成棱角分明的"琴弦"感
+          y = baseY + amp * (Math.sin(t) * 0.5 + 0.35 * Math.sin(t * 3) + 0.12 * Math.cos(t * 2));
+          // 弦脉特征：波峰尖锐、下降沿陡峭（如按琴弦）
+          if ((t % (Math.PI * 2)) > Math.PI && (t % (Math.PI * 2)) < Math.PI * 1.6) {
+            y -= amp * 0.08; // 下压形成锐角
+          }
           break;
         case 'rough': // 涩脉——不规则抖动
           y = baseY + amp * (Math.sin(t) * 0.7 
@@ -1144,8 +1175,17 @@ function startPulseAnimation(canvas, item) {
           y = baseY + amp * Math.sin(t) + amp * 0.2 * Math.cos(t * 0.5);
           // 滑脉更圆润
           break;
-        case 'wide_strong': // 洪脉——大而有力
-          y = baseY + amp * 1.1 * Math.sin(t) * (1 + 0.2 * Math.exp(-Math.pow((t % (2*Math.PI) - Math.PI) / 2, 2)));
+        case 'wide_strong': // 洪脉——来盛去衰，大而有力
+          // 模拟"来盛去衰"：上升段急剧，下降段缓慢
+          const phase = (t % (2 * Math.PI));
+          const raw = Math.sin(t);
+          let decay = 1;
+          if (phase > Math.PI && phase < Math.PI * 1.7) {
+            // 下降段（去衰）：衰减因子，使下降变缓
+            const decayProgress = (phase - Math.PI) / (Math.PI * 0.7);
+            decay = 1 - 0.35 * Math.pow(decayProgress, 0.6);
+          }
+          y = baseY + amp * 1.15 * raw * decay;
           break;
         case 'float_fast': // 浮数
           y = (H * 0.38) + amp * 0.75 * Math.sin(t * freq);
@@ -1153,8 +1193,10 @@ function startPulseAnimation(canvas, item) {
         case 'float_medium': // 浮中
           y = (H * 0.36) + amp * 0.68 * Math.sin(t * freq * 0.95);
           break;
-        case 'tight': // 紧脉——绷直
-          y = (H * 0.36) + amp * 0.85 * (Math.abs(Math.sin(t)) * Math.sign(Math.sin(t)) + 0.15 * Math.sin(t * 2.3));
+        case 'tight': // 紧脉——绷紧如绳索，左右弹指
+          // 方波近似+微小抖动→形成"绳索转索"的紧绷感
+          const tightWave = Math.sign(Math.sin(t)) * (0.85 + 0.08 * Math.sin(t * 5));
+          y = (H * 0.36) + amp * (tightWave + 0.06 * Math.sin(t * 7));
           break;
         case 'soft': // 濡脉——浮而软
           y = (H * 0.35) + amp * 0.5 * Math.sin(t * 0.85) * (1 - 0.3 * Math.abs(Math.cos(t * 0.3)));
