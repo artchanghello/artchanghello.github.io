@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>446辨证体系 · 用药表自测</title>
+<meta name="description" content="446辨证体系用药表自测，根据方剂名填写组成药材，巩固72首核心方剂。">
+<link rel="icon" href="446-logo-og.png" type="image/png">
+<style>
+  :root {
+    --primary: #1B4332;
+    --primary-light: #2D6A4F;
+    --accent: #40916C;
+    --accent-light: #52B788;
+    --bg: #F8F9F7;
+    --card-bg: #FFFFFF;
+    --text: #1A1A1A;
+    --text-secondary: #555;
+    --border: #E0E4E0;
+    --shadow: 0 2px 12px rgba(0,0,0,0.08);
+    --radius: 12px;
+    --danger: #D00000;
+    --success: #2D6A4F;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+  .navbar {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 24px; height: 56px;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .navbar .logo {
+    font-family: Georgia, "Songti SC", "SimSun", serif;
+    font-size: 18px; font-weight: 700;
+    color: var(--primary); text-decoration: none;
+  }
+  .navbar .back-link {
+    font-size: 14px; color: var(--accent); text-decoration: none;
+  }
+  .container { max-width: 720px; margin: 0 auto; padding: 24px 16px 60px; }
+
+  /* 顶部状态栏 */
+  .status-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 16px; font-size: 14px; color: var(--text-secondary);
+  }
+  .score-badge {
+    background: var(--primary); color: #fff;
+    padding: 4px 14px; border-radius: 20px; font-weight: 600;
+  }
+
+  /* 题目卡片 */
+  .quiz-card {
+    background: var(--card-bg); border-radius: var(--radius);
+    box-shadow: var(--shadow); padding: 28px 20px; margin-bottom: 20px;
+    text-align: center;
+  }
+  .quiz-card .label { font-size: 13px; color: var(--text-secondary); margin-bottom: 6px; }
+  .quiz-card .formula-name {
+    font-size: 26px; font-weight: 700; color: var(--primary);
+    font-family: Georgia, "Songti SC", "SimSun", serif;
+    margin-bottom: 20px;
+  }
+
+  /* 填空区 */
+  .blanks-area {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;
+    margin-bottom: 20px;
+  }
+  .blank-slot {
+    min-width: 80px; min-height: 42px;
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 6px 14px;
+    font-size: 15px; color: var(--primary); font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: #FAFBFA;
+    user-select: none;
+  }
+  .blank-slot.filled {
+    border-style: solid;
+    border-color: var(--accent);
+    background: #F0FAF5;
+  }
+  .blank-slot.filled:hover {
+    border-color: var(--danger);
+    background: #FFF0F0;
+  }
+  .blank-slot.correct {
+    border-color: var(--success) !important;
+    background: #E8F5EE !important;
+    color: var(--success) !important;
+    cursor: default;
+  }
+  .blank-slot.wrong {
+    border-color: var(--danger) !important;
+    background: #FFF0F0 !important;
+    color: var(--danger) !important;
+    cursor: default;
+  }
+  .blank-slot.show-answer {
+    border-color: #FFA500 !important;
+    background: #FFF8E7 !important;
+    color: #CC8400 !important;
+    cursor: default;
+  }
+
+  /* 药材选项区 */
+  .options-area {
+    background: var(--card-bg); border-radius: var(--radius);
+    box-shadow: var(--shadow); padding: 20px;
+  }
+  .options-area .section-title {
+    font-size: 14px; font-weight: 600; color: var(--text-secondary);
+    margin-bottom: 12px; text-align: center;
+  }
+  .herbs-grid {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;
+  }
+  .herb-btn {
+    padding: 8px 16px; border-radius: 8px;
+    border: 1.5px solid var(--border);
+    background: #fff; color: var(--text);
+    font-size: 14px; cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+  .herb-btn:hover:not(.used) {
+    border-color: var(--accent);
+    background: #F0FAF5;
+  }
+  .herb-btn.used {
+    opacity: 0.35;
+    pointer-events: none;
+    border-style: dashed;
+  }
+
+  /* 操作按钮 */
+  .actions {
+    display: flex; justify-content: center; gap: 12px;
+    margin-top: 20px;
+  }
+  .btn {
+    padding: 10px 28px; border-radius: 8px;
+    border: none; font-size: 15px; font-weight: 600;
+    cursor: pointer; font-family: inherit;
+    transition: all 0.15s;
+  }
+  .btn-primary {
+    background: var(--primary); color: #fff;
+  }
+  .btn-primary:hover { background: var(--primary-light); }
+  .btn-primary:disabled {
+    background: #ccc; cursor: not-allowed;
+  }
+  .btn-outline {
+    background: #fff; color: var(--primary);
+    border: 1.5px solid var(--border);
+  }
+  .btn-outline:hover { border-color: var(--primary); }
+  .btn-danger {
+    background: #fff; color: var(--danger);
+    border: 1.5px solid var(--danger);
+  }
+  .btn-danger:hover { background: #FFF0F0; }
+
+  /* Toast */
+  .result-toast {
+    position: fixed; top: 70px; left: 50%; transform: translateX(-50%);
+    padding: 10px 24px; border-radius: 8px;
+    font-size: 15px; font-weight: 600;
+    z-index: 999; opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  .result-toast.show { opacity: 1; }
+  .result-toast.correct { background: #E8F5EE; color: var(--success); }
+  .result-toast.wrong { background: #FFF0F0; color: var(--danger); }
+
+  /* 进度条 */
+  .progress-bar {
+    width: 100%; height: 4px; background: var(--border);
+    border-radius: 2px; margin-bottom: 16px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; background: var(--accent);
+    border-radius: 2px; transition: width 0.3s;
+  }
+
+  /* 结束页面 */
+  .end-screen {
+    text-align: center; padding: 40px 20px;
+    display: none;
+  }
+  .end-screen .big-score {
+    font-size: 64px; font-weight: 800; color: var(--primary);
+    line-height: 1;
+  }
+  .end-screen .big-score small {
+    font-size: 18px; font-weight: 400; color: var(--text-secondary);
+  }
+  .end-screen .subtitle {
+    font-size: 15px; color: var(--text-secondary);
+    margin-top: 8px; margin-bottom: 28px;
+  }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .animate-in { animation: fadeIn 0.35s ease-out; }
+
+  @media (max-width: 480px) {
+    .quiz-card .formula-name { font-size: 22px; }
+    .herb-btn { padding: 7px 12px; font-size: 13px; }
+    .blank-slot { min-width: 64px; padding: 6px 10px; font-size: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="446-index.html" class="logo">446辨证体系</a>
+  <a href="446-herbs.html" class="back-link">← 返回用药表</a>
+</nav>
+
+<div class="container">
+  <div class="status-bar" id="statusBar">
+    <span id="progressText">第 1 / 72 题</span>
+    <span class="score-badge" id="scoreBadge">得分：0</span>
+  </div>
+
+  <div class="progress-bar">
+    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+  </div>
+
+  <!-- 题目卡片 -->
+  <div class="quiz-card animate-in" id="quizCard">
+    <div class="label">请根据方剂名，点击下方药材填入空白</div>
+    <div class="formula-name" id="formulaName"></div>
+    <div class="blanks-area" id="blanksArea"></div>
+    <div class="actions" id="quizActions">
+      <button class="btn btn-outline" onclick="resetCurrent()">清空重选</button>
+      <button class="btn btn-primary" id="submitBtn" onclick="checkAnswer()" disabled>判题</button>
+    </div>
+  </div>
+
+  <!-- 药材选项 -->
+  <div class="options-area" id="optionsArea">
+    <div class="section-title">点击药材填入上方空白 · 点击已填药材可移除</div>
+    <div class="herbs-grid" id="herbsGrid"></div>
+  </div>
+
+  <!-- 结束页面 -->
+  <div class="end-screen" id="endScreen">
+    <div class="big-score" id="bigScore"></div>
+    <div class="subtitle" id="endSubtitle"></div>
+    <div class="actions">
+      <button class="btn btn-primary" onclick="restartQuiz()">再来一次</button>
+      <button class="btn btn-outline" onclick="location.href='446-herbs.html'">返回用药表</button>
+    </div>
+  </div>
+</div>
+
+<div class="result-toast" id="resultToast"></div>
+
+<script src="446-formula-herbs.js"></script>
+<script>
+// ============ 状态 ============
+let currentIndex = 0;
+let score = 0;
+let quizOrder = [];
+let currentFormula = null;
+let filledSlots = [];   // [null, "黄芪", null, ...]
+let currentButtons = []; // 保存当前按钮 DOM 引用
+
+// ============ 初始化 ============
+function init() {
+  quizOrder = [...Array(FORMULA_HERBS.length).keys()];
+  shuffle(quizOrder);
+  currentIndex = 0;
+  score = 0;
+  updateStatus();
+  loadQuestion();
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+}
+
+// ============ 加载题目 ============
+function loadQuestion() {
+  const idx = quizOrder[currentIndex];
+  currentFormula = FORMULA_HERBS[idx];
+  filledSlots = new Array(currentFormula.herbs.length).fill(null);
+
+  document.getElementById('formulaName').textContent = currentFormula.name;
+  renderBlanks();
+  generateOptions();
+  updateStatus();
+  document.getElementById('submitBtn').disabled = true;
+
+  const card = document.getElementById('quizCard');
+  card.classList.remove('animate-in');
+  void card.offsetWidth;
+  card.classList.add('animate-in');
+}
+
+// ============ 渲染空白槽 ============
+function renderBlanks() {
+  const area = document.getElementById('blanksArea');
+  area.innerHTML = '';
+  filledSlots.forEach((herb, i) => {
+    const slot = document.createElement('div');
+    slot.className = 'blank-slot' + (herb ? ' filled' : '');
+    slot.textContent = herb ? herb : '？';
+    slot.onclick = () => removeFilled(i);
+    area.appendChild(slot);
+  });
+}
+
+// ============ 生成选项 ============
+function generateOptions() {
+  const correct = currentFormula.herbs;
+
+  // 收集所有其他方剂的药材作为干扰项
+  const distractorSet = new Set();
+  FORMULA_HERBS.forEach(f => {
+    if (f.name === currentFormula.name) return;
+    f.herbs.forEach(h => distractorSet.add(h));
+  });
+
+  const distractors = Array.from(distractorSet).filter(h => !correct.includes(h));
+  shuffle(distractors);
+
+  // 干扰项数量 = 12~16 总数
+  const totalOptions = Math.min(16, correct.length + distractors.length);
+  const numDistractors = Math.min(distractors.length, totalOptions - correct.length);
+  const selected = distractors.slice(0, numDistractors);
+
+  currentOptions = [...correct, ...selected];
+  shuffle(currentOptions);
+
+  // 渲染按钮
+  const grid = document.getElementById('herbsGrid');
+  grid.innerHTML = '';
+  currentButtons = [];
+
+  currentOptions.forEach(herb => {
+    const btn = document.createElement('button');
+    btn.className = 'herb-btn';
+    btn.textContent = herb;
+    btn.onclick = () => selectHerb(herb, btn);
+    grid.appendChild(btn);
+    currentButtons.push({ herb, el: btn });
+  });
+}
+
+// ============ 点击药材填入 ============
+function selectHerb(herb, btnEl) {
+  const emptyIdx = filledSlots.indexOf(null);
+  if (emptyIdx === -1) return;
+
+  filledSlots[emptyIdx] = herb;
+  btnEl.classList.add('used');
+  renderBlanks();
+
+  if (filledSlots.indexOf(null) === -1) {
+    document.getElementById('submitBtn').disabled = false;
+  }
+}
+
+// ============ 点击已填空白移除 ============
+function removeFilled(slotIdx) {
+  const herb = filledSlots[slotIdx];
+  if (!herb) return;
+
+  filledSlots[slotIdx] = null;
+
+  // 恢复对应的按钮
+  currentButtons.forEach(item => {
+    if (item.herb === herb && item.el.classList.contains('used')) {
+      // 只恢复第一个被使用的
+      const stillUsed = filledSlots.includes(herb);
+      if (!stillUsed) {
+        item.el.classList.remove('used');
+      }
+    }
+  });
+
+  renderBlanks();
+  document.getElementById('submitBtn').disabled = true;
+}
+
+// ============ 判题 ============
+function checkAnswer() {
+  const correct = currentFormula.herbs;
+  const filledSet = new Set(filledSlots);
+  const correctSet = new Set(correct);
+
+  // 计算答对数量（不关心顺序）
+  let rightNum = 0;
+  correct.forEach(c => {
+    if (filledSet.has(c)) rightNum++;
+  });
+
+  // 标记每个空白的对错
+  const slots = document.querySelectorAll('.blank-slot');
+  filledSlots.forEach((herb, i) => {
+    if (herb === correct[i]) {
+      slots[i].classList.add('correct');
+    } else {
+      slots[i].classList.add('wrong');
+    }
+  });
+
+  if (rightNum === correct.length) {
+    score++;
+    showToast('✓ 全部正确！', 'correct');
+    setTimeout(() => goNext(), 900);
+  } else {
+    showToast(`答对 ${rightNum}/${correct.length}，正确答案：`, 'wrong');
+    setTimeout(() => showCorrectAnswer(), 1200);
+  }
+
+  updateStatus();
+}
+
+// ============ 显示正确答案 ============
+function showCorrectAnswer() {
+  const correct = currentFormula.herbs;
+  const slots = document.querySelectorAll('.blank-slot');
+  slots.forEach((slotEl, i) => {
+    if (!slotEl.classList.contains('correct')) {
+      slotEl.textContent = correct[i];
+      slotEl.classList.remove('wrong');
+      slotEl.classList.add('show-answer');
+    }
+  });
+
+  setTimeout(() => goNext(), 2000);
+}
+
+// ============ 下一题 ============
+function goNext() {
+  currentIndex++;
+  if (currentIndex >= FORMULA_HERBS.length) {
+    showEndScreen();
+  } else {
+    loadQuestion();
+  }
+}
+
+// ============ 清空当前 ============
+function resetCurrent() {
+  filledSlots = new Array(currentFormula.herbs.length).fill(null);
+  currentButtons.forEach(item => item.el.classList.remove('used'));
+  renderBlanks();
+  document.getElementById('submitBtn').disabled = true;
+}
+
+// ============ 更新状态 ============
+function updateStatus() {
+  document.getElementById('progressText').textContent =
+    `第 ${currentIndex + 1} / ${FORMULA_HERBS.length} 题`;
+  document.getElementById('scoreBadge').textContent = `得分：${score}`;
+  document.getElementById('progressFill').style.width =
+    `${((currentIndex) / FORMULA_HERBS.length) * 100}%`;
+}
+
+// ============ Toast ============
+function showToast(msg, type) {
+  const toast = document.getElementById('resultToast');
+  toast.textContent = msg;
+  toast.className = `result-toast ${type} show`;
+  setTimeout(() => toast.classList.remove('show'), 1500);
+}
+
+// ============ 结束页面 ============
+function showEndScreen() {
+  document.getElementById('quizCard').style.display = 'none';
+  document.getElementById('optionsArea').style.display = 'none';
+  document.getElementById('statusBar').style.display = 'none';
+  document.querySelector('.progress-bar').style.display = 'none';
+
+  const end = document.getElementById('endScreen');
+  end.style.display = 'block';
+
+  const pct = Math.round(score / FORMULA_HERBS.length * 100);
+  document.getElementById('bigScore').innerHTML =
+    `${score}<small> / ${FORMULA_HERBS.length}</small>`;
+
+  let msg = '';
+  if (pct >= 90) msg = '太厉害了！你已经完全掌握用药表 🎉';
+  else if (pct >= 70) msg = '不错！再加把劲就能完全掌握 💪';
+  else if (pct >= 50) msg = '继续加油，多练几次就能记住 📖';
+  else msg = '建议多看看用药表，熟悉方剂组成哦 🌿';
+  document.getElementById('endSubtitle').textContent = msg;
+
+  document.getElementById('progressFill').style.width = '100%';
+}
+
+// ============ 重新开始 ============
+function restartQuiz() {
+  document.getElementById('quizCard').style.display = '';
+  document.getElementById('optionsArea').style.display = '';
+  document.getElementById('statusBar').style.display = '';
+  document.querySelector('.progress-bar').style.display = '';
+  document.getElementById('endScreen').style.display = 'none';
+  init();
+}
+
+// 启动
+init();
+</script>
+</body>
+</html>
