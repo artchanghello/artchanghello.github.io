@@ -40,7 +40,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 .timer-text{font-size:14px;font-weight:700;color:var(--text-secondary);min-width:60px;text-align:right}
 .timer-bar.warning .timer-text{color:var(--wrong)}
 .options{display:flex;flex-direction:column;gap:10px}
-.option{padding:14px 18px;border-radius:10px;border:2px solid var(--border);background:#fff;font-size:14px;cursor:pointer;text-align:left;font-family:inherit;line-height:1.5}
+.option{padding:14px 18px;border-radius:10px;border:2px solid var(--border);background:#fff;color:var(--text);font-size:14px;cursor:pointer;text-align:left;font-family:inherit;line-height:1.5}
 .option:hover{border-color:var(--primary);background:var(--bg)}
 .option:disabled{cursor:default;opacity:0.7}
 .option.correct{border-color:var(--correct);background:var(--correct-bg);color:var(--correct);font-weight:600}
@@ -133,7 +133,7 @@ if(currentIndex>=filteredIndices.length){showScore();return}
 const idx=filteredIndices[currentIndex],q=data[idx],isAns=answered[idx]!==undefined,isCor=results[idx];
 const modeLabel=currentMode==='pattern'?'看案辨证':'鉴别冲刺';
 const allDone=filteredIndices.every(i=>answered[i]!==undefined),isLast=currentIndex===filteredIndices.length-1;
-let ops=q.options.map((o,i)=>{let c='option',d='';if(isAns){d='disabled';if(results[idx]==='timeout')c+=' timeout';else if(isAnsCorrect(q,o))c+=' correct';else if(answered[idx]===i)c+=' wrong'}return '<button class="'+c+'" onclick="selOpt('+idx+','+i+')" '+d+'>'+o+'</button>'}).join('');
+let ops=q.options.map((o,i)=>{let c='option',d='';if(isAns){d='disabled';if(results[idx]==='timeout')c+=' timeout';else if(isAnsCorrect(q,o))c+=' correct';else if(answered[idx]===i)c+=' wrong'}let txt=o.replace(/^[A-H][:：]\s*/,'');return '<button class="'+c+'" onclick="selOpt('+idx+','+i+')" '+d+'>'+txt+'</button>'}).join('');
 let fb='';if(isAns){const fc=results[idx]==='timeout'?'timeout':(isCor?'correct':'wrong'),ft=results[idx]==='timeout'?'超时':(isCor?'正确！':'错误');fb='<div class="feedback show '+fc+'"><div class="feedback-title">'+ft+'</div><div class="feedback-detail">答案：<strong>'+q.answer+'</strong></div><div class="feedback-detail">'+q.explanation+'</div></div>'}
 let timer='';if(currentMode==='discern'&&!isAns)timer='<div class="timer-bar" id="tBar"><span>倒计时</span><div class="timer-track"><div class="timer-fill" id="tFill" style="width:100%"></div></div><span class="timer-text" id="tText">60s</span></div>';
 let nav='';if(allDone&&isLast)nav='<div class="nav-buttons"><button class="nav-btn" onclick="prevQ()" '+(currentIndex===0?'disabled':'')+'>上一题</button><button class="nav-btn primary" onclick="showScore()">答完交卷</button></div>';
