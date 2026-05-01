@@ -223,6 +223,21 @@
     .herb-btn { padding: 7px 12px; font-size: 13px; }
     .blank-slot { min-width: 64px; padding: 6px 10px; font-size: 14px; }
   }
+
+  /* 移动端深度优化 */
+  @media (max-width: 768px) {
+    * { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+    .navbar { padding: 0 12px; height: 56px; }
+    .navbar .logo { font-size: 16px; }
+    .home-btn { padding: 6px 12px; font-size: 13px; }
+    .home-text { display: none; }
+    .herb-btn { min-height: 44px; min-width: 44px; }
+    .blank-slot { min-height: 44px; font-size: 14px; }
+  }
+  @media (max-width: 380px) {
+    .formula-name { font-size: 18px; }
+    .quiz-card { padding: 16px; }
+  }
 </style>
 </head>
 <body>

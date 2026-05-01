@@ -88,6 +88,48 @@ body.font-small{font-size:13px}
 body.font-normal{font-size:14px}
 body.font-large{font-size:16px}
 body.font-xlarge{font-size:18px}
+/* ===== 移动端深度优化 ===== */
+@media(max-width:768px){
+  *{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+  .navbar{padding:0 12px;height:56px}
+  .navbar .logo{font-size:17px}
+  .home-btn{padding:6px 12px;font-size:13px}
+  .hero{padding:32px 16px 28px}
+  .hero h1{font-size:20px;letter-spacing:1px}
+  .hero p{font-size:13px;margin-bottom:20px}
+  .mode-tabs{gap:6px}
+  .mode-tab{padding:8px 12px;font-size:12px}
+  .stats-bar{padding:12px 16px;gap:8px}
+  .stat-value{font-size:18px}
+  .progress-bar-track{width:80px}
+  .layout{padding:12px}
+  .question-card{padding:16px;margin-bottom:16px}
+  .question-text{font-size:15px;padding:12px;line-height:1.9}
+  .question-mode-badge{font-size:10px}
+  .option{padding:14px 16px;font-size:15px;min-height:50px;line-height:1.6;border-radius:12px}
+  .timer-bar{padding:8px 12px;font-size:13px}
+  .timer-text{font-size:13px;min-width:50px}
+  .feedback{padding:14px;font-size:13px}
+  .feedback-title{font-size:15px}
+  .nav-buttons{flex-direction:column-reverse;gap:8px}
+  .nav-btn{width:100%;padding:12px 0;font-size:15px;min-height:48px;border-radius:12px}
+  .nav-btn.primary{order:-1}
+  .score-card{padding:32px 20px}
+  .score-circle{width:100px;height:100px;font-size:28px}
+  .score-card h2{font-size:22px}
+  .score-btn{width:100%;padding:14px 0;font-size:15px;min-height:48px}
+  .fab-group{bottom:16px;right:16px;gap:8px}
+  .fab-btn{width:40px;height:40px;font-size:16px}
+  .font-popup{bottom:64px;right:12px}
+}
+@media(max-width:380px){
+  .hero h1{font-size:18px}
+  .mode-tab{font-size:11px;padding:7px 10px}
+  .question-text{font-size:14px}
+  .option{font-size:14px;padding:12px 14px}
+  .stats-bar{gap:6px}
+  .stat-label{font-size:10px}
+}
 </style></head><body>
 <a href="#main-content" class="skip-link">跳到主要内容</a>
 <nav class="navbar"><a href="446-index.html" class="logo">446<span>·</span>辨证训练</a><div class="nav-links"><a href="446-index.html" class="home-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1V9.5z"/></svg><span>首页</span></a></div></nav>
@@ -101,15 +143,55 @@ body.font-xlarge{font-size:18px}
 <div class="fab-group"><button id="jumpTopBtn" class="fab-btn top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button><button id="fontSizeBtn" class="fab-btn font-btn">A</button><div id="fontPopup" class="font-popup">
 <button class="font-option" data-size="font-small">小</button><button class="font-option active" data-size="font-normal">中</button><button class="font-option" data-size="font-large">大</button><button class="font-option" data-size="font-xlarge">特大</button></div></div>
 <script src="446-training-data.js"></script><script>
-// DATA loaded from 446-training-data.js
-
-
-let currentMode='pattern',currentIndex=0,filteredIndices=[];
-let answered={},results={},totalAnswered=0,correctCount=0,timerInterval=null;
 const MODE_SIZES={pattern:30,discern:15};
 const SEEN_KEY='446_train_v3';
+let currentMode='pattern',filteredIndices=[],currentIndex=0,answered={},results={},totalAnswered=0,correctCount=0,timerInterval=null;
+let currentDisplayOrder = []; // 显示顺序映射：displayOrder[i] = 原始options中的索引
+let cachedDiscernData = null;   // 缓存DISCERN题目，避免每次重新生成
+let questionDisplayOrders = {};  // 每个题目的显示顺序：{idx: [0,1,2,3]}
 
-function getData(){return currentMode==='pattern'?PATTERN_DATA:DISCERN_DATA}
+function getDiscernQuestions(){
+    let questions = [...DISCERN_DATA];
+    PATTERN_DATA.forEach((q,idx)=>{
+        // 解析正确答案文本（兼容 answer 是文本 或 "A"/"B"/"C"/"D" 两种格式）
+        let correctOpt;
+        if(q.answer==='A'||q.answer==='B'||q.answer==='C'||q.answer==='D'){
+            let correctIdx = {'A':0,'B':1,'C':2,'D':3}[q.answer];
+            correctOpt = q.options[correctIdx];
+        } else {
+            correctOpt = q.answer;
+        }
+        let wrongOpts = q.options.filter(o => o !== correctOpt);
+        let wrongOpt = wrongOpts[Math.floor(Math.random()*wrongOpts.length)];
+        // 从 explanation 提取"方药→功效"映射
+        let eff = {};
+        if(q.explanation){
+            q.explanation.split(/[；;]/g).forEach(function(part){
+                let m = part.match(/([^=＝]+)[=＝](.+)/);
+                if(m) eff[m[1].trim()]= m[2].trim();
+            });
+        }
+        let correctLabel = eff[correctOpt] ? correctOpt+' '+eff[correctOpt] : correctOpt;
+        let wrongLabel  = eff[wrongOpt]  ? wrongOpt+' '+eff[wrongOpt]  : wrongOpt;
+        let isCorrectFirst = Math.random()<0.5;
+        let options = isCorrectFirst ? [correctLabel, wrongLabel] : [wrongLabel, correctLabel];
+        questions.push({
+            id:'P'+(idx+1),
+            symptoms:q.symptoms,
+            options:options,
+            answer:isCorrectFirst?'A':'B',
+            explanation:q.explanation
+        });
+    });
+    return questions;
+}
+
+function getData(){
+    if(currentMode==='pattern')return PATTERN_DATA;
+    if(!cachedDiscernData)cachedDiscernData=getDiscernQuestions();
+    return cachedDiscernData;
+}
+
 function getSeen(){try{return JSON.parse(localStorage.getItem(SEEN_KEY))||{}}catch(e){return{}}}
 function saveSeen(s){try{localStorage.setItem(SEEN_KEY,JSON.stringify(s))}catch(e){}}
 
@@ -121,6 +203,18 @@ if(pool.length<s){if(seen[currentMode]){for(let k in seen[currentMode])delete se
 for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}
 filteredIndices=pool.slice(0,Math.min(s,pool.length));currentIndex=0;
 answered={};results={};totalAnswered=0;correctCount=0;
+
+// 为每个题目生成并显示顺序（只生成一次）
+questionDisplayOrders={};
+filteredIndices.forEach(idx=>{
+    if(currentMode==='pattern'){
+        let order=[0,1,2,3];
+        for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]]}
+        questionDisplayOrders[idx]=order;
+    }else{
+        questionDisplayOrders[idx]=[0,1];
+    }
+});
 }
 
 function markSeen(i){const s=getSeen();if(!s[currentMode])s[currentMode]={};s[currentMode][i]=true;saveSeen(s)}
@@ -133,9 +227,45 @@ if(currentIndex>=filteredIndices.length){showScore();return}
 const idx=filteredIndices[currentIndex],q=data[idx],isAns=answered[idx]!==undefined,isCor=results[idx];
 const modeLabel=currentMode==='pattern'?'看案辨证':'鉴别冲刺';
 const allDone=filteredIndices.every(i=>answered[i]!==undefined),isLast=currentIndex===filteredIndices.length-1;
+
+// 从缓存读取本题的显示顺序（buildFilter时已生成，不再重新随机）
+currentDisplayOrder = questionDisplayOrders[idx] || (currentMode==='pattern'?[0,1,2,3]:[0,1]);
+
 const labels=currentMode==='discern'?['A','B']:['A','B','C','D'];
-let ops=q.options.map((o,i)=>{let c='option',d='';if(isAns){d='disabled';if(results[idx]==='timeout')c+=' timeout';else if(isAnsCorrect(q,o))c+=' correct';else if(answered[idx]===i)c+=' wrong'}return '<button class=\"'\+c\+'\" onclick=\"selOpt\('\+idx\+','\+i\+'\)\" '\+d\+'>'\+labels\[i\]\+'\. '\+o\+'</button>'}).join('');
-let fb='';if(isAns){const fc=results[idx]==='timeout'?'timeout':(isCor?'correct':'wrong'),ft=results[idx]==='timeout'?'超时':(isCor?'正确！':'错误');fb='<div class="feedback show '+fc+'"><div class="feedback-title">'+ft+'</div><div class="feedback-detail">答案：<strong>'+q.answer+'</strong></div><div class="feedback-detail">'+q.explanation+'</div></div>'}
+
+// 渲染选项：用currentDisplayOrder映射
+let ops = currentDisplayOrder.map((origIdx,i)=>{
+    const o = q.options[origIdx];
+    let c='option',d='';
+    if(isAns){
+        d='disabled';
+        if(results[idx]==='timeout')c+=' timeout';
+        else if(isAnsCorrect(q, origIdx))c+=' correct';
+        else if(answered[idx]===origIdx)c+=' wrong';
+    }
+    return '<button class="'+c+'" onclick="selOptIdx('+idx+','+origIdx+')" '+d+'>'+labels[i]+'. '+o+'</button>';
+}).join('');
+
+// 反馈：显示答案文本
+let ansText;
+if(currentMode==='pattern'){
+    // PATTERN模式：answer可能是答案文本，也可能是"A"/"B"/"C"/"D"
+    if(q.answer==='A'||q.answer==='B'||q.answer==='C'||q.answer==='D'){
+        let correctIdx = {'A':0,'B':1,'C':2,'D':3}[q.answer];
+        ansText = q.options[correctIdx];
+    } else {
+        ansText = q.answer;
+    }
+} else {
+    ansText = q.answer==='A'?q.options[0]:q.options[1];
+}
+let fb='';
+if(isAns){
+    const fc=results[idx]==='timeout'?'timeout':(isCor?'correct':'wrong'),
+          ft=results[idx]==='timeout'?'超时':(isCor?'正确！':'错误');
+    fb='<div class="feedback show '+fc+'"><div class="feedback-title">'+ft+'</div><div class="feedback-detail">答案：<strong>'+ansText+'</strong></div><div class="feedback-detail">'+q.explanation+'</div></div>'
+}
+
 let timer='';if(currentMode==='discern'&&!isAns)timer='<div class="timer-bar" id="tBar"><span>倒计时</span><div class="timer-track"><div class="timer-fill" id="tFill" style="width:100%"></div></div><span class="timer-text" id="tText">60s</span></div>';
 let nav='';if(allDone&&isLast)nav='<div class="nav-buttons"><button class="nav-btn" onclick="prevQ()" '+(currentIndex===0?'disabled':'')+'>上一题</button><button class="nav-btn primary" onclick="showScore()">答完交卷</button></div>';
 else nav='<div class="nav-buttons"><button class="nav-btn" onclick="prevQ()" '+(currentIndex===0?'disabled':'')+'>上一题</button><span style="font-size:13px;color:var(--text-secondary);align-self:center;">'+(currentIndex+1)+'/'+filteredIndices.length+'</span><button class="nav-btn primary" onclick="nextQ()">'+(isLast?'交卷':'下一题')+'</button></div>';
@@ -144,15 +274,46 @@ updStats();window.scrollTo({top:0,behavior:'smooth'});
 if(currentMode==='discern'&&!isAns){let t=60;const f=document.getElementById('tFill'),tx=document.getElementById('tText'),b=document.getElementById('tBar');if(!f||!tx)return;stopTimer();timerInterval=setInterval(()=>{t--;if(f)f.style.width=(t/60)*100+'%';if(tx)tx.textContent=t+'s';if(b&&t<=10)b.classList.add('warning');if(t<=0){stopTimer();if(answered[idx]===void 0){answered[idx]=-1;results[idx]='timeout';totalAnswered++;renderQ()}}},1000)}
 }
 
-function isAnsCorrect(q,s){return q.answer===s;}
-function selOpt(qi,oi){if(answered[qi]!==void 0)return;stopTimer();const d=getData(),q=d[qi];answered[qi]=oi;results[qi]=isAnsCorrect(q,q.options[oi]);if(results[qi])correctCount++;totalAnswered++;markSeen(qi);renderQ()}
+// isAnsCorrect：接受原始索引，直接比较
+// PATTERN模式 answer 有两种格式：答案文本 或 "A"/"B"/"C"/"D"
+function isAnsCorrect(q, clickedOrigIdx){
+    if(currentMode==='pattern'){
+        let correctIdx;
+        if(q.answer==='A'||q.answer==='B'||q.answer==='C'||q.answer==='D'){
+            // answer是"A"/"B"/"C"/"D"，对应原始options的索引
+            correctIdx = {'A':0,'B':1,'C':2,'D':3}[q.answer];
+        } else {
+            // answer是答案文本，在options中查找
+            correctIdx = q.options.indexOf(q.answer);
+        }
+        return correctIdx === clickedOrigIdx;
+    } else {
+        // DISCERN模式：q.answer是"A"或"B"
+        if(q.answer==='A'&&clickedOrigIdx===0)return true;
+        if(q.answer==='B'&&clickedOrigIdx===1)return true;
+        return false;
+    }
+}
+
+function selOptIdx(qi, origIdx){
+    if(answered[qi]!==void 0)return;
+    stopTimer();
+    const d=getData(),q=d[qi];
+    answered[qi]=origIdx;
+    results[qi]=isAnsCorrect(q, origIdx);
+    if(results[qi])correctCount++;
+    totalAnswered++;
+    markSeen(qi);
+    renderQ();
+}
+
 function nextQ(){if(currentIndex<filteredIndices.length-1)currentIndex++;renderQ()}
 function prevQ(){if(currentIndex>0)currentIndex--;renderQ()}
 function showScore(){stopTimer();const t=filteredIndices.length,p=t?Math.round(correctCount/t*100):0,g=p>=90?'卓越':p>=70?'良好':p>=50?'继续加油':'需加强',gc=p>=90?'#2E7D32':p>=70?'#F57F17':'#C62828',mn={pattern:'看案辨证',discern:'鉴别冲刺'};document.getElementById('questionArea').innerHTML='<div class="score-card"><h2>'+g+'</h2><div class="score-circle" style="background:'+(p>=70?'#E8F5E9':'#FFEBEE')+';color:'+gc+'">'+p+'%</div><div class="score-detail"><p>'+mn[currentMode]+'</p><p>答对 <strong>'+correctCount+'</strong>/<strong>'+t+'</strong></p></div><button class="score-btn" onclick="nextRound()">再来一组（不重复）</button><br><button class="score-btn" style="background:#888;margin-top:10px" onclick="resetAll()">重置全部题库</button></div>';updStats()}
 function nextRound(){buildFilter();renderQ()}
-function resetAll(){try{localStorage.removeItem(SEEN_KEY)}catch(e){};buildFilter();renderQ()}
+function resetAll(){try{localStorage.removeItem(SEEN_KEY)}catch(e){};cachedDiscernData=null;questionDisplayOrders={};buildFilter();renderQ()}
 function updStats(){const t=filteredIndices.length;document.getElementById('qNum').textContent=totalAnswered+'/'+t;document.getElementById('accuracy').textContent=(totalAnswered?Math.round(correctCount/totalAnswered*100):0)+'%';document.getElementById('progressFill').style.width=(t?Math.round(totalAnswered/t*100):0)+'%'}
-function switchMode(m){stopTimer();currentMode=m;document.querySelectorAll('.mode-tab').forEach(t=>t.classList.remove('active'));document.querySelector('.mode-tab[data-mode="'+m+'"]').classList.add('active');buildFilter();renderQ()}
+function switchMode(m){stopTimer();currentMode=m;cachedDiscernData=null;questionDisplayOrders={};document.querySelectorAll('.mode-tab').forEach(t=>t.classList.remove('active'));document.querySelector('.mode-tab[data-mode="'+m+'"]').classList.add('active');buildFilter();renderQ()}
 buildFilter();renderQ();
 (function(){const tb=document.getElementById('jumpTopBtn');window.addEventListener('scroll',function(){tb.classList.toggle('show',window.scrollY>300)},{passive:true});const fb=document.getElementById('fontSizeBtn'),fp=document.getElementById('fontPopup'),sz=['font-small','font-normal','font-large','font-xlarge'];function as(s){sz.forEach(x=>document.body.classList.remove(x));if(s!=='font-normal')document.body.classList.add(s);try{localStorage.setItem('446f',s)}catch(e){};document.querySelectorAll('.font-option').forEach(el=>el.classList.toggle('active',el.dataset.size===s))}fb.addEventListener('click',function(e){e.stopPropagation();fp.classList.toggle('show')});document.querySelectorAll('.font-option').forEach(el=>{el.addEventListener('click',function(){as(this.dataset.size);fp.classList.remove('show')})});document.addEventListener('click',function(e){if(!fp.contains(e.target)&&e.target!==fb)fp.classList.remove('show')});try{var s=localStorage.getItem('446f');if(s&&sz.includes(s))as(s)}catch(e){}})();
 document.addEventListener('keydown',function(e){if(e.key==='ArrowRight')nextQ();if(e.key==='ArrowLeft')prevQ()});

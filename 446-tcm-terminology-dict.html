@@ -210,7 +210,23 @@
     .navbar .logo { font-size: 15px; }
   }
 
-  </style>
+
+  /* 移动端深度优化 */
+  @media (max-width: 768px) {
+    * { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+    .navbar { padding: 0 12px; height: 56px; }
+    .navbar .logo { font-size: 16px; }
+    .home-btn { padding: 6px 12px; font-size: 13px; }
+    .home-text { display: none; }
+    .term-card { padding: 16px; }
+    .term-card h3 { font-size: 16px; }
+  }
+  @media (max-width: 380px) {
+    .navbar .logo { font-size: 14px; }
+    .term-card h3 { font-size: 15px; }
+    .term-card .en { font-size: 12px; }
+  }
+</style>
 </head>
 <body>
 

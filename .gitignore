@@ -4,3 +4,10 @@ __pycache__/
 *.pyo
 .DS_Store
 generated-images/
+
+# 本地开发脚本（不需要部署到 GitHub Pages）
+*.py
+CLAUDE.md
+plan.md
+sent_articles.json
+.workbuddy/

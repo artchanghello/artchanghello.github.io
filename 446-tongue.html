@@ -379,6 +379,21 @@
     .tongue-info { grid-template-columns: 1fr; }
     .detail-grid { grid-template-columns: 1fr; }
   }
+
+  /* 移动端深度优化 */
+  @media (max-width: 768px) {
+    * { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+    .navbar { padding: 0 12px; height: 56px; }
+    .navbar .logo { font-size: 16px; }
+    .home-btn { padding: 6px 12px; font-size: 13px; }
+    .home-text { display: none; }
+    .filter-chip { min-height: 44px; display: flex; align-items: center; justify-content: center; }
+    .card { padding: 16px; }
+  }
+  @media (max-width: 380px) {
+    .navbar .logo { font-size: 14px; }
+    .card h3 { font-size: 15px; }
+  }
 </style>
 </head>
 <body>
