@@ -133,7 +133,8 @@ if(currentIndex>=filteredIndices.length){showScore();return}
 const idx=filteredIndices[currentIndex],q=data[idx],isAns=answered[idx]!==undefined,isCor=results[idx];
 const modeLabel=currentMode==='pattern'?'看案辨证':'鉴别冲刺';
 const allDone=filteredIndices.every(i=>answered[i]!==undefined),isLast=currentIndex===filteredIndices.length-1;
-let ops=q.options.map((o,i)=>{let c='option',d='';if(isAns){d='disabled';if(results[idx]==='timeout')c+=' timeout';else if(isAnsCorrect(q,o))c+=' correct';else if(answered[idx]===i)c+=' wrong'}let txt=o.replace(/^[A-H][:：]\s*/,'');return '<button class="'+c+'" onclick="selOpt('+idx+','+i+')" '+d+'>'+txt+'</button>'}).join('');
+const labels=currentMode==='discern'?['A','B']:['A','B','C','D'];
+let ops=q.options.map((o,i)=>{let c='option',d='';if(isAns){d='disabled';if(results[idx]==='timeout')c+=' timeout';else if(isAnsCorrect(q,o))c+=' correct';else if(answered[idx]===i)c+=' wrong'}return '<button class=\"'\+c\+'\" onclick=\"selOpt\('\+idx\+','\+i\+'\)\" '\+d\+'>'\+labels\[i\]\+'\. '\+o\+'</button>'}).join('');
 let fb='';if(isAns){const fc=results[idx]==='timeout'?'timeout':(isCor?'correct':'wrong'),ft=results[idx]==='timeout'?'超时':(isCor?'正确！':'错误');fb='<div class="feedback show '+fc+'"><div class="feedback-title">'+ft+'</div><div class="feedback-detail">答案：<strong>'+q.answer+'</strong></div><div class="feedback-detail">'+q.explanation+'</div></div>'}
 let timer='';if(currentMode==='discern'&&!isAns)timer='<div class="timer-bar" id="tBar"><span>倒计时</span><div class="timer-track"><div class="timer-fill" id="tFill" style="width:100%"></div></div><span class="timer-text" id="tText">60s</span></div>';
 let nav='';if(allDone&&isLast)nav='<div class="nav-buttons"><button class="nav-btn" onclick="prevQ()" '+(currentIndex===0?'disabled':'')+'>上一题</button><button class="nav-btn primary" onclick="showScore()">答完交卷</button></div>';
@@ -143,7 +144,7 @@ updStats();window.scrollTo({top:0,behavior:'smooth'});
 if(currentMode==='discern'&&!isAns){let t=60;const f=document.getElementById('tFill'),tx=document.getElementById('tText'),b=document.getElementById('tBar');if(!f||!tx)return;stopTimer();timerInterval=setInterval(()=>{t--;if(f)f.style.width=(t/60)*100+'%';if(tx)tx.textContent=t+'s';if(b&&t<=10)b.classList.add('warning');if(t<=0){stopTimer();if(answered[idx]===void 0){answered[idx]=-1;results[idx]='timeout';totalAnswered++;renderQ()}}},1000)}
 }
 
-function isAnsCorrect(q,s){if(q.answer===s)return 1;if('ABCDEFGH'.indexOf(q.answer)>=0)return s&&s.startsWith(q.answer+':');return s&&q.answer&&(s.indexOf(q.answer)>=0||q.answer.indexOf(s)>=0)}
+function isAnsCorrect(q,s){return q.answer===s;}
 function selOpt(qi,oi){if(answered[qi]!==void 0)return;stopTimer();const d=getData(),q=d[qi];answered[qi]=oi;results[qi]=isAnsCorrect(q,q.options[oi]);if(results[qi])correctCount++;totalAnswered++;markSeen(qi);renderQ()}
 function nextQ(){if(currentIndex<filteredIndices.length-1)currentIndex++;renderQ()}
 function prevQ(){if(currentIndex>0)currentIndex--;renderQ()}
