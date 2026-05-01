@@ -180,6 +180,19 @@
   .card-btn.green  { background: linear-gradient(160deg, #1B4332, #2D6A4F 50%, #40916C); }
   .card-btn.gold  { background: linear-gradient(160deg, #7C5E10, #9A7518 50%, #B8860B); }
   .card-btn.blue  { background: linear-gradient(160deg, #1a3a5c, #1d4ed8 50%, #2980B9); }
+  .card-btn.orange  { background: linear-gradient(160deg, #B8430A, #D35400 50%, #E67E22); }
+
+  /* 两行卡片布局 */
+  .cards.row-layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+    padding: 0 32px 80px;
+    max-width: 1000px;
+    margin: 0 auto;
+    width: 100%;
+    justify-items: center;
+  }
 
   /* ===== Footer ===== */
   .footer {
@@ -225,7 +238,7 @@
   <h2>选择工具</h2>
 </div>
 
-<div class="cards">
+<div class="cards row-layout">
   <a href="446-query.html" class="card-btn green animate-in">
     <div class="icon-wrap">
       <!-- 方剂图标：写实药碗（带蒸汽） -->
@@ -287,7 +300,7 @@
     </div>
   </a>
 
-  <a href="446-tcm-terminology-dict.html" class="card-btn blue animate-in">
+  <a href="446-tcm-terminology-dict.html" class="card-btn orange animate-in">
     <div class="icon-wrap">
       <!-- 词典图标：写实古书（线装书） -->
       <svg viewBox="0 0 64 64" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -321,6 +334,33 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
     </div>
   </a>
+
+  <a href="446-training.html" class="card-btn blue animate-in">
+    <div class="icon-wrap">
+      <!-- 训练图标：靶心/目标 -->
+      <svg viewBox="0 0 64 64" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <!-- 外圈 -->
+        <circle cx="32" cy="32" r="24" fill="rgba(255,255,255,0.08)"/>
+        <!-- 中圈 -->
+        <circle cx="32" cy="32" r="16" opacity="0.7"/>
+        <!-- 内圈 -->
+        <circle cx="32" cy="32" r="8" fill="rgba(255,255,255,0.12)"/>
+        <!-- 中心点 -->
+        <circle cx="32" cy="32" r="3" fill="white" opacity="0.9"/>
+        <!-- 装饰线条（能量/动态感） -->
+        <path d="M32 2 L32 8" stroke-width="2" opacity="0.5"/>
+        <path d="M32 56 L32 62" stroke-width="2" opacity="0.5"/>
+        <path d="M2 32 L8 32" stroke-width="2" opacity="0.5"/>
+        <path d="M56 32 L62 32" stroke-width="2" opacity="0.5"/>
+      </svg>
+    </div>
+    <div class="label">训练</div>
+    <div class="sub">辨证练习与测试</div>
+    <div class="arrow">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </div>
+  </a>
+
 </div>
 
 <footer class="footer">
