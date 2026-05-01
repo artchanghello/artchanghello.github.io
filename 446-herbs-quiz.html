@@ -279,9 +279,8 @@ let currentIndex = 0;
 let score = 0;
 let quizOrder = [];
 let currentFormula = null;
-let filledSlots = [];
-let currentButtons = [];
-let currentOptions = [];
+let filledSlots = [];   // [null, "黄芪", null, ...]
+let currentButtons = []; // 保存当前按钮 DOM 引用
 
 // ============ 初始化 ============
 function init() {
@@ -306,26 +305,26 @@ function loadQuestion() {
   currentFormula = FORMULA_HERBS[idx];
   filledSlots = new Array(currentFormula.herbs.length).fill(null);
 
-  document.getElementById("formulaName").textContent = currentFormula.name;
+  document.getElementById('formulaName').textContent = currentFormula.name;
   renderBlanks();
   generateOptions();
   updateStatus();
-  document.getElementById("submitBtn").disabled = true;
+  document.getElementById('submitBtn').disabled = true;
 
-  const card = document.getElementById("quizCard");
-  card.classList.remove("animate-in");
+  const card = document.getElementById('quizCard');
+  card.classList.remove('animate-in');
   void card.offsetWidth;
-  card.classList.add("animate-in");
+  card.classList.add('animate-in');
 }
 
 // ============ 渲染空白槽 ============
 function renderBlanks() {
-  const area = document.getElementById("blanksArea");
-  area.innerHTML = "";
+  const area = document.getElementById('blanksArea');
+  area.innerHTML = '';
   filledSlots.forEach((herb, i) => {
-    const slot = document.createElement("div");
-    slot.className = "blank-slot" + (herb ? " filled" : "");
-    slot.textContent = herb ? herb : "？";
+    const slot = document.createElement('div');
+    slot.className = 'blank-slot' + (herb ? ' filled' : '');
+    slot.textContent = herb ? herb : '？';
     slot.onclick = () => removeFilled(i);
     area.appendChild(slot);
   });
@@ -335,6 +334,7 @@ function renderBlanks() {
 function generateOptions() {
   const correct = currentFormula.herbs;
 
+  // 收集所有其他方剂的药材作为干扰项
   const distractorSet = new Set();
   FORMULA_HERBS.forEach(f => {
     if (f.name === currentFormula.name) return;
@@ -344,6 +344,7 @@ function generateOptions() {
   const distractors = Array.from(distractorSet).filter(h => !correct.includes(h));
   shuffle(distractors);
 
+  // 干扰项数量 = 12~16 总数
   const totalOptions = Math.min(16, correct.length + distractors.length);
   const numDistractors = Math.min(distractors.length, totalOptions - correct.length);
   const selected = distractors.slice(0, numDistractors);
@@ -351,13 +352,14 @@ function generateOptions() {
   currentOptions = [...correct, ...selected];
   shuffle(currentOptions);
 
-  const grid = document.getElementById("herbsGrid");
-  grid.innerHTML = "";
+  // 渲染按钮
+  const grid = document.getElementById('herbsGrid');
+  grid.innerHTML = '';
   currentButtons = [];
 
   currentOptions.forEach(herb => {
-    const btn = document.createElement("button");
-    btn.className = "herb-btn";
+    const btn = document.createElement('button');
+    btn.className = 'herb-btn';
     btn.textContent = herb;
     btn.onclick = () => selectHerb(herb, btn);
     grid.appendChild(btn);
@@ -371,11 +373,11 @@ function selectHerb(herb, btnEl) {
   if (emptyIdx === -1) return;
 
   filledSlots[emptyIdx] = herb;
-  btnEl.classList.add("used");
+  btnEl.classList.add('used');
   renderBlanks();
 
   if (filledSlots.indexOf(null) === -1) {
-    document.getElementById("submitBtn").disabled = false;
+    document.getElementById('submitBtn').disabled = false;
   }
 }
 
@@ -386,69 +388,68 @@ function removeFilled(slotIdx) {
 
   filledSlots[slotIdx] = null;
 
+  // 恢复对应的按钮
   currentButtons.forEach(item => {
-    if (item.herb === herb && item.el.classList.contains("used")) {
+    if (item.herb === herb && item.el.classList.contains('used')) {
+      // 只恢复第一个被使用的
       const stillUsed = filledSlots.includes(herb);
       if (!stillUsed) {
-        item.el.classList.remove("used");
+        item.el.classList.remove('used');
       }
     }
   });
 
   renderBlanks();
-  document.getElementById("submitBtn").disabled = true;
+  document.getElementById('submitBtn').disabled = true;
 }
 
 // ============ 判题 ============
 function checkAnswer() {
   const correct = currentFormula.herbs;
-  const filledSet = new Set(filledSlots.filter(v => v !== null));
+  const filledSet = new Set(filledSlots);
   const correctSet = new Set(correct);
 
+  // 计算答对数量（不关心顺序）
   let rightNum = 0;
   correct.forEach(c => {
     if (filledSet.has(c)) rightNum++;
   });
 
+  // 标记每个空白的对错
+  const slots = document.querySelectorAll('.blank-slot');
+  filledSlots.forEach((herb, i) => {
+    if (herb === correct[i]) {
+      slots[i].classList.add('correct');
+    } else {
+      slots[i].classList.add('wrong');
+    }
+  });
+
   if (rightNum === correct.length) {
-    // 全对：标记绿色
-    const slots = document.querySelectorAll(".blank-slot");
-    filledSlots.forEach((herb, i) => {
-      if (correctSet.has(herb)) {
-        slots[i].classList.add("correct");
-      }
-    });
     score++;
-    showToast("✓ 全部正确！", "correct");
+    showToast('✓ 全部正确！', 'correct');
     setTimeout(() => goNext(), 900);
   } else {
-    // 答错：对的标绿，错的/空白的填入正确答案（橙色）
-    const slots = document.querySelectorAll(".blank-slot");
-    filledSlots.forEach((herb, i) => {
-      if (correctSet.has(herb)) {
-        slots[i].classList.add("correct");
-      } else {
-        slots[i].classList.add("wrong");
-      }
-    });
-    showCorrectAnswerInSlots();
-    setTimeout(() => goNext(), 2500);
+    showToast(`答对 ${rightNum}/${correct.length}，正确答案：`, 'wrong');
+    setTimeout(() => showCorrectAnswer(), 1200);
   }
 
   updateStatus();
 }
 
-// ============ 在空白槽中显示正确答案（只填错的/空白的） ============
-function showCorrectAnswerInSlots() {
-  renderBlanks();
-  const slots = document.querySelectorAll(".blank-slot");
-  filledSlots.forEach((herb, i) => {
-    if (herb !== currentFormula.herbs[i]) {
-      slots[i].textContent = currentFormula.herbs[i];
-      slots[i].classList.add("show-answer");
-      slots[i].onclick = null;
+// ============ 显示正确答案 ============
+function showCorrectAnswer() {
+  const correct = currentFormula.herbs;
+  const slots = document.querySelectorAll('.blank-slot');
+  slots.forEach((slotEl, i) => {
+    if (!slotEl.classList.contains('correct')) {
+      slotEl.textContent = correct[i];
+      slotEl.classList.remove('wrong');
+      slotEl.classList.add('show-answer');
     }
   });
+
+  setTimeout(() => goNext(), 2000);
 }
 
 // ============ 下一题 ============
@@ -464,62 +465,63 @@ function goNext() {
 // ============ 清空当前 ============
 function resetCurrent() {
   filledSlots = new Array(currentFormula.herbs.length).fill(null);
-  currentButtons.forEach(item => item.el.classList.remove("used"));
+  currentButtons.forEach(item => item.el.classList.remove('used'));
   renderBlanks();
-  document.getElementById("submitBtn").disabled = true;
+  document.getElementById('submitBtn').disabled = true;
 }
 
 // ============ 更新状态 ============
 function updateStatus() {
-  document.getElementById("progressText").textContent =
-    "第 " + (currentIndex + 1) + " / " + FORMULA_HERBS.length + " 题";
-  document.getElementById("scoreBadge").textContent = "得分：" + score;
-  document.getElementById("progressFill").style.width =
-    ((currentIndex) / FORMULA_HERBS.length * 100) + "%";
+  document.getElementById('progressText').textContent =
+    `第 ${currentIndex + 1} / ${FORMULA_HERBS.length} 题`;
+  document.getElementById('scoreBadge').textContent = `得分：${score}`;
+  document.getElementById('progressFill').style.width =
+    `${((currentIndex) / FORMULA_HERBS.length) * 100}%`;
 }
 
 // ============ Toast ============
 function showToast(msg, type) {
-  const toast = document.getElementById("resultToast");
+  const toast = document.getElementById('resultToast');
   toast.textContent = msg;
-  toast.className = "result-toast " + type + " show";
-  setTimeout(() => toast.classList.remove("show"), 1500);
+  toast.className = `result-toast ${type} show`;
+  setTimeout(() => toast.classList.remove('show'), 1500);
 }
 
 // ============ 结束页面 ============
 function showEndScreen() {
-  document.getElementById("quizCard").style.display = "none";
-  document.getElementById("optionsArea").style.display = "none";
-  document.getElementById("statusBar").style.display = "none";
-  document.querySelector(".progress-bar").style.display = "none";
+  document.getElementById('quizCard').style.display = 'none';
+  document.getElementById('optionsArea').style.display = 'none';
+  document.getElementById('statusBar').style.display = 'none';
+  document.querySelector('.progress-bar').style.display = 'none';
 
-  const end = document.getElementById("endScreen");
-  end.style.display = "block";
+  const end = document.getElementById('endScreen');
+  end.style.display = 'block';
 
   const pct = Math.round(score / FORMULA_HERBS.length * 100);
-  document.getElementById("bigScore").innerHTML =
-    score + "<small> / " + FORMULA_HERBS.length + "</small>";
+  document.getElementById('bigScore').innerHTML =
+    `${score}<small> / ${FORMULA_HERBS.length}</small>`;
 
-  let msg = "";
-  if (pct >= 90) msg = "太厉害了！你已经完全掌握用药表 🎉";
-  else if (pct >= 70) msg = "不错！再加把劲就能完全掌握 💪";
-  else if (pct >= 50) msg = "继续加油，多练几次就能记住 📖";
-  else msg = "建议多看看用药表，熟悉方剂组成哦 🌿";
-  document.getElementById("endSubtitle").textContent = msg;
+  let msg = '';
+  if (pct >= 90) msg = '太厉害了！你已经完全掌握用药表 🎉';
+  else if (pct >= 70) msg = '不错！再加把劲就能完全掌握 💪';
+  else if (pct >= 50) msg = '继续加油，多练几次就能记住 📖';
+  else msg = '建议多看看用药表，熟悉方剂组成哦 🌿';
+  document.getElementById('endSubtitle').textContent = msg;
 
-  document.getElementById("progressFill").style.width = "100%";
+  document.getElementById('progressFill').style.width = '100%';
 }
 
 // ============ 重新开始 ============
 function restartQuiz() {
-  document.getElementById("quizCard").style.display = "";
-  document.getElementById("optionsArea").style.display = "";
-  document.getElementById("statusBar").style.display = "";
-  document.querySelector(".progress-bar").style.display = "";
-  document.getElementById("endScreen").style.display = "none";
+  document.getElementById('quizCard').style.display = '';
+  document.getElementById('optionsArea').style.display = '';
+  document.getElementById('statusBar').style.display = '';
+  document.querySelector('.progress-bar').style.display = '';
+  document.getElementById('endScreen').style.display = 'none';
   init();
 }
 
+// 启动
 init();
 </script>
 </body>
