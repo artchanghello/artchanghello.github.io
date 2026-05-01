@@ -422,6 +422,15 @@ function checkAnswer() {
     showToast("✓ 全部正确！", "correct");
     setTimeout(() => goNext(), 900);
   } else {
+    // 答错：对的标绿，错的/空白的填入正确答案（橙色）
+    const slots = document.querySelectorAll(".blank-slot");
+    filledSlots.forEach((herb, i) => {
+      if (correctSet.has(herb)) {
+        slots[i].classList.add("correct");
+      } else {
+        slots[i].classList.add("wrong");
+      }
+    });
     showCorrectAnswerInSlots();
     setTimeout(() => goNext(), 2500);
   }
@@ -429,13 +438,16 @@ function checkAnswer() {
   updateStatus();
 }
 
-// ============ 在空白槽中显示正确答案 ============
+// ============ 在空白槽中显示正确答案（只填错的/空白的） ============
 function showCorrectAnswerInSlots() {
-  filledSlots = [...currentFormula.herbs];
   renderBlanks();
-  document.querySelectorAll(".blank-slot").forEach(slot => {
-    slot.classList.add("show-answer");
-    slot.onclick = null;
+  const slots = document.querySelectorAll(".blank-slot");
+  filledSlots.forEach((herb, i) => {
+    if (herb !== currentFormula.herbs[i]) {
+      slots[i].textContent = currentFormula.herbs[i];
+      slots[i].classList.add("show-answer");
+      slots[i].onclick = null;
+    }
   });
 }
 
