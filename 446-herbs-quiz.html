@@ -252,7 +252,6 @@
       <button class="btn btn-primary" id="submitBtn" onclick="checkAnswer()" disabled>判题</button>
     </div>
   </div>
-  <div id="correctAnswerDiv" style="display:none; margin-top:12px; padding:10px; background:#FFF8E7; border-radius:8px; font-size:14px; color:#CC8400;"></div>
 
   <!-- 药材选项 -->
   <div class="options-area" id="optionsArea">
@@ -411,38 +410,33 @@ function checkAnswer() {
     if (filledSet.has(c)) rightNum++;
   });
 
-  const slots = document.querySelectorAll(".blank-slot");
-  filledSlots.forEach((herb, i) => {
-    if (correctSet.has(herb)) {
-      slots[i].classList.add("correct");
-    } else {
-      slots[i].classList.add("wrong");
-    }
-  });
-
   if (rightNum === correct.length) {
+    // 全对：标记绿色
+    const slots = document.querySelectorAll(".blank-slot");
+    filledSlots.forEach((herb, i) => {
+      if (correctSet.has(herb)) {
+        slots[i].classList.add("correct");
+      }
+    });
     score++;
     showToast("✓ 全部正确！", "correct");
     setTimeout(() => goNext(), 900);
   } else {
-    const answerText = "正确答案：" + correct.join("、");
-    document.getElementById("correctAnswerDiv").textContent = answerText;
-    document.getElementById("correctAnswerDiv").style.display = "block";
-    setTimeout(() => {
-      document.getElementById("correctAnswerDiv").style.display = "none";
-      goNext();
-    }, 2500);
+    showCorrectAnswerInSlots();
+    setTimeout(() => goNext(), 2500);
   }
 
   updateStatus();
 }
 
-// ============ 显示正确答案（在专用div中，不依赖顺序） ============
-function showCorrectAnswer() {
-  const correct = currentFormula.herbs;
-  const answerText = "正确答案：" + correct.join("、");
-    document.getElementById("correctAnswerDiv").textContent = answerText;
-    document.getElementById("correctAnswerDiv").style.display = "block";
+// ============ 在空白槽中显示正确答案 ============
+function showCorrectAnswerInSlots() {
+  filledSlots = [...currentFormula.herbs];
+  renderBlanks();
+  document.querySelectorAll(".blank-slot").forEach(slot => {
+    slot.classList.add("show-answer");
+    slot.onclick = null;
+  });
 }
 
 // ============ 下一题 ============
