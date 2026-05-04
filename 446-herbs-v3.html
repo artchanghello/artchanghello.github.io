@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>446 辨证体系 · 用药表</title>
+<meta name="description" content="446辨证体系核心用药表，约80味中药查询，按四虚四实六外感分类">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #B45309;
+  --primary-light: #D97706;
+  --secondary: #65A30D;
+  --accent: #C2410C;
+  --bg: #FFF8F0;
+  --surface: #FFFFFF;
+  --surface-alt: #FFFBEB;
+  --border: #E7E5E4;
+  --text: #292524;
+  --text-secondary: #57534E;
+  --text-muted: #A8A29E;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.03);
+  --shadow-lg: 0 10px 15px rgba(0,0,0,0.08), 0 4px 6px rgba(0,0,0,0.04);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --font-heading: 'Noto Serif SC', 'Source Han Serif SC', serif;
+  --font-body: 'Noto Sans SC', 'Source Han Sans SC', sans-serif;
+  --fs-h1: clamp(1.75rem, 4vw, 2.25rem);
+  --fs-h2: clamp(1.35rem, 3vw, 1.75rem);
+  --fs-h3: clamp(1.15rem, 2.5vw, 1.35rem);
+  --fs-body: clamp(0.95rem, 2vw, 1.05rem);
+  --fs-small: clamp(0.85rem, 1.5vw, 0.9rem);
+  --container-max: 1200px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+.skip-link {
+  position: absolute; top: -40px; left: 0;
+  background: var(--primary); color: white;
+  padding: 8px 16px; z-index: 10000;
+  text-decoration: none; border-radius: 0 0 4px 0;
+  transition: top 0.2s;
+}
+.skip-link:focus { top: 0; }
+
+/* Nav */
+.navbar {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 32px; height: 64px;
+  background: rgba(255, 248, 240, 0.88);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+.navbar .logo {
+  font-family: var(--font-heading);
+  font-size: 20px; font-weight: 600; color: var(--primary);
+  text-decoration: none;
+}
+.navbar .logo span { color: var(--secondary); }
+.nav-links { display: flex; align-items: center; gap: 10px; }
+.nav-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 18px;
+  background: var(--primary); color: white !important;
+  border-radius: var(--radius-sm); text-decoration: none;
+  font-size: 14px; font-weight: 500;
+  transition: background 0.25s ease, transform 0.15s ease;
+  cursor: pointer; font-family: inherit;
+}
+.nav-btn:hover { background: var(--primary-light); }
+.nav-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+.nav-btn.secondary { background: var(--secondary); }
+.nav-btn.secondary:hover { background: #4D7C0F; }
+
+/* Hero */
+.hero {
+  background: linear-gradient(135deg, #B45309 0%, #D97706 45%, #65A30D 100%);
+  color: white; text-align: center;
+  padding: 80px 24px 64px;
+  position: relative; overflow: hidden;
+}
+.hero::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 30% 50%, rgba(255,255,255,0.12) 0%, transparent 60%);
+}
+.hero * { position: relative; z-index: 1; }
+.hero h1 {
+  font-family: var(--font-heading);
+  font-size: var(--fs-h1); font-weight: 600;
+  margin-bottom: 12px; letter-spacing: 0.02em;
+}
+.hero p {
+  font-size: var(--fs-body); opacity: 0.88;
+  margin-bottom: 32px; max-width: 560px; margin-left: auto; margin-right: auto;
+}
+
+/* Search */
+.search-wrap {
+  max-width: 520px; margin: 0 auto;
+  display: flex; align-items: center;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.28);
+  border-radius: 40px; overflow: hidden;
+  backdrop-filter: blur(4px); transition: border-color 0.25s ease;
+}
+.search-wrap:focus-within {
+  border-color: rgba(255,255,255,0.6);
+  background: rgba(255,255,255,0.2);
+}
+.search-wrap input {
+  flex: 1; padding: 14px 24px; border: none;
+  background: transparent; color: white; font-size: 15px; outline: none;
+  font-family: var(--font-body);
+}
+.search-wrap input::placeholder { color: rgba(255,255,255,0.55); }
+.search-wrap button {
+  padding: 0 20px; border: none;
+  background: transparent; color: rgba(255,255,255,0.7);
+  cursor: pointer; transition: color 0.2s; display: flex; align-items: center;
+}
+.search-wrap button:hover { color: white; }
+.search-wrap button svg { width: 20px; height: 20px; }
+
+/* Main */
+.main {
+  max-width: var(--container-max); margin: 0 auto;
+  padding: 48px 24px 80px;
+}
+
+/* Tabs */
+.cat-tabs {
+  display: flex; gap: 10px; margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+.cat-tab {
+  padding: 10px 24px; border: 1.5px solid var(--border);
+  border-radius: 40px; background: var(--surface);
+  font-size: 15px; cursor: pointer; transition: all 0.25s ease;
+  color: var(--text-secondary); font-weight: 500;
+  font-family: var(--font-body);
+}
+.cat-tab:hover { border-color: var(--primary); color: var(--primary); }
+.cat-tab.active {
+  background: var(--primary); color: white; border-color: var(--primary);
+}
+
+/* Sub category title */
+.sub-title {
+  font-family: var(--font-heading);
+  font-size: 18px; font-weight: 600; color: var(--primary);
+  margin: 40px 0 20px; padding-left: 14px;
+  border-left: 3px solid var(--secondary);
+  position: relative;
+}
+.sub-title .count {
+  font-family: var(--font-body);
+  font-size: 13px; font-weight: 400; color: var(--text-muted);
+  margin-left: 8px;
+}
+
+/* Herb grid */
+.herb-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px; margin-bottom: 48px;
+}
+
+/* Herb card */
+.herb-card {
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: 24px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.25s ease;
+  border: 1px solid var(--border);
+}
+.herb-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+.herb-card .card-top {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 8px; margin-bottom: 12px;
+}
+.herb-card .herb-name {
+  font-family: var(--font-heading);
+  font-size: 20px; font-weight: 600; color: var(--primary);
+  line-height: 1.3;
+}
+.herb-card .herb-tag {
+  flex-shrink: 0;
+  font-size: 11px; padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 500; white-space: nowrap;
+}
+.herb-tag.xu { background: #EBF5FB; color: #1E6FA0; }
+.herb-tag.shi { background: #FDEBD0; color: #A25E0A; }
+.herb-tag.wai { background: #E8F8F0; color: #1D7A5E; }
+.herb-card .herb-xingwei {
+  font-size: 13px; color: var(--text-secondary);
+  margin-bottom: 10px; line-height: 1.5;
+}
+.herb-card .herb-gongxiao {
+  font-size: 14px; color: var(--text);
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.herb-card .herb-daibiao {
+  font-size: 13px; color: var(--secondary);
+  margin-top: 12px; padding-top: 12px;
+  border-top: 1px solid var(--border);
+  line-height: 1.5;
+}
+.daibiao-label { color: var(--text-muted); }
+
+/* Empty state */
+.empty-state {
+  text-align: center; padding: 80px 24px; color: var(--text-muted);
+}
+.empty-state svg { width: 56px; height: 56px; margin-bottom: 16px; opacity: 0.5; }
+.empty-state p { font-size: 16px; }
+
+/* Modal */
+.modal-overlay {
+  display: none; position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.45);
+  z-index: 1000; justify-content: center; align-items: center;
+  padding: 24px;
+}
+.modal-overlay.active { display: flex; }
+.modal {
+  background: var(--surface); border-radius: var(--radius-lg);
+  max-width: 600px; width: 100%; max-height: 80vh;
+  overflow-y: auto; padding: 36px; position: relative;
+  box-shadow: var(--shadow-lg);
+}
+.modal-close {
+  position: absolute; top: 16px; right: 16px;
+  background: none; border: none;
+  cursor: pointer; color: var(--text-muted);
+  transition: color 0.2s; padding: 4px;
+  display: flex; align-items: center; justify-content: center;
+}
+.modal-close:hover { color: var(--text); }
+.modal-close svg { width: 24px; height: 24px; }
+.modal h2 {
+  font-family: var(--font-heading);
+  font-size: 26px; color: var(--primary); margin-bottom: 4px;
+}
+.modal .modal-cat {
+  font-size: 14px; color: var(--secondary); margin-bottom: 24px;
+}
+.modal-section { margin-bottom: 20px; }
+.modal-label {
+  font-size: 12px; font-weight: 500; color: var(--text-muted);
+  margin-bottom: 6px; letter-spacing: 0.5px;
+}
+.modal-value { font-size: 15px; line-height: 1.65; color: var(--text); }
+
+/* Footer */
+.footer {
+  text-align: center; padding: 32px 24px;
+  color: var(--text-muted); font-size: 13px;
+  border-top: 1px solid var(--border);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .navbar { padding: 0 16px; height: 56px; }
+  .navbar .logo { font-size: 17px; }
+  .nav-btn { padding: 6px 12px; font-size: 13px; gap: 4px; }
+  .hero { padding: 56px 16px 48px; }
+  .hero h1 { font-size: 26px; }
+  .main { padding: 32px 16px 64px; }
+  .herb-grid { grid-template-columns: 1fr; gap: 16px; }
+  .cat-tabs { gap: 8px; }
+  .cat-tab { padding: 8px 16px; font-size: 14px; }
+  .modal { padding: 24px; margin: 16px; }
+}
+@media (max-width: 380px) {
+  .navbar .logo { font-size: 15px; }
+  .hero h1 { font-size: 22px; }
+}
+
+/* 药象法折叠展示 */
+.herb-yaoxiang-toggle {
+  display: flex; align-items: center; gap: 4px;
+  margin-top: 6px; padding: 4px 0;
+  font-size: 11px; color: #C4BFBA;
+  cursor: pointer; user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.2s;
+}
+.herb-yaoxiang-toggle:hover { color: #A8A29E; }
+.herb-yaoxiang-toggle .arrow {
+  width: 10px; height: 10px;
+  transition: transform 0.25s ease;
+  opacity: 0.6;
+}
+.herb-yaoxiang-toggle .arrow.open { transform: rotate(180deg); }
+.herb-yaoxiang {
+  display: none; margin-top: 4px; padding: 6px 8px;
+  background: #F8F7F5; border-radius: 4px;
+  font-size: 12px; line-height: 1.6;
+  color: #78716C;
+}
+.herb-yaoxiang.open { display: block; }
+.yaoxiang-value { color: #78716C; }
+.yaoxiang-value .arrow-char { color: #A8A29E; margin: 0 2px; }
+.yaoxiang-void { margin-top: 6px; font-size: 10px; color: #D6D3D1; font-style: italic; }
+
+/* 弹窗中药象法区域 */
+.modal-yaoxiang-section { display: none; }
+.my-block .mb-value .my-arrow { color: var(--primary); }
+
+</style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">跳到主内容</a>
+
+<nav class="navbar" role="navigation" aria-label="主导航">
+  <a href="index.html" class="logo">446<span>·用药表</span></a>
+  <div class="nav-links">
+    <a href="index.html" class="nav-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1V9.5z"/></svg>
+      <span>首页</span>
+    </a>
+    <a href="446-herbs-quiz.html" class="nav-btn secondary" target="_self">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 10l2 2 4-4"/></svg>
+      <span>组方自测</span>
+    </a>
+  </div>
+</nav>
+
+<section class="hero">
+  <h1>446 用药表</h1>
+  <p>约80味核心中药 · 按四虚 / 四实 / 六外感分类 · 性味归经速查</p>
+  <div class="search-wrap">
+    <input type="text" id="searchInput" placeholder="搜索药名、性味、功效…" aria-label="搜索中药">
+    <button onclick="handleSearch()" aria-label="搜索">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+    </button>
+  </div>
+</section>
+
+<main class="main" id="main-content">
+  <div class="cat-tabs" role="tablist">
+    <button class="cat-tab active" data-cat="all" role="tab" aria-selected="true">全部</button>
+    <button class="cat-tab" data-cat="四虚" role="tab" aria-selected="false">四虚</button>
+    <button class="cat-tab" data-cat="四实" role="tab" aria-selected="false">四实</button>
+    <button class="cat-tab" data-cat="六外感" role="tab" aria-selected="false">六外感</button>
+  </div>
+
+  <div id="herbContainer"></div>
+
+  <div class="empty-state" id="emptyState" style="display:none;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+    <p>没有找到匹配的中药，请尝试其他关键词</p>
+  </div>
+</main>
+
+<div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()" aria-label="关闭">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
+    </button>
+    <h2 id="modalName"></h2>
+    <div class="modal-cat" id="modalCat"></div>
+    <div class="modal-section">
+      <div class="modal-label">性味</div>
+      <div class="modal-value" id="modalXingwei"></div>
+    </div>
+    <div class="modal-section">
+      <div class="modal-label">归经</div>
+      <div class="modal-value" id="modalGuijing"></div>
+    </div>
+    <div class="modal-section">
+      <div class="modal-label">功效</div>
+      <div class="modal-value" id="modalGongxiao"></div>
+    </div>
+    <div class="modal-section" id="modalDaibiaoSection">
+      <div class="modal-label">代表方</div>
+      <div class="modal-value" id="modalDaibiao"></div>
+    </div>
+    <div class="modal-yaoxiang-section" id="modalYaoxiangSection">
+      <div class="my-label">药象法 · 看形识药性</div>
+      <div class="my-block">
+        <div class="mb-mini-label">药象观察</div>
+        <div class="mb-value" id="modalYaoxiangLook"></div>
+      </div>
+      <div class="my-block">
+        <div class="mb-mini-label">药性推导</div>
+        <div class="mb-value" id="modalYaoxiangOut"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <p>446 辨证体系 · 用药表 · 基于《四虚四实六外感》教学体系</p>
+</footer>
+
+<script>
+const CAT_COLORS = { "四虚": "xu", "四实": "shi", "六外感": "wai" };
+const YAOXIANG_MAP = {
+  '生黄芪|气虚': { look: '根深色黄、质柔韧丝密', out: '入脾补中气，补而能走' },
+  '炙黄芪|气虚': { look: '蜜炙后色深质润', out: '补力更专，偏于温补中焦' },
+  '炙甘草|气虚': { look: '蜜炙后甘味更浓', out: '补中缓急之力增强，调和诸药' },
+  '人参|气虚': { look: '根如人形、芦头密集', out: '形似人体，大补一身元气' },
+  '党参|气虚': { look: '根圆柱形、质柔润', out: '形似人参而力弱，平补脾胃' },
+  '炒白术|气虚': { look: '根肥大白、炒后香燥', out: '健脾燥湿力增，守而不走' },
+  '糯米|气虚': { look: '米粒圆润、黏性强', out: '黏滞之性可补中焦、缩尿敛汗' },
+  '粳米|气虚': { look: '米粒饱满、甘淡平和', out: '平淡养胃气，护中焦' },
+  '附子|阳虚': { look: '', out: '' },
+  '干姜|阳虚': { look: '老姜干燥、质重辣烈', out: '水分全失则热力纯守中焦' },
+  '炮姜|阳虚': { look: '干姜炒炭、色黑质轻', out: '炭化后温经止血，守而不走' },
+  '生姜|阳虚': { look: '鲜品多汁、辛辣窜散', out: '含水分多故走表散寒、止呕' },
+  '桂枝|阳虚': { look: '肉桂嫩枝、细而向上', out: '枝走肢节，温通血脉向外走' },
+  '吴茱萸|阳虚': { look: '果实辛热、嚼之麻舌', out: '辛热走肝，散寒降逆善止痛' },
+  '炒白芍|血虚': { look: '根白质实、炒后收敛', out: '色白入血，质实能收，柔肝敛阴' },
+  '生地黄|血虚': { look: '根肥厚多汁、酒煎减寒', out: '鲜品多汁则滋阴，酒制则行血' },
+  '熟地|血虚': { look: '九蒸九晒、色黑质润', out: '黑入肾、润养精，大补肾阴' },
+  '当归|血虚': { look: '根油润多脂、断面油点', out: '油润养血脉，分三部各有所主' },
+  '阿胶|血虚': { look: '驴皮胶、色黑质粘', out: '皮属肺、黑入肾、胶粘止血养阴' },
+  '大枣|血虚': { look: '果实肥厚、甘甜质糯', out: '甘补脾胃之津液，养血安神' },
+  '生白芍|阴虚': { look: '根白质实、味酸收敛', out: '生用凉润，柔肝止痛力更强' },
+  '麦门冬|阴虚': { look: '根纺锤形、质柔润多汁', out: '形如心、汁滋润，养心肺之阴' },
+  '火麻仁|阴虚': { look: '种仁含油极多、一碾出油', out: '油脂润滑肠道，润通而不攻' },
+  '知母|阴虚': { look: '根肥厚多汁、色白质润', out: '多汁故能滋阴，色白入肺清气热' },
+  '百合|阴虚': { look: '鳞茎层层包裹、色白形美', out: '类肺之形，清润肺金' },
+  '麦芽糖|阴虚': { look: '麦芽熬制、甘甜黏稠', out: '甘守中焦，缓急补虚' },
+  '怀山药|阴虚': { look: '根条直质密、黏液丰富', out: '质密补脾肾，黏液固精缩尿' },
+  '赤石脂|固涩': { look: '矿物色赤、质细腻粘舌', out: '色赤入血、质粘能涩，固脱止利' },
+  '禹余粮|固涩': { look: '矿物质重、色黄褐', out: '质重沉降、固涩下焦，与赤石脂同用' },
+  '龙骨|固涩': { look: '化石沉重、质酥易碎', out: '质重镇惊安神，涩能收敛固脱' },
+  '牡蛎|固涩': { look: '贝壳质重、层层如瓦', out: '质重潜阳、壳能软坚散结' },
+  '五味子|固涩': { look: '果实皮肉甘酸、核辛苦咸', out: '五味俱全故能敛五脏之气' },
+  '乌梅|固涩': { look: '烟熏色黑、味酸极敛', out: '极酸故能敛肺涩肠、安蛔' },
+  '山茱萸|固涩': { look: '果实色红油润、味酸微温', out: '酸收滋补，补肝肾而固脱' },
+  '柴胡|气滞': { look: '茎细长直立、色青绿', out: '细直疏肝气、青绿入肝胆' },
+  '川芎|气滞': { look: '根茎不规则结节、气香浓', out: '香烈走窜，上行头目下行血海' },
+  '枳实|气滞': { look: '果实小、质坚实', out: '形小力猛，破气消积之力强' },
+  '枳壳|气滞': { look: '果实大、质轻', out: '形大力缓，宽中行气而不猛' },
+  '厚朴|气滞': { look: '树皮厚、香气浓烈', out: '皮厚故能燥湿下气，芳香醒脾' },
+  '赤芍|血瘀': { look: '根赤色、质坚实', out: '色赤入血分，凉血散瘀力量专' },
+  '红花|血瘀': { look: '花红色、质轻油润', out: '色红入血、质轻上行，活血通经' },
+  '桃仁|血瘀': { look: '种仁油润、去皮色红', out: '油润润肠、色红入血，活血润肠并施' },
+  '丹皮|血瘀': { look: '根皮色红、香气清郁', out: '色红入血凉血，芳香行气散瘀' },
+  '地龙|血瘀': { look: '虫体细长、善钻土', out: '钻土善通经隧，清热定惊通络' },
+  '牛膝|血瘀': { look: '根节状如膝、质柔韧', out: '节似膝故引血下行，质韧补肝肾' },
+  '莪术|血瘀': { look: '根茎块状、气香浓烈', out: '香烈走窜，行气破血力猛' },
+  '瓜蒂|痰饮水湿': { look: '瓜蒂味极苦、苦能涌吐', out: '苦极上行，涌吐痰食' },
+  '姜半夏|痰饮水湿': { look: '姜制后辛燥减、温性增', out: '生姜制其毒，降逆止呕专药' },
+  '杏仁|痰饮水湿': { look: '种仁油润', out: '油润润肺止咳，形似心而通大肠' },
+  '陈皮|痰饮水湿': { look: '橘皮陈久、气香燥烈减', out: '陈久则燥性减，理气而不伤阴' },
+  '茯苓|痰饮水湿': { look: '菌核质轻、色白多孔', out: '白入肺、多孔通调水道，利水不伤正' },
+  '猪苓|痰饮水湿': { look: '菌核色黑、质轻如木', out: '色黑入肾、质轻通利，利水最强' },
+  '泽泻|痰饮水湿': { look: '根茎类圆、质轻多粉', out: '形圆走水道、多粉能利水泄热' },
+  '防己|痰饮水湿': { look: '根粉质、木纤维重', out: '粉质祛湿、纤维通经，祛风湿止痛' },
+  '薏苡仁|痰饮水湿': { look: '种仁色白饱满、质硬', out: '色白入肺健脾、质硬能利湿排脓' },
+  '桔梗|痰饮水湿': { look: '根圆柱形、质实', out: '形直如气管，载药上浮宣肺' },
+  '前胡|痰饮水湿': { look: '根圆锥形、气香', out: '形似桔梗而偏降气，化痰降气' },
+  '赤小豆|痰饮水湿': { look: '豆粒色红、质实', out: '色红入心、质实利水，解毒排脓' },
+  '白蔻仁|痰饮水湿': { look: '果实芳香味辛', out: '芳香化湿醒脾，辛散行气温中' },
+  '通草|痰饮水湿': { look: '茎髓质轻、色白中间有孔', out: '质轻通利水道，色白入肺' },
+  '滑石|痰饮水湿': { look: '矿物质滑、入水即散', out: '质滑利窍通淋，性寒清热解暑' },
+  '淡竹叶|痰饮水湿': { look: '叶色绿质轻', out: '叶轻走表凉散心火，入小肠利尿' },
+  '生石膏|内火': { look: '矿石质重色白、纹理如丝', out: '质重沉降清透、清白入肺胃' },
+  '大黄|内火': { look: '根粗大色黄、断面红纹', out: '色黄入胃、红纹通血脉，推陈致新' },
+  '黄连|内火': { look: '根节密色黄、极苦', out: '节密则能量集中，极苦则泻火最强' },
+  '黄芩|内火': { look: '根中空色黄、质轻松', out: '中空走肺、色黄清热，清肺胆之火' },
+  '黄柏|内火': { look: '根皮色黄、质重', out: '色黄入下焦，清肾中湿热' },
+  '芒硝|内火': { look: '针状结晶、咸味极重', out: '咸能软坚、结晶能润燥，泻下通便' },
+  '栀子|内火': { look: '果实色红、质轻', out: '色红入心、质轻散郁，清三焦火' },
+  '淡豆豉|内火': { look: '黑豆发酵、香气外透', out: '发酵则升散，宣散郁热除烦' },
+  '茵陈蒿|内火': { look: '幼苗嫩绿、气清香', out: '嫩绿秉春生之气，清利肝胆湿热' },
+  '白头翁|内火': { look: '根有白毛如翁', out: '白毛清热解毒，专治热毒血痢' },
+  '秦皮|内火': { look: '树皮色青、味苦', out: '青入肝胆、苦燥湿热，治热痢' },
+  '荆芥|风邪': { look: '茎叶气香轻扬', out: '轻扬走表，祛风解表散邪' },
+  '防风|风邪': { look: '根柔韧如防风屏', out: '质柔不峻，祛风而不燥，风药中润剂' },
+  '麻黄|寒邪': { look: '茎中空质轻、色绿微黄', out: '中空轻扬、宣肺发汗力量最强' },
+  '细辛|寒邪': { look: '根细长辛烈、嚼之麻舌', out: '细辛入少阴、辛烈通彻表里' },
+  '清酒|寒邪': { look: '米酒温通、酒性行散', out: '酒行药势、温通血脉' },
+  '苍术|湿邪': { look: '根芳香油润、断面朱砂点', out: '芳香燥湿力强、朱砂点入血分' },
+  '升麻|外火': { look: '茎中空轻扬', out: '中空升提、轻扬走表，升阳举陷' },
+  '葛根|外火': { look: '根粗长纤维多、生嚼津多', out: '纤维撑肌、津多升津，解肌止渴' },
+  '金银花|外火': { look: '花初开色白后黄、形如金银', out: '花轻散风热，黄白相间清透热毒' },
+  '连翘|外火': { look: '果壳中空、形如心', out: '中空走表散热、形心如心清心火' },
+  '牛蒡子|外火': { look: '种子有钩刺、质硬', out: '钩刺疏散风热、质硬通利咽喉' },
+  '薄荷|外火': { look: '叶芳香清凉、嚼之凉爽', out: '芳香清爽，疏散风热利咽' },
+  '桑叶|热燥': { look: '叶薄脉密、质轻', out: '薄叶轻扬散风热，脉密入络清肝肺' },
+  '胡麻仁|热燥': { look: '种仁油润含油', out: '油脂润滑，润燥通便' },
+  '枇杷叶|热燥': { look: '叶大绒毛、色绿', out: '大叶降气、绒毛化痰止咳' },
+  '紫苏叶|凉燥': { look: '叶面紫背绿、气香散', out: '紫绿相间行气血，芳香解表散寒' },
+};
+
+const YAOXIANG_NAME_ALIASES = {
+  '生地黄（酒煎）': '生地黄',
+  '生牡蛎': '牡蛎',
+  '生龙骨': '龙骨',
+  '瓜蒌根（天花粉）': '天花粉',
+  '无硫黑顺片（附子）': '附子',
+  '生姜皮（姜皮）': '生姜',
+  '丹皮（牡丹皮）': '丹皮',
+};
+
+function mergeYaoxiang(herb) {
+  const name = YAOXIANG_NAME_ALIASES[herb.name] || herb.name;
+  // Try exact match: name|subcat
+  let key = name + '|' + herb.subcat;
+  let match = YAOXIANG_MAP[key];
+  if (match) {
+    herb.yaoxiang_look = match.look;
+    herb.yaoxiang_out = match.out;
+    return;
+  }
+  // Try name-only fallback
+  for (const [yk, yv] of Object.entries(YAOXIANG_MAP)) {
+    if (yk.startsWith(name + '|')) {
+      herb.yaoxiang_look = yv.look;
+      herb.yaoxiang_out = yv.out;
+      return;
+    }
+  }
+}
+
+const HERBS = [
+  { name: "生黄芪", cat: "四虚", subcat: "气虚", xingwei: "甘，温", guijing: "脾、肺经", gongxiao: "补气固表、利水消肿、托毒排脓、敛疮生肌、行滞通痹、生津养血、升阳举陷。", daibiao: "黄芪甘草汤、黄芪糯米粥、补阳还五汤、黄芪桂枝五物汤、补中益气汤" },
+  { name: "炙黄芪", cat: "四虚", subcat: "气虚", xingwei: "甘，温", guijing: "脾、肺经", gongxiao: "补气固表，炙后温性增强，偏于补气健脾。", daibiao: "补中益气汤" },
+  { name: "炙甘草", cat: "四虚", subcat: "气虚", xingwei: "甘，平", guijing: "心、肺、脾、胃经", gongxiao: "补脾益气，清热解毒，缓急止痛，调和诸药。注意：长期大量服用可能引起水肿、高血压。", daibiao: "黄芪甘草汤、甘草干姜汤、桂枝甘草汤、芍药甘草汤、炙甘草汤" },
+  { name: "人参", cat: "四虚", subcat: "气虚", xingwei: "甘、微温", guijing: "脾、肺、心、肾经", gongxiao: "大补元气，生津安神。缓解津伤口渴、心神不宁，适用于热病后期或气血两虚。", daibiao: "补中益气汤、吴茱萸汤、四逆加人参汤、茯苓四逆汤、白虎加人参汤、炙甘草汤" },
+  { name: "党参", cat: "四虚", subcat: "气虚", xingwei: "甘，平", guijing: "脾、肺经", gongxiao: "健脾益肺，补气力较人参弱，适合日常调理脾肺气虚（如党参养荣丸）。养血生津：改善气血不足、面色萎黄。", daibiao: "" },
+  { name: "炒白术", cat: "四虚", subcat: "气虚", xingwei: "苦、甘，温", guijing: "脾、胃经", gongxiao: "健脾益气、燥湿利水、止汗安胎。", daibiao: "补中益气汤、理中丸" },
+  { name: "糯米", cat: "四虚", subcat: "气虚", xingwei: "甘，温", guijing: "脾、胃、肺经", gongxiao: "补中益气、缩尿敛汗、解毒疗疮。", daibiao: "黄芪糯米粥" },
+  { name: "粳米", cat: "四虚", subcat: "气虚", xingwei: "甘，平", guijing: "脾、胃、肺经", gongxiao: "补气健脾、除烦止渴、止泻痢。", daibiao: "白虎汤、竹叶石膏汤" },
+  { name: "无硫黑顺片（附子）", cat: "四虚", subcat: "阳虚", xingwei: "大辛，大热；有毒", guijing: "心、肾、脾经", gongxiao: "回阳救逆、补火助阳、散寒止痛。本草至尊，无可替代。", daibiao: "桂枝甘草汤（类）、四逆汤、通脉四逆汤、真武汤、桂枝茯苓丸" },
+  { name: "干姜", cat: "四虚", subcat: "阳虚", xingwei: "辛，热", guijing: "脾、胃、肾、心、肺经", gongxiao: "温中散寒、回阳通脉、温肺化饮。", daibiao: "甘草干姜汤、理中丸、四逆汤" },
+  { name: "炮姜", cat: "四虚", subcat: "阳虚", xingwei: "辛，热", guijing: "脾、胃、肾经", gongxiao: "温经止血、温中止痛。", daibiao: "甘草干姜汤（炮姜版）" },
+  { name: "生姜", cat: "四虚", subcat: "阳虚", xingwei: "辛，微温", guijing: "肺、脾、胃经", gongxiao: "解表散寒、温中止呕、化痰止咳。", daibiao: "桂枝汤、吴茱萸汤、小半夏汤、厚朴生姜半夏甘草人参汤" },
+  { name: "桂枝", cat: "四虚", subcat: "阳虚", xingwei: "辛、甘，温", guijing: "心、肺、膀胱经", gongxiao: "发汗解肌、温通经脉、助阳化气。", daibiao: "桂枝汤、桂枝甘草汤、黄芪桂枝五物汤、桂枝新加汤、桂枝加葛根汤、桂枝加附子汤、桂枝茯苓丸、五苓散、苓桂枣甘汤、苓桂术甘汤" },
+  { name: "吴茱萸", cat: "四虚", subcat: "阳虚", xingwei: "辛、苦，热；有小毒", guijing: "肝、脾、胃、肾经", gongxiao: "散寒止痛、降逆止呕、助阳止泻。注意：有小毒，孕妇慎用；阴虚有热者忌用。", daibiao: "吴茱萸汤、当归四逆加吴茱萸生姜汤" },
+  { name: "炒白芍", cat: "四虚", subcat: "血虚", xingwei: "苦、酸，微寒", guijing: "肝、脾经", gongxiao: "养血和营、敛阴止汗、柔肝止痛。炒白芍寒性减弱，长于敛阴。", daibiao: "芍药甘草汤、桂枝汤、小建中汤、真武汤" },
+  { name: "生地黄（酒煎）", cat: "四虚", subcat: "血虚", xingwei: "甘、苦，寒", guijing: "心、肝、肾经", gongxiao: "清热凉血、养阴生津。酒煎减寒性，增强活血作用。", daibiao: "炙甘草汤、百合地黄汤" },
+  { name: "熟地", cat: "四虚", subcat: "血虚", xingwei: "甘，微温", guijing: "肝、肾经", gongxiao: "补血滋阴、益精填髓。", daibiao: "炙甘草汤（类）、六味地黄丸类" },
+  { name: "当归", cat: "四虚", subcat: "血虚", xingwei: "甘、辛，温", guijing: "肝、心、脾经", gongxiao: "补血活血、调经止痛、润肠通便。", daibiao: "当归四逆汤、补阳还五汤、当归四逆加吴茱萸生姜汤" },
+  { name: "阿胶", cat: "四虚", subcat: "血虚", xingwei: "甘，平", guijing: "肺、肝、肾经", gongxiao: "补血止血、滋阴润燥。脾胃虚弱者宜配伍陈皮减轻滋腻。", daibiao: "炙甘草汤、黄连阿胶汤、猪苓汤" },
+  { name: "大枣", cat: "四虚", subcat: "血虚", xingwei: "甘，温", guijing: "脾、胃、心经", gongxiao: "补中益气、养血安神。", daibiao: "桂枝汤、黄芪桂枝五物汤、吴茱萸汤、十枣汤（类）" },
+  { name: "生白芍", cat: "四虚", subcat: "阴虚", xingwei: "苦、酸，微寒", guijing: "肝、脾经", gongxiao: "养血调经、敛阴止汗、柔肝止痛。", daibiao: "小建中汤、桂枝汤" },
+  { name: "麦门冬", cat: "四虚", subcat: "阴虚", xingwei: "甘、微苦，微寒", guijing: "心、肺、胃经", gongxiao: "养阴润肺、清心除烦。", daibiao: "炙甘草汤、竹叶石膏汤、清燥救肺汤" },
+  { name: "火麻仁", cat: "四虚", subcat: "阴虚", xingwei: "甘，平", guijing: "脾、胃、大肠经", gongxiao: "润肠通便、滋养补虚。", daibiao: "麻子仁丸、炙甘草汤" },
+  { name: "知母", cat: "四虚", subcat: "阴虚", xingwei: "苦、甘，寒", guijing: "肺、胃、肾经", gongxiao: "清热泻火、滋阴润燥。", daibiao: "白虎汤、白虎加人参汤" },
+  { name: "百合", cat: "四虚", subcat: "阴虚", xingwei: "甘，寒", guijing: "心、肺经", gongxiao: "养阴润肺、清心安神。", daibiao: "百合地黄汤" },
+  { name: "麦芽糖", cat: "四虚", subcat: "阴虚", xingwei: "甘，温", guijing: "脾、胃、肺经", gongxiao: "补脾益气、缓急止痛。", daibiao: "小建中汤" },
+  { name: "怀山药", cat: "四虚", subcat: "阴虚", xingwei: "甘，平", guijing: "脾、肺、肾经", gongxiao: "补脾养胃、益肺固肾。", daibiao: "小建中汤（类）" },
+  { name: "赤石脂", cat: "四虚", subcat: "固涩", xingwei: "甘、酸、涩，温", guijing: "大肠、胃经", gongxiao: "涩肠止泻、收敛止血、生肌敛疮。", daibiao: "赤石脂禹余粮汤、桃花汤" },
+  { name: "禹余粮", cat: "四虚", subcat: "固涩", xingwei: "甘、涩，平", guijing: "胃经", gongxiao: "涩肠止泻、收敛止血、止带。", daibiao: "赤石脂禹余粮汤" },
+  { name: "龙骨", cat: "四虚", subcat: "固涩", xingwei: "甘、涩，平", guijing: "心、肝、肾经", gongxiao: "镇惊安神、平肝潜阳、收敛固涩。", daibiao: "桂枝甘草龙骨牡蛎汤" },
+  { name: "牡蛎", cat: "四虚", subcat: "固涩", xingwei: "咸、涩，微寒", guijing: "肝、肾经", gongxiao: "平肝潜阳、软坚散结、收敛固涩。", daibiao: "桂枝甘草龙骨牡蛎汤" },
+  { name: "五味子", cat: "四虚", subcat: "固涩", xingwei: "酸、甘，温", guijing: "肺、心、肾经", gongxiao: "收敛固涩、益气生津、补肾宁心。", daibiao: "小青龙汤、苓桂术甘汤（类）" },
+  { name: "乌梅", cat: "四虚", subcat: "固涩", xingwei: "酸、涩，平", guijing: "肝、脾、肺、大肠经", gongxiao: "敛肺止咳、涩肠止泻、安蛔止痛。", daibiao: "乌梅丸" },
+  { name: "山茱萸", cat: "四虚", subcat: "固涩", xingwei: "酸、涩，微温", guijing: "肝、肾经", gongxiao: "补益肝肾、收敛固涩、固冲止血。", daibiao: "六味地黄丸（类）" },
+  { name: "柴胡", cat: "四实", subcat: "气滞", xingwei: "苦、辛，微寒", guijing: "肝、胆、肺经", gongxiao: "和解退热、疏肝解郁、升举阳气。", daibiao: "四逆散、血府逐瘀汤、小柴胡汤（类）" },
+  { name: "川芎", cat: "四实", subcat: "气滞", xingwei: "辛，温", guijing: "肝、胆、心包经", gongxiao: "活血行气、祛风止痛。", daibiao: "血府逐瘀汤、补阳还五汤" },
+  { name: "枳实", cat: "四实", subcat: "气滞", xingwei: "苦、辛，微寒", guijing: "脾、胃经", gongxiao: "破气消积、化痰散痞、升提固脱（用于脏器下垂）。", daibiao: "四逆散、大承气汤（类）" },
+  { name: "枳壳", cat: "四实", subcat: "气滞", xingwei: "苦、辛，微寒", guijing: "脾、胃经", gongxiao: "理气宽中、行滞消胀、缓急止痛。", daibiao: "四逆散、血府逐瘀汤" },
+  { name: "厚朴", cat: "四实", subcat: "气滞", xingwei: "苦、辛，温", guijing: "脾、胃、肺、大肠经", gongxiao: "燥湿消痰、下气除满、温中散寒。", daibiao: "半夏厚朴汤、厚朴生姜半夏甘草人参汤、大承气汤" },
+  { name: "赤芍", cat: "四实", subcat: "血瘀", xingwei: "苦，微寒", guijing: "肝经", gongxiao: "清热凉血、散瘀止痛。", daibiao: "桂枝茯苓丸、芍药甘草汤" },
+  { name: "红花", cat: "四实", subcat: "血瘀", xingwei: "辛，温", guijing: "心、肝经", gongxiao: "活血通经、散瘀止痛。", daibiao: "血府逐瘀汤、补阳还五汤" },
+  { name: "桃仁", cat: "四实", subcat: "血瘀", xingwei: "苦、甘，平", guijing: "心、肝、大肠经", gongxiao: "活血祛瘀、润肠通便、止咳平喘。", daibiao: "桃核承气汤、血府逐瘀汤、桂枝茯苓丸" },
+  { name: "丹皮（牡丹皮）", cat: "四实", subcat: "血瘀", xingwei: "苦、辛，微寒", guijing: "心、肝、肾经", gongxiao: "清热凉血、活血化瘀。", daibiao: "桂枝茯苓丸、大黄牡丹汤（类）" },
+  { name: "地龙", cat: "四实", subcat: "血瘀", xingwei: "咸，寒", guijing: "肝、脾、膀胱经", gongxiao: "清热定惊、通络止痛。", daibiao: "补阳还五汤" },
+  { name: "牛膝", cat: "四实", subcat: "血瘀", xingwei: "苦、酸，平", guijing: "肝、肾经", gongxiao: "活血祛瘀、引血下行、补肝肾强筋骨。", daibiao: "血府逐瘀汤" },
+  { name: "莪术", cat: "四实", subcat: "血瘀", xingwei: "辛、苦，温", guijing: "肝、脾经", gongxiao: "行气破血、消积止痛。莪术与三棱功效相似，但莪术行气力强，三棱破血力专。", daibiao: "莪术汤（类）" },
+  { name: "瓜蒂", cat: "四实", subcat: "痰饮水湿", xingwei: "苦，寒；有毒", guijing: "胃经", gongxiao: "涌吐痰食、祛湿退黄。注意：有毒，孕妇、体虚者忌用；过量易致呕吐、腹泻甚至循环衰竭。", daibiao: "瓜蒂散" },
+  { name: "姜半夏", cat: "四实", subcat: "痰饮水湿", xingwei: "辛，温", guijing: "脾、胃、肺经", gongxiao: "降逆止呕、温中化痰。", daibiao: "小半夏汤、半夏泻心汤、生姜泻心汤、甘草泻心汤" },
+  { name: "杏仁", cat: "四实", subcat: "痰饮水湿", xingwei: "苦，微温；有小毒", guijing: "肺、大肠经", gongxiao: "止咳平喘、润肠通便。苦杏仁善治痰热咳喘，甜杏仁润肺止咳。", daibiao: "麻黄汤、麻杏石甘汤、三仁汤、杏苏散" },
+  { name: "陈皮", cat: "四实", subcat: "痰饮水湿", xingwei: "苦、辛，温", guijing: "脾、肺经", gongxiao: "理气健脾、燥湿化痰。", daibiao: "二陈汤（类）、半夏泻心汤（类）" },
+  { name: "茯苓", cat: "四实", subcat: "痰饮水湿", xingwei: "甘、淡，平", guijing: "心、脾、肾经", gongxiao: "利水渗湿、健脾宁心。", daibiao: "五苓散、苓桂术甘汤、猪苓汤、真武汤" },
+  { name: "猪苓", cat: "四实", subcat: "痰饮水湿", xingwei: "甘、淡，平", guijing: "肾、膀胱经", gongxiao: "利水渗湿、通淋消肿。", daibiao: "五苓散、猪苓汤" },
+  { name: "泽泻", cat: "四实", subcat: "痰饮水湿", xingwei: "甘、淡，寒", guijing: "肾、膀胱经", gongxiao: "利水泄热、化浊降脂。", daibiao: "五苓散、猪苓汤" },
+  { name: "防己", cat: "四实", subcat: "痰饮水湿", xingwei: "苦，寒", guijing: "膀胱、肾、脾经", gongxiao: "祛风湿止痛、利水消肿。", daibiao: "防己黄芪汤" },
+  { name: "薏苡仁", cat: "四实", subcat: "痰饮水湿", xingwei: "甘、淡，凉", guijing: "脾、胃、肺经", gongxiao: "利水渗湿、健脾止泻。", daibiao: "三仁汤、麻黄杏仁薏苡甘草汤" },
+  { name: "桔梗", cat: "四实", subcat: "痰饮水湿", xingwei: "苦、辛，平", guijing: "肺经", gongxiao: "宣肺利咽、祛痰排脓。", daibiao: "桔梗汤、杏苏散" },
+  { name: "前胡", cat: "四实", subcat: "痰饮水湿", xingwei: "苦、辛，微寒", guijing: "肺经", gongxiao: "降气化痰、散风清热。", daibiao: "杏苏散" },
+  { name: "赤小豆", cat: "四实", subcat: "痰饮水湿", xingwei: "甘、酸，平", guijing: "心、小肠经", gongxiao: "利水消肿、解毒排脓。", daibiao: "赤小豆当归散（类）" },
+  { name: "白蔻仁", cat: "四实", subcat: "痰饮水湿", xingwei: "辛，温", guijing: "肺、脾、胃经", gongxiao: "化湿行气、温中止呕。", daibiao: "三仁汤" },
+  { name: "通草", cat: "四实", subcat: "痰饮水湿", xingwei: "甘、淡，微寒", guijing: "肺、胃经", gongxiao: "利尿通淋、通气下乳。", daibiao: "三仁汤" },
+  { name: "滑石", cat: "四实", subcat: "痰饮水湿", xingwei: "甘、淡，寒", guijing: "膀胱、肺、胃经", gongxiao: "利尿通淋、清热解暑。", daibiao: "三仁汤、猪苓汤" },
+  { name: "淡竹叶", cat: "四实", subcat: "痰饮水湿", xingwei: "甘、淡，寒", guijing: "心、胃、小肠经", gongxiao: "清热除烦、利尿通淋。", daibiao: "竹叶石膏汤" },
+  { name: "生石膏", cat: "四实", subcat: "内火", xingwei: "辛、甘，大寒", guijing: "肺、胃经", gongxiao: "清热泻火、除烦止渴。", daibiao: "白虎汤、白虎加人参汤、竹叶石膏汤、麻杏石甘汤" },
+  { name: "大黄", cat: "四实", subcat: "内火", xingwei: "苦，寒", guijing: "脾、胃、大肠、肝、心包经", gongxiao: "泻下攻积、清热凉血。", daibiao: "大承气汤、小承气汤、大黄黄连泻心汤、桃核承气汤、大黄附子细辛汤、麻子仁丸" },
+  { name: "黄连", cat: "四实", subcat: "内火", xingwei: "苦，寒", guijing: "心、脾、胃、肝、胆、大肠经", gongxiao: "清热燥湿、泻火解毒。", daibiao: "大黄黄连泻心汤、葛根黄芩黄连汤、黄连阿胶汤、半夏泻心汤、生姜泻心汤、甘草泻心汤、附子泻心汤" },
+  { name: "黄芩", cat: "四实", subcat: "内火", xingwei: "苦，寒", guijing: "肺、胆、脾、大肠、小肠经", gongxiao: "清热燥湿、凉血止血。", daibiao: "黄芩汤、葛根黄芩黄连汤、大黄黄连泻心汤、半夏泻心汤" },
+  { name: "黄柏", cat: "四实", subcat: "内火", xingwei: "苦，寒", guijing: "肾、膀胱经", gongxiao: "清热燥湿、泻火解毒。", daibiao: "白头翁汤" },
+  { name: "芒硝", cat: "四实", subcat: "内火", xingwei: "咸、苦，寒", guijing: "胃、大肠经", gongxiao: "泻下通便、润燥软坚。", daibiao: "大承气汤、桃核承气汤" },
+  { name: "栀子", cat: "四实", subcat: "内火", xingwei: "苦，寒", guijing: "心、肺、三焦经", gongxiao: "泻火除烦、清热利湿。", daibiao: "栀子豆豉汤、栀子豆豉甘草汤" },
+  { name: "淡豆豉", cat: "四实", subcat: "内火", xingwei: "苦、辛，凉", guijing: "肺、胃经", gongxiao: "解表除烦、宣发郁热。", daibiao: "栀子豆豉汤、栀子豆豉甘草汤" },
+  { name: "茵陈蒿", cat: "四实", subcat: "内火", xingwei: "苦、辛，微寒", guijing: "脾、胃、肝、胆经", gongxiao: "清利湿热、利胆退黄。", daibiao: "茵陈蒿汤" },
+  { name: "白头翁", cat: "四实", subcat: "内火", xingwei: "苦，寒", guijing: "胃、大肠经", gongxiao: "清热解毒、凉血止痢。", daibiao: "白头翁汤" },
+  { name: "秦皮", cat: "四实", subcat: "内火", xingwei: "苦、涩，寒", guijing: "肝、胆、大肠经", gongxiao: "清热燥湿、收涩止痢。", daibiao: "白头翁汤" },
+  { name: "桂枝", cat: "六外感", subcat: "风邪", xingwei: "辛、甘，温", guijing: "心、肺、膀胱经", gongxiao: "发汗解肌、温通经脉、助阳化气。", daibiao: "桂枝汤、桂枝甘草汤、黄芪桂枝五物汤、桂枝新加汤、桂枝加葛根汤、桂枝加附子汤、桂枝茯苓丸、五苓散、苓桂枣甘汤、苓桂术甘汤" },
+  { name: "荆芥", cat: "六外感", subcat: "风邪", xingwei: "辛，微温", guijing: "肺、肝经", gongxiao: "祛风解表、透疹消疮、止血（炒炭后用于吐血、衄血、崩漏）。", daibiao: "银翘散（类）" },
+  { name: "防风", cat: "六外感", subcat: "风邪", xingwei: "辛、甘，微温", guijing: "膀胱、肝、脾经", gongxiao: "祛风解表、胜湿止痛、止痉。", daibiao: "防风通圣散（类）" },
+  { name: "麻黄", cat: "六外感", subcat: "寒邪", xingwei: "辛、微苦，温", guijing: "肺、膀胱经", gongxiao: "发汗散寒、宣肺平喘、利水消肿。", daibiao: "麻黄汤、葛根汤、小青龙汤、麻杏石甘汤、麻黄附子细辛汤、麻黄汤加术" },
+  { name: "细辛", cat: "六外感", subcat: "寒邪", xingwei: "辛，温", guijing: "心、肺、肾经", gongxiao: "解表散寒、祛风止痛、温肺化饮。", daibiao: "麻黄附子细辛汤、大黄附子细辛汤、小青龙汤、当归四逆加吴茱萸生姜汤" },
+  { name: "清酒", cat: "六外感", subcat: "寒邪", xingwei: "甘、辛，温", guijing: "肝、胃经", gongxiao: "活血通络、祛风散寒、行药势（非传统中药，部分方剂配伍使用）。", daibiao: "炙甘草汤" },
+  { name: "苍术", cat: "六外感", subcat: "湿邪", xingwei: "辛、苦，温", guijing: "脾、胃、肝经", gongxiao: "燥湿健脾、祛风散寒。", daibiao: "参苓白术散（类）、平胃散" },
+  { name: "柴胡", cat: "六外感", subcat: "外火", xingwei: "苦、辛，微寒", guijing: "肝、胆、肺经", gongxiao: "疏散退热、疏肝解郁、升举阳气。", daibiao: "四逆散、血府逐瘀汤、小柴胡汤（类）" },
+  { name: "升麻", cat: "六外感", subcat: "外火", xingwei: "辛、甘，微寒", guijing: "肺、脾、胃、大肠经", gongxiao: "发表透疹、清热解毒、升举阳气。", daibiao: "升麻葛根汤" },
+  { name: "葛根", cat: "六外感", subcat: "外火", xingwei: "甘、辛，凉", guijing: "脾、胃经", gongxiao: "解肌退热、生津止渴、升阳止泻。", daibiao: "葛根汤、葛根黄芩黄连汤、升麻葛根汤" },
+  { name: "金银花", cat: "六外感", subcat: "外火", xingwei: "甘，寒", guijing: "肺、心、胃经", gongxiao: "清热解毒、疏散风热。", daibiao: "银翘散" },
+  { name: "连翘", cat: "六外感", subcat: "外火", xingwei: "苦，微寒", guijing: "肺、心、小肠经", gongxiao: "清热解毒、消肿散结、疏散风热。", daibiao: "银翘散" },
+  { name: "牛蒡子", cat: "六外感", subcat: "外火", xingwei: "辛、苦，寒", guijing: "肺、胃经", gongxiao: "疏散风热、解毒透疹、利咽消肿。", daibiao: "银翘散" },
+  { name: "薄荷", cat: "六外感", subcat: "外火", xingwei: "辛，凉", guijing: "肺、肝经", gongxiao: "疏散风热、清利头目、疏肝行气。", daibiao: "银翘散" },
+  { name: "桑叶", cat: "六外感", subcat: "热燥", xingwei: "苦、甘，寒", guijing: "肺、肝经", gongxiao: "疏散风热、清肺润燥、平肝明目。", daibiao: "清燥救肺汤" },
+  { name: "胡麻仁", cat: "六外感", subcat: "热燥", xingwei: "甘，平", guijing: "肺、脾、肝、肾经", gongxiao: "润燥滑肠、滋养肝肾。", daibiao: "清燥救肺汤" },
+  { name: "枇杷叶", cat: "六外感", subcat: "热燥", xingwei: "苦，微寒", guijing: "肺、胃经", gongxiao: "清肺止咳、降逆止呕。", daibiao: "清燥救肺汤" },
+  { name: "杏仁", cat: "六外感", subcat: "凉燥", xingwei: "苦，微温；有小毒", guijing: "肺、大肠经", gongxiao: "止咳平喘、润肠通便。凉燥证用杏苏散治之。", daibiao: "麻黄汤、麻杏石甘汤、三仁汤、杏苏散" },
+  { name: "紫苏叶", cat: "六外感", subcat: "凉燥", xingwei: "辛，温", guijing: "肺、脾经", gongxiao: "解表散寒、行气和胃、解鱼蟹毒。", daibiao: "杏苏散" },
+];
+
+let currentCat = "all";
+let currentSearch = "";
+
+function filterHerbs() {
+  return HERBS.filter(h => {
+    const catMatch = currentCat === "all" || h.cat === currentCat;
+    const s = currentSearch;
+    const searchMatch = !s ||
+      h.name.includes(s) || h.xingwei.includes(s) || h.guijing.includes(s) || (h.yaoxiang_look && h.yaoxiang_look.includes(s)) || (h.yaoxiang_out && h.yaoxiang_out.includes(s)) ||
+      h.gongxiao.includes(s) || (h.daibiao && h.daibiao.includes(s));
+    return catMatch && searchMatch;
+  });
+}
+
+// 合并药象法数据
+HERBS.forEach(mergeYaoxiang);
+
+function renderHerbs() {
+  const container = document.getElementById('herbContainer');
+  const emptyState = document.getElementById('emptyState');
+  const filtered = filterHerbs();
+
+  if (filtered.length === 0) {
+    container.innerHTML = '';
+    emptyState.style.display = 'block';
+    return;
+  }
+  emptyState.style.display = 'none';
+
+  const grouped = {};
+  filtered.forEach(h => {
+    const key = h.subcat || h.cat;
+    if (!grouped[key]) grouped[key] = [];
+    grouped[key].push(h);
+  });
+
+  const catClass = (cat) => CAT_COLORS[cat] || '';
+
+  let html = '';
+  Object.keys(grouped).forEach(subcat => {
+    html += `<div class="sub-title">${subcat}<span class="count">${grouped[subcat].length}味</span></div>`;
+    html += '<div class="herb-grid">';
+    grouped[subcat].forEach(h => {
+      const idx = HERBS.indexOf(h);
+      html += `<div class="herb-card" onclick="toggleYaoxiangCard(this)" role="button" tabindex="0" onkeydown="if(event.key==='Enter')toggleYaoxiangCard(this)">
+        <div class="card-top">
+          <div class="herb-name">${h.name}</div>
+          <div class="herb-tag ${catClass(h.cat)}">${h.subcat}</div>
+        </div>
+        <div class="herb-xingwei">${h.xingwei} · ${h.guijing}</div>
+        <div class="herb-gongxiao">${h.gongxiao}</div>
+        ${h.daibiao ? `<div class="herb-daibiao"><span class="daibiao-label">代表方 </span>${h.daibiao}</div>` : ''}
+        ${h.yaoxiang_look || h.yaoxiang_out ? `
+        <div class="herb-yaoxiang-toggle" onclick="event.stopPropagation();toggleYaoxiangCard(this.parentElement)">
+          <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+          <span>看形识药性</span>
+        </div>
+        <div class="herb-yaoxiang">
+          <div class="yaoxiang-value">${h.yaoxiang_look || ''}</div>
+          ${h.yaoxiang_out ? `<div style="margin-top:4px"><span class="arrow-char">→</span> ${h.yaoxiang_out}</div>` : ''}
+        </div>` : '<div class="yaoxiang-void">暂无药象数据</div>'}
+      </div>`;
+    });
+    html += '</div>';
+  });
+  container.innerHTML = html;
+}
+
+function handleSearch() {
+  currentSearch = document.getElementById('searchInput').value.trim();
+  renderHerbs();
+}
+document.getElementById('searchInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') handleSearch();
+});
+
+document.querySelectorAll('.cat-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.cat-tab').forEach(t => {
+      t.classList.remove('active');
+      t.setAttribute('aria-selected', 'false');
+    });
+    tab.classList.add('active');
+    tab.setAttribute('aria-selected', 'true');
+    currentCat = tab.dataset.cat;
+    renderHerbs();
+  });
+});
+
+function toggleYaoxiangCard(el) {
+  const content = el.querySelector('.herb-yaoxiang');
+  if (content) {
+    content.classList.toggle('open');
+    const arrow = el.querySelector('.herb-yaoxiang-toggle .arrow');
+    if (arrow) arrow.classList.toggle('open');
+  }
+}
+
+const CAT_CLICK_HANDLED = true;
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+
+renderHerbs();
+</script>
+</body>
+</html>
