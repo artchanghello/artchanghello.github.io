@@ -4,10 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>中医术语词典 · 446体系术语层</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #f8f7f4; --bg2: #ffffff; --bg3: #f0ede6;
+      /* 暖色系（保持原色调） */
       --accent-gold: #b45309; --accent-cyan: #0891b2;
       --accent-purple: #7c3aed; --accent-rose: #be123c;
       --accent-green: #047857;
@@ -21,23 +23,43 @@
       --warm: #c2410c; --cool: #1d4ed8; --tonic: #047857;
       --drain: #7c3aed; --organ: #be123c; --blood: #9f1239;
       --heat: #b91c1c;
+
+      /* 设计系统变量 */
+      --font-heading: 'Noto Serif SC', 'Songti SC', serif;
+      --font-body: 'Noto Sans SC', 'PingFang SC', sans-serif;
+      --surface-warm: #f8f7f4;
+      --surface-card: #ffffff;
+      --surface-alt: #f0ede6;
+      --text-primary: #1c1917;
+      --text-secondary: #57534e;
+      --text-muted: #a8a29e;
+
+      --space-xs: 4px; --space-sm: 8px; --space-md: 16px;
+      --space-lg: 24px; --space-xl: 48px; --space-2xl: 64px;
+      --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-elevated: 0 4px 6px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.03);
+      --shadow-modal: 0 10px 15px rgba(0,0,0,0.08), 0 4px 6px rgba(0,0,0,0.04);
+      --transition-fast: 150ms ease;
+      --transition-base: 250ms ease;
+      --transition-slow: 350ms ease;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: var(--bg); color: var(--text); font-family: 'Noto Sans SC', sans-serif; line-height: 1.7; }
-    header { background: var(--bg2); border-bottom: 1px solid var(--border2); padding: 28px 0 20px; text-align: center; }
-    .eyebrow { font-size: 10px; letter-spacing: 3px; color: var(--text3); text-transform: uppercase; margin-bottom: 6px; }
+    body { background: var(--surface-warm); color: var(--text); font-family: 'Noto Sans SC', sans-serif; line-height: 1.7; }
+    header { background: var(--surface-card); border-bottom: 1px solid var(--border2); padding: 28px 0 20px; text-align: center; }
+    .eyebrow { font-size: 10px; letter-spacing: 3px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; }
     h1 { font-family: 'Noto Serif SC', serif; font-size: 26px; font-weight: 900; margin-bottom: 4px; }
     h1 span { color: var(--accent-gold); }
-    .header-sub { font-size: 12px; color: var(--text2); letter-spacing: 2px; margin-bottom: 18px; }
-    .search-wrap { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 14px 0; position: sticky; top: 0; z-index: 100; }
+    .header-sub { font-size: 12px; color: var(--text-secondary); letter-spacing: 2px; margin-bottom: 18px; }
+    .search-wrap { background: var(--surface-card); border-bottom: 1px solid var(--border); padding: 14px 0; position: sticky; top: 0; z-index: 100; }
     .search-inner { max-width: 680px; margin: 0 auto; padding: 0 20px; position: relative; }
-    #search-input { width: 100%; padding: 10px 16px 10px 42px; border: 1px solid var(--border2); border-radius: 10px; font-size: 14px; font-family: 'Noto Sans SC', sans-serif; background: var(--bg); outline: none; transition: border-color 0.2s; }
+    #search-input { width: 100%; padding: 10px 16px 10px 42px; border: 1px solid var(--border2); border-radius: 10px; font-size: 14px; font-family: 'Noto Sans SC', sans-serif; background: var(--surface-warm); outline: none; transition: border-color 0.2s; }
     #search-input:focus { border-color: var(--accent-gold); }
     .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 15px; opacity: 0.4; }
-    #search-count { font-size: 11px; color: var(--text3); margin-top: 6px; text-align: center; min-height: 16px; }
-    .cat-nav { background: var(--bg2); border-bottom: 1px solid var(--border); overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    #search-count { font-size: 11px; color: var(--text-muted); margin-top: 6px; text-align: center; min-height: 16px; }
+    .cat-nav { background: var(--surface-card); border-bottom: 1px solid var(--border); overflow-x: auto; -webkit-overflow-scrolling: touch; }
     .cat-nav-inner { display: flex; gap: 4px; padding: 10px 16px; max-width: 900px; margin: 0 auto; min-width: max-content; }
-    .cat-btn { padding: 5px 14px; border-radius: 20px; border: 1px solid var(--border2); font-size: 12px; cursor: pointer; white-space: nowrap; background: transparent; color: var(--text2); transition: all 0.15s; font-family: 'Noto Sans SC', sans-serif; }
+    .cat-btn { padding: 5px 14px; border-radius: 20px; border: 1px solid var(--border2); font-size: 12px; cursor: pointer; white-space: nowrap; background: transparent; color: var(--text-secondary); transition: all 0.15s; font-family: 'Noto Sans SC', sans-serif; }
     .cat-btn:hover { border-color: var(--accent-gold); color: var(--accent-gold); }
     .cat-btn.active { background: var(--accent-gold); color: white; border-color: var(--accent-gold); }
     .cat-btn .dot { display: inline-block; margin-right: 4px; }
@@ -46,8 +68,8 @@
     .term-section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 2px solid var(--border2); }
     .term-section-icon { font-size: 18px; }
     .term-section-title { font-family: 'Noto Serif SC', serif; font-size: 16px; font-weight: 700; }
-    .term-section-sub { font-size: 11px; color: var(--text3); margin-left: auto; }
-    .term-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; margin-bottom: 12px; transition: box-shadow 0.2s, opacity 0.2s; border-left: 4px solid transparent; }
+    .term-section-sub { font-size: 11px; color: var(--text-muted); margin-left: auto; }
+    .term-card { background: var(--surface-card); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; margin-bottom: 12px; transition: box-shadow 0.2s, opacity 0.2s; border-left: 4px solid transparent; }
     .term-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
     .term-card.hidden { display: none; }
     /* 三分类卡片边框 */
@@ -56,32 +78,32 @@
     .term-card.bar-external  { border-left-color: var(--external); }
     .term-card-top { display: flex; align-items: baseline; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
     .term-main { font-family: 'Noto Serif SC', serif; font-size: 18px; font-weight: 700; letter-spacing: 1px; }
-    .term-main .term-sep { color: var(--text3); font-weight: 400; margin: 0 2px; }
+    .term-main .term-sep { color: var(--text-muted); font-weight: 400; margin: 0 2px; }
     .term-badge { font-size: 10px; letter-spacing: 1px; padding: 2px 8px; border-radius: 10px; font-weight: 700; flex-shrink: 0; }
     /* 三分类徽标 */
     .badge-deficiency { background: rgba(4,120,87,0.13); color: var(--deficiency); }
     .badge-excess     { background: rgba(124,58,237,0.13); color: var(--excess); }
     .badge-external   { background: rgba(194,65,12,0.13); color: var(--external); }
     .term-breakdown { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; align-items: center; }
-    .breakdown-chip { background: var(--bg3); border-radius: 6px; padding: 3px 10px; font-size: 12px; color: var(--text2); }
+    .breakdown-chip { background: var(--surface-alt); border-radius: 6px; padding: 3px 10px; font-size: 12px; color: var(--text-secondary); }
     .breakdown-chip .arrow { color: var(--accent-gold); margin: 0 4px; font-size: 10px; }
-    .term-image { background: var(--bg3); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--text2); margin-bottom: 12px; line-height: 1.8; border-left: 3px solid var(--border2); }
+    .term-image { background: var(--surface-alt); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.8; border-left: 3px solid var(--border2); }
     .term-image strong { color: var(--accent-gold); }
-    .term-def { font-size: 13px; color: var(--text2); line-height: 1.8; margin-bottom: 12px; padding: 8px 12px; background: rgba(180,83,9,0.04); border-radius: 8px; }
+    .term-def { font-size: 13px; color: var(--text-secondary); line-height: 1.8; margin-bottom: 12px; padding: 8px 12px; background: rgba(180,83,9,0.04); border-radius: 8px; }
     .term-formulas { display: flex; flex-direction: column; gap: 6px; }
     /* 446定位区块 */
     .term-446 { background: rgba(180,83,9,0.06); border: 1px solid rgba(180,83,9,0.15);
                     border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; font-size: 12px; line-height: 1.8; }
     .term-446-title { font-weight: 700; color: var(--accent-gold); letter-spacing: 1px; margin-bottom: 4px; }
-    .term-446-line { color: var(--text2); }
+    .term-446-line { color: var(--text-secondary); }
     .term-446-line span { color: var(--accent-gold); font-weight: 600; }
     .term-formula { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; }
     .term-formula .f-num { font-weight: 700; color: var(--accent-gold); width: 22px; flex-shrink: 0; line-height: 1.7; }
     .term-formula .f-name { font-weight: 600; color: var(--text); width: 110px; flex-shrink: 0; }
-    .term-formula .f-role { color: var(--text2); font-size: 11px; }
-    .group-label { font-size: 11px; letter-spacing: 1.5px; color: var(--text3); margin: 18px 0 10px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+    .term-formula .f-role { color: var(--text-secondary); font-size: 11px; }
+    .group-label { font-size: 11px; letter-spacing: 1.5px; color: var(--text-muted); margin: 18px 0 10px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
     .group-label::after { content: ''; flex: 1; height: 1px; background: var(--border2); }
-    .how-to { background: rgba(180,83,9,0.05); border: 1px solid rgba(180,83,9,0.15); border-radius: 12px; padding: 16px 20px; margin-bottom: 28px; font-size: 13px; color: var(--text2); line-height: 1.9; }
+    .how-to { background: rgba(180,83,9,0.05); border: 1px solid rgba(180,83,9,0.15); border-radius: 12px; padding: 16px 20px; margin-bottom: 28px; font-size: 13px; color: var(--text-secondary); line-height: 1.9; }
     .how-to-title { font-size: 11px; letter-spacing: 2px; color: var(--accent-gold); font-weight: 700; margin-bottom: 8px; }
     .how-to strong { color: var(--accent-gold); }
   /* ===== Floating Action Buttons ===== */
