@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>446辨证体系 · 方剂查询</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1B4332;
+    --primary-light: #2D6A4F;
+    --accent: #40916C;
+    --accent-light: #52B788;
+    --bg: #F8F9F7;
+    --card-bg: #FFFFFF;
+    --text: #1A1A1A;
+    --text-secondary: #555;
+    --border: #E0E4E0;
+    --shadow: 0 2px 12px rgba(0,0,0,0.08);
+    --radius: 12px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans SC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* ===== Navbar ===== */
+  .navbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+    height: 64px;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .navbar .logo {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--primary);
+  }
+  .navbar .logo span {
+    color: var(--accent);
+  }
+  .navbar nav a {
+    margin-left: 24px;
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-size: 14px;
+    transition: color 0.2s;
+  }
+  .navbar nav a:hover { color: var(--primary); }
+
+  /* ===== Hero ===== */
+  .hero {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 50%, var(--accent) 100%);
+    color: white;
+    text-align: center;
+    padding: 72px 24px 64px;
+  }
+  .hero h1 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .hero p {
+    font-size: 16px;
+    opacity: 0.85;
+    margin-bottom: 32px;
+  }
+  .search-box {
+    max-width: 520px;
+    margin: 0 auto;
+    display: flex;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 40px;
+    overflow: hidden;
+    backdrop-filter: blur(4px);
+  }
+  .search-box input {
+    flex: 1;
+    padding: 14px 24px;
+    border: none;
+    background: transparent;
+    color: white;
+    font-size: 15px;
+    outline: none;
+  }
+  .search-box input::placeholder { color: rgba(255,255,255,0.6); }
+  .search-box button {
+    padding: 0 24px;
+    border: none;
+    background: rgba(255,255,255,0.2);
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .search-box button:hover { background: rgba(255,255,255,0.35); }
+
+  /* ===== Filters ===== */
+  .filters {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 24px 24px 8px;
+    flex-wrap: wrap;
+  }
+  .filter-chip {
+    padding: 8px 20px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    background: var(--card-bg);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text-secondary);
+  }
+  .filter-chip:hover { border-color: var(--accent); color: var(--accent); }
+  .filter-chip.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+  }
+
+  /* ===== Layout ===== */
+  .layout {
+    display: flex;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px;
+    gap: 24px;
+  }
+
+  /* ===== Sidebar ===== */
+  .sidebar {
+    width: 200px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 88px;
+    align-self: flex-start;
+  }
+  .sidebar h3 {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .sidebar ul { list-style: none; }
+  .sidebar li {
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.15s;
+    color: var(--text-secondary);
+  }
+  .sidebar li:hover { background: #E8F0EB; color: var(--primary); }
+  .sidebar li.active { background: #E8F0EB; color: var(--primary); font-weight: 500; }
+
+  /* ===== Card Grid ===== */
+  .main-content { flex: 1; }
+  .section-title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 20px;
+    margin-bottom: 16px;
+    color: var(--primary);
+  }
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid var(--border);
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  }
+  .card-tags { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+  .tag {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+  .tag-biao { background: #E3F2FD; color: #1565C0; }
+  .tag-li   { background: #FFF3E0; color: #E65100; }
+  .tag-han  { background: #E8F5E9; color: #2E7D32; }
+  .tag-re   { background: #FCE4EC; color: #C62828; }
+  .tag-xu   { background: #F3E5F5; color: #6A1B9A; }
+  .tag-shi  { background: #FFF8E1; color: #F57F17; }
+  .card h3 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 18px;
+    margin-bottom: 6px;
+    color: var(--primary);
+  }
+  .card .pinyin { font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; }
+  .card .desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* ===== Modal ===== */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 200;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal {
+    background: white;
+    border-radius: 16px;
+    max-width: 600px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 32px;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  }
+  .modal-close {
+    position: absolute;
+    top: 16px; right: 16px;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: #F0F0F0;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+  }
+  .modal-close:hover { background: #E0E0E0; }
+  .modal h2 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 24px;
+    color: var(--primary);
+    margin-bottom: 4px;
+  }
+  .modal .modal-pinyin { color: var(--text-secondary); font-size: 14px; margin-bottom: 16px; }
+  .modal-section { margin-bottom: 16px; }
+  .modal-section h4 {
+    font-size: 13px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+  .modal-section p, .modal-section ul { font-size: 14px; color: var(--text-secondary); }
+  .modal-section ul { padding-left: 18px; }
+  .modal-section li { margin-bottom: 4px; }
+
+  /* ===== Footer ===== */
+  .footer {
+    text-align: center;
+    padding: 32px 24px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+    margin-top: 48px;
+  }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 768px) {
+    .layout { flex-direction: column; }
+    .sidebar { display: none; }
+    .hero h1 { font-size: 26px; }
+    .navbar nav { display: none; }
+  }
+
+  .no-results {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--text-secondary);
+    font-size: 15px;
+    grid-column: 1 / -1;
+  }
+</style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="logo">446<span>·</span>辨证查询</div>
+  <nav>
+    <a href="#home">首页</a>
+    <a href="#formulas">方剂</a>
+    <a href="#about">关于</a>
+  </nav>
+</nav>
+
+<!-- Hero -->
+<section class="hero" id="home">
+  <h1>桂林古本《伤寒杂病论》</h1>
+  <p>446辨证体系 · 72首核心方剂 · 智能查询与浏览</p>
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="搜索方剂名称、症状、病机..." oninput="filterCards()">
+    <button onclick="filterCards()">🔍</button>
+  </div>
+</section>
+
+<!-- Filters -->
+<div class="filters">
+  <div class="filter-chip active" data-tag="all" onclick="setFilter('all', this)">全部</div>
+  <div class="filter-chip" data-tag="biao" onclick="setFilter('biao', this)">表证</div>
+  <div class="filter-chip" data-tag="li" onclick="setFilter('li', this)">里证</div>
+  <div class="filter-chip" data-tag="han" onclick="setFilter('han', this)">寒证</div>
+  <div class="filter-chip" data-tag="re" onclick="setFilter('re', this)">热证</div>
+  <div class="filter-chip" data-tag="xu" onclick="setFilter('xu', this)">虚证</div>
+  <div class="filter-chip" data-tag="shi" onclick="setFilter('shi', this)">实证</div>
+</div>
+
+<!-- Layout -->
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <h3>方剂分类</h3>
+    <ul>
+      <li class="active" onclick="filterByCategory('all', this)">全部方剂</li>
+      <li onclick="filterByCategory('解表', this)">解表剂</li>
+      <li onclick="filterByCategory('清热', this)">清热剂</li>
+      <li onclick="filterByCategory('泻下', this)">泻下剂</li>
+      <li onclick="filterByCategory('温里', this)">温里剂</li>
+      <li onclick="filterByCategory('和解', this)">和解剂</li>
+      <li onclick="filterByCategory('补益', this)">补益剂</li>
+    </ul>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <h2 class="section-title" id="formulas">方剂总览</h2>
+    <div class="card-grid" id="cardGrid">
+
+      <!-- 桂枝汤 -->
+      <div class="card"
+           data-tags="biao han xu"
+           data-category="解表"
+           data-id="guizhi"
+           onclick="openModal('guizhi')">
+        <div class="card-tags">
+          <span class="tag tag-biao">表证</span>
+          <span class="tag tag-han">寒证</span>
+          <span class="tag tag-xu">虚证</span>
+        </div>
+        <h3>桂枝汤</h3>
+        <div class="pinyin">Guì Zhī Tāng</div>
+        <div class="desc">太阳病表虚证主方，解肌发表、调和营卫，治恶风发热、汗出脉浮缓。</div>
+      </div>
+
+      <!-- 麻黄汤 -->
+      <div class="card"
+           data-tags="biao han shi"
+           data-category="解表"
+           data-id="mahuang"
+           onclick="openModal('mahuang')">
+        <div class="card-tags">
+          <span class="tag tag-biao">表证</span>
+          <span class="tag tag-han">寒证</span>
+          <span class="tag tag-shi">实证</span>
+        </div>
+        <h3>麻黄汤</h3>
+        <div class="pinyin">Má Huáng Tāng</div>
+        <div class="desc">太阳病表实证主方，发汗解表、宣肺平喘，治恶寒发热、无汗而喘。</div>
+      </div>
+
+      <!-- 小柴胡汤 -->
+      <div class="card"
+           data-tags="li han re xu shi"
+           data-category="和解"
+           data-id="xiaochaihu"
+           onclick="openModal('xiaochaihu')">
+        <div class="card-tags">
+          <span class="tag tag-li">里证</span>
+          <span class="tag tag-han">寒证</span>
+          <span class="tag tag-re">热证</span>
+          <span class="tag tag-xu">虚证</span>
+          <span class="tag tag-shi">实证</span>
+        </div>
+        <h3>小柴胡汤</h3>
+        <div class="pinyin">Xiǎo Chái Hú Tāng</div>
+        <div class="desc">少阳病主方，和解少阳，治往来寒热、胸胁苦满、默默不欲饮食。</div>
+      </div>
+
+      <!-- 白虎汤 -->
+      <div class="card"
+           data-tags="li re shi"
+           data-category="清热"
+           data-id="baihu"
+           onclick="openModal('baihu')">
+        <div class="card-tags">
+          <span class="tag tag-li">里证</span>
+          <span class="tag tag-re">热证</span>
+          <span class="tag tag-shi">实证</span>
+        </div>
+        <h3>白虎汤</h3>
+        <div class="pinyin">Bái Hǔ Tāng</div>
+        <div class="desc">阳明气分热盛主方，清热生津，治壮热面赤、烦渴引饮、脉洪大。</div>
+      </div>
+
+      <!-- 大承气汤 -->
+      <div class="card"
+           data-tags="li re shi"
+           data-category="泻下"
+           data-id="dachengqi"
+           onclick="openModal('dachengqi')">
+        <div class="card-tags">
+          <span class="tag tag-li">里证</span>
+          <span class="tag tag-re">热证</span>
+          <span class="tag tag-shi">实证</span>
+        </div>
+        <h3>大承气汤</h3>
+        <div class="pinyin">Dà Chéng Qì Tāng</div>
+        <div class="desc">阳明腑实重证主方，峻下热结，治痞满燥实、腹痛拒按、大便不通。</div>
+      </div>
+
+      <!-- 四逆汤 -->
+      <div class="card"
+           data-tags="li han xu"
+           data-category="温里"
+           data-id="sini"
+           onclick="openModal('sini')">
+        <div class="card-tags">
+          <span class="tag tag-li">里证</span>
+          <span class="tag tag-han">寒证</span>
+          <span class="tag tag-xu">虚证</span>
+        </div>
+        <h3>四逆汤</h3>
+        <div class="pinyin">Sì Nì Tāng</div>
+        <div class="desc">少阴阳虚寒厥主方，回阳救逆，治四肢厥逆、恶寒蜷卧、下利清谷。</div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Modals -->
+
+<!-- 桂枝汤 Modal -->
+<div class="modal-overlay" id="modal-guizhi">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('guizhi')">✕</button>
+    <h2>桂枝汤</h2>
+    <div class="modal-pinyin">Guì Zhī Tāng · 桂林古本《伤寒杂病论》</div>
+    <div class="modal-section">
+      <h4>组成</h4>
+      <p>桂枝三两 · 芍药三两 · 生姜三两 · 大枣十二枚 · 炙甘草二两</p>
+    </div>
+    <div class="modal-section">
+      <h4>功效</h4>
+      <p>解肌发表，调和营卫</p>
+    </div>
+    <div class="modal-section">
+      <h4>主治</h4>
+      <ul>
+        <li>太阳病表虚证（中风）</li>
+        <li>恶风发热，汗出，脉浮缓</li>
+        <li>鼻鸣干呕</li>
+      </ul>
+    </div>
+    <div class="modal-section">
+      <h4>方解</h4>
+      <p>桂枝辛温通阳解肌为君；芍药酸苦敛阴和营为臣；生姜助桂枝解表，大枣助芍药和营，炙甘草调和诸药，共为佐使。五味相合，调和营卫，散中有收。</p>
+    </div>
+    <div class="modal-section">
+      <h4>煎服法</h4>
+      <p>以水七升，微火煮取三升，去滓，适寒温，服一升。服已须臾，啜热稀粥一升余，以助药力。温覆令一时许，遍身漐漐微似有汗者益佳。</p>
+    </div>
+  </div>
+</div>
+
+<!-- 麻黄汤 Modal -->
+<div class="modal-overlay" id="modal-mahuang">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('mahuang')">✕</button>
+    <h2>麻黄汤</h2>
+    <div class="modal-pinyin">Má Huáng Tāng · 桂林古本《伤寒杂病论》</div>
+    <div class="modal-section">
+      <h4>组成</h4>
+      <p>麻黄三两 · 桂枝二两 · 杏仁七十个 · 炙甘草一两</p>
+    </div>
+    <div class="modal-section">
+      <h4>功效</h4>
+      <p>发汗解表，宣肺平喘</p>
+    </div>
+    <div class="modal-section">
+      <h4>主治</h4>
+      <ul>
+        <li>太阳病表实证（伤寒）</li>
+        <li>恶寒发热，无汗而喘，脉浮紧</li>
+        <li>身体疼痛</li>
+      </ul>
+    </div>
+    <div class="modal-section">
+      <h4>方解</h4>
+      <p>麻黄辛温，开毛孔、发汗解表为君；桂枝辛甘温，助麻黄发汗为臣；杏仁苦降，宣肺平喘为佐；炙甘草甘温，调和诸药、防麻黄发汗太过为使。</p>
+    </div>
+    <div class="modal-section">
+      <h4>煎服法</h4>
+      <p>以水九升，先煮麻黄减二升，去上沫，纳诸药，煮取二升半，去滓，温服八合，覆取微似汗，不须啜粥。</p>
+    </div>
+  </div>
+</div>
+
+<!-- 小柴胡汤 Modal -->
+<div class="modal-overlay" id="modal-xiaochaihu">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('xiaochaihu')">✕</button>
+    <h2>小柴胡汤</h2>
+    <div class="modal-pinyin">Xiǎo Chái Hú Tāng · 桂林古本《伤寒杂病论》</div>
+    <div class="modal-section">
+      <h4>组成</h4>
+      <p>柴胡半斤 · 黄芩三两 · 人参三两 · 半夏半升 · 炙甘草三两 · 生姜三两 · 大枣十二枚</p>
+    </div>
+    <div class="modal-section">
+      <h4>功效</h4>
+      <p>和解少阳，调达枢机</p>
+    </div>
+    <div class="modal-section">
+      <h4>主治</h4>
+      <ul>
+        <li>少阳病：往来寒热，胸胁苦满</li>
+        <li>默默不欲饮食，心烦喜呕</li>
+        <li>口苦、咽干、目眩</li>
+      </ul>
+    </div>
+    <div class="modal-section">
+      <h4>方解</h4>
+      <p>柴胡苦平，升达少阳清气为君；黄芩苦寒，清泄少阳胆热为臣；半夏、生姜和胃降逆，人参、大枣益气和中，共为佐药；炙甘草调和诸药为使。寒温并用，攻补兼施。</p>
+    </div>
+    <div class="modal-section">
+      <h4>煎服法</h4>
+      <p>以水一斗二升，煮取六升，去滓，再煎取三升，温服一升，日三服。</p>
+    </div>
+  </div>
+</div>
+
+<!-- 白虎汤 Modal -->
+<div class="modal-overlay" id="modal-baihu">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('baihu')">✕</button>
+    <h2>白虎汤</h2>
+    <div class="modal-pinyin">Bái Hǔ Tāng · 桂林古本《伤寒杂病论》</div>
+    <div class="modal-section">
+      <h4>组成</h4>
+      <p>石膏一斤 · 知母六两 · 炙甘草二两 · 粳米六合</p>
+    </div>
+    <div class="modal-section">
+      <h4>功效</h4>
+      <p>清热生津，除烦止渴</p>
+    </div>
+    <div class="modal-section">
+      <h4>主治</h4>
+      <ul>
+        <li>阳明气分热盛证</li>
+        <li>壮热面赤，烦渴引饮，大汗出</li>
+        <li>脉洪大有力</li>
+      </ul>
+    </div>
+    <div class="modal-section">
+      <h4>方解</h4>
+      <p>石膏辛甘大寒，清阳明气分实热为君；知母苦寒质润，清热养阴润燥为臣；粳米、炙甘草和中护胃，防寒凉伤胃为佐使。四味相合，清热而不伤阴，护胃而不碍邪。</p>
+    </div>
+    <div class="modal-section">
+      <h4>煎服法</h4>
+      <p>以水一斗，煮米熟汤成，去滓，温服一升，日三服。</p>
+    </div>
+  </div>
+</div>
+
+<!-- 大承气汤 Modal -->
+<div class="modal-overlay" id="modal-dachengqi">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('dachengqi')">✕</button>
+    <h2>大承气汤</h2>
+    <div class="modal-pinyin">Dà Chéng Qì Tāng · 桂林古本《伤寒杂病论》</div>
+    <div class="modal-section">
+      <h4>组成</h4>
+      <p>大黄四两（酒洗）· 厚朴半斤 · 枳实五枚 · 芒硝三合</p>
+    </div>
+    <div class="modal-section">
+      <h4>功效</h4>
+      <p>峻下热结，荡涤肠胃</p>
+    </div>
+    <div class="modal-section">
+      <h4>主治</h4>
+      <ul>
+        <li>阳明腑实重证：痞、满、燥、实、坚俱全</li>
+        <li>腹痛拒按，大便不通，潮热谵语</li>
+        <li>脉滑数或沉实</li>
+      </ul>
+    </div>
+    <div class="modal-section">
+      <h4>方解</h4>
+      <p>大黄苦寒，攻积导滞、泻热去实为君；芒硝咸寒，软坚润燥、泄热通便为臣；厚朴苦温，行气除满，枳实苦微寒，破气消痞，共为佐使。四药合用，急下存阴，釜底抽薪。</p>
+    </div>
+    <div class="modal-section">
+      <h4>煎服法</h4>
+      <p>先煮厚朴、枳实，去滓，纳大黄，煮取二升，去滓，纳芒硝，更上微火一两沸，分温再服。得下，余勿服。</p>
+    </div>
+  </div>
+</div>
+
+<!-- 四逆汤 Modal -->
+<div class="modal-overlay" id="modal-sini">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('sini')">✕</button>
+    <h2>四逆汤</h2>
+    <div class="modal-pinyin">Sì Nì Tāng · 桂林古本《伤寒杂病论》</div>
+    <div class="modal-section">
+      <h4>组成</h4>
+      <p>附子一枚（生用，去皮破八片）· 干姜一两半 · 炙甘草二两</p>
+    </div>
+    <div class="modal-section">
+      <h4>功效</h4>
+      <p>回阳救逆，温中散寒</p>
+    </div>
+    <div class="modal-section">
+      <h4>主治</h4>
+      <ul>
+        <li>少阴阳虚寒厥证</li>
+        <li>四肢厥逆，恶寒蜷卧，呕吐下利</li>
+        <li>脉沉微细</li>
+      </ul>
+    </div>
+    <div class="modal-section">
+      <h4>方解</h4>
+      <p>附子大辛大热，温阳散寒、回阳救逆为君；干姜辛热，助附子温中散寒为臣；炙甘草甘温，益气补中、缓附姜燥烈之性，解附子毒，为佐使。三药合用，力专效宏，回阳以救逆。</p>
+    </div>
+    <div class="modal-section">
+      <h4>煎服法</h4>
+      <p>以水三升，煮取一升二合，去滓，分温再服。强人可大附子一枚、干姜三两。</p>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  <p>446辨证体系 · 基于桂林古本《伤寒杂病论》整理</p>
+  <p style="margin-top:8px; font-size:12px; color:#AAA;">仅供学习参考，临床请遵医嘱</p>
+</div>
+
+<script>
+  let currentFilter = 'all';
+  let currentCategory = 'all';
+
+  function setFilter(tag, el) {
+    currentFilter = tag;
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    filterCards();
+  }
+
+  function filterByCategory(cat, el) {
+    currentCategory = cat;
+    document.querySelectorAll('.sidebar li').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    filterCards();
+  }
+
+  function filterCards() {
+    const query = document.getElementById('searchInput').value.trim().toLowerCase();
+    const cards = document.querySelectorAll('.card');
+    let visibleCount = 0;
+
+    cards.forEach(card => {
+      const tags = card.dataset.tags || '';
+      const category = card.dataset.category || '';
+      const title = card.querySelector('h3').textContent.toLowerCase();
+      const desc = card.querySelector('.desc').textContent.toLowerCase();
+
+      let matchFilter = (currentFilter === 'all') || tags.includes(currentFilter);
+      let matchCategory = (currentCategory === 'all') || (category === currentCategory);
+      let matchSearch = !query || title.includes(query) || desc.includes(query);
+
+      if (matchFilter && matchCategory && matchSearch) {
+        card.style.display = '';
+        visibleCount++;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    const grid = document.getElementById('cardGrid');
+    let noResults = grid.querySelector('.no-results');
+    if (visibleCount === 0) {
+      if (!noResults) {
+        noResults = document.createElement('div');
+        noResults.className = 'no-results';
+        noResults.textContent = '没有找到匹配的方剂';
+        grid.appendChild(noResults);
+      }
+      noResults.style.display = '';
+    } else if (noResults) {
+      noResults.style.display = 'none';
+    }
+  }
+
+  function openModal(id) {
+    const overlay = document.getElementById('modal-' + id);
+    if (overlay) {
+      overlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  function closeModal(id) {
+    const overlay = document.getElementById('modal-' + id);
+    if (overlay) {
+      overlay.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+  }
+
+  // Close modal on overlay click
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', function(e) {
+      if (e.target === this) {
+        this.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    });
+  });
+
+  // Close modal on Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal-overlay.active').forEach(o => {
+        o.classList.remove('active');
+        document.body.style.overflow = '';
+      });
+    }
+  });
+</script>
+
+</body>
+</html>

@@ -299,6 +299,38 @@ body {
   .navbar .logo { font-size: 15px; }
   .hero h1 { font-size: 22px; }
 }
+
+/* 药象法折叠展示 */
+.herb-yaoxiang-toggle {
+  display: flex; align-items: center; gap: 4px;
+  margin-top: 6px; padding: 4px 0;
+  font-size: 11px; color: #C4BFBA;
+  cursor: pointer; user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.2s;
+}
+.herb-yaoxiang-toggle:hover { color: #A8A29E; }
+.herb-yaoxiang-toggle .arrow {
+  width: 10px; height: 10px;
+  transition: transform 0.25s ease;
+  opacity: 0.6;
+}
+.herb-yaoxiang-toggle .arrow.open { transform: rotate(180deg); }
+.herb-yaoxiang {
+  display: none; margin-top: 4px; padding: 6px 8px;
+  background: #F8F7F5; border-radius: 4px;
+  font-size: 12px; line-height: 1.6;
+  color: #78716C;
+}
+.herb-yaoxiang.open { display: block; }
+.yaoxiang-value { color: #78716C; }
+.yaoxiang-value .arrow-char { color: #A8A29E; margin: 0 2px; }
+.yaoxiang-void { margin-top: 6px; font-size: 10px; color: #D6D3D1; font-style: italic; }
+
+/* 弹窗中药象法区域 */
+.modal-yaoxiang-section { display: none; }
+.my-block .mb-value .my-arrow { color: var(--primary); }
+
 </style>
 </head>
 <body>
@@ -314,7 +346,7 @@ body {
     </a>
     <a href="446-herbs-quiz.html" class="nav-btn secondary" target="_self">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 10l2 2 4-4"/></svg>
-      <span>组方测试</span>
+      <span>组方自测</span>
     </a>
   </div>
 </nav>
@@ -369,6 +401,17 @@ body {
       <div class="modal-label">代表方</div>
       <div class="modal-value" id="modalDaibiao"></div>
     </div>
+    <div class="modal-yaoxiang-section" id="modalYaoxiangSection">
+      <div class="my-label">药象法 · 看形识药性</div>
+      <div class="my-block">
+        <div class="mb-mini-label">药象观察</div>
+        <div class="mb-value" id="modalYaoxiangLook"></div>
+      </div>
+      <div class="my-block">
+        <div class="mb-mini-label">药性推导</div>
+        <div class="mb-value" id="modalYaoxiangOut"></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -378,6 +421,127 @@ body {
 
 <script>
 const CAT_COLORS = { "四虚": "xu", "四实": "shi", "六外感": "wai" };
+const YAOXIANG_MAP = {
+  '生黄芪|气虚': { look: '根深色黄、质柔韧丝密', out: '入脾补中气，补而能走' },
+  '炙黄芪|气虚': { look: '蜜炙后色深质润', out: '补力更专，偏于温补中焦' },
+  '炙甘草|气虚': { look: '蜜炙后甘味更浓', out: '补中缓急之力增强，调和诸药' },
+  '人参|气虚': { look: '根如人形、芦头密集', out: '形似人体，大补一身元气' },
+  '党参|气虚': { look: '根圆柱形、质柔润', out: '形似人参而力弱，平补脾胃' },
+  '炒白术|气虚': { look: '根肥大白、炒后香燥', out: '健脾燥湿力增，守而不走' },
+  '糯米|气虚': { look: '米粒圆润、黏性强', out: '黏滞之性可补中焦、缩尿敛汗' },
+  '粳米|气虚': { look: '米粒饱满、甘淡平和', out: '平淡养胃气，护中焦' },
+  '附子|阳虚': { look: '', out: '' },
+  '干姜|阳虚': { look: '老姜干燥、质重辣烈', out: '水分全失则热力纯守中焦' },
+  '炮姜|阳虚': { look: '干姜炒炭、色黑质轻', out: '炭化后温经止血，守而不走' },
+  '生姜|阳虚': { look: '鲜品多汁、辛辣窜散', out: '含水分多故走表散寒、止呕' },
+  '桂枝|阳虚': { look: '肉桂嫩枝、细而向上', out: '枝走肢节，温通血脉向外走' },
+  '吴茱萸|阳虚': { look: '果实辛热、嚼之麻舌', out: '辛热走肝，散寒降逆善止痛' },
+  '炒白芍|血虚': { look: '根白质实、炒后收敛', out: '色白入血，质实能收，柔肝敛阴' },
+  '生地黄|血虚': { look: '根肥厚多汁、酒煎减寒', out: '鲜品多汁则滋阴，酒制则行血' },
+  '熟地|血虚': { look: '九蒸九晒、色黑质润', out: '黑入肾、润养精，大补肾阴' },
+  '当归|血虚': { look: '根油润多脂、断面油点', out: '油润养血脉，分三部各有所主' },
+  '阿胶|血虚': { look: '驴皮胶、色黑质粘', out: '皮属肺、黑入肾、胶粘止血养阴' },
+  '大枣|血虚': { look: '果实肥厚、甘甜质糯', out: '甘补脾胃之津液，养血安神' },
+  '生白芍|阴虚': { look: '根白质实、味酸收敛', out: '生用凉润，柔肝止痛力更强' },
+  '麦门冬|阴虚': { look: '根纺锤形、质柔润多汁', out: '形如心、汁滋润，养心肺之阴' },
+  '火麻仁|阴虚': { look: '种仁含油极多、一碾出油', out: '油脂润滑肠道，润通而不攻' },
+  '知母|阴虚': { look: '根肥厚多汁、色白质润', out: '多汁故能滋阴，色白入肺清气热' },
+  '百合|阴虚': { look: '鳞茎层层包裹、色白形美', out: '类肺之形，清润肺金' },
+  '麦芽糖|阴虚': { look: '麦芽熬制、甘甜黏稠', out: '甘守中焦，缓急补虚' },
+  '怀山药|阴虚': { look: '根条直质密、黏液丰富', out: '质密补脾肾，黏液固精缩尿' },
+  '赤石脂|固涩': { look: '矿物色赤、质细腻粘舌', out: '色赤入血、质粘能涩，固脱止利' },
+  '禹余粮|固涩': { look: '矿物质重、色黄褐', out: '质重沉降、固涩下焦，与赤石脂同用' },
+  '龙骨|固涩': { look: '化石沉重、质酥易碎', out: '质重镇惊安神，涩能收敛固脱' },
+  '牡蛎|固涩': { look: '贝壳质重、层层如瓦', out: '质重潜阳、壳能软坚散结' },
+  '五味子|固涩': { look: '果实皮肉甘酸、核辛苦咸', out: '五味俱全故能敛五脏之气' },
+  '乌梅|固涩': { look: '烟熏色黑、味酸极敛', out: '极酸故能敛肺涩肠、安蛔' },
+  '山茱萸|固涩': { look: '果实色红油润、味酸微温', out: '酸收滋补，补肝肾而固脱' },
+  '柴胡|气滞': { look: '茎细长直立、色青绿', out: '细直疏肝气、青绿入肝胆' },
+  '川芎|气滞': { look: '根茎不规则结节、气香浓', out: '香烈走窜，上行头目下行血海' },
+  '枳实|气滞': { look: '果实小、质坚实', out: '形小力猛，破气消积之力强' },
+  '枳壳|气滞': { look: '果实大、质轻', out: '形大力缓，宽中行气而不猛' },
+  '厚朴|气滞': { look: '树皮厚、香气浓烈', out: '皮厚故能燥湿下气，芳香醒脾' },
+  '赤芍|血瘀': { look: '根赤色、质坚实', out: '色赤入血分，凉血散瘀力量专' },
+  '红花|血瘀': { look: '花红色、质轻油润', out: '色红入血、质轻上行，活血通经' },
+  '桃仁|血瘀': { look: '种仁油润、去皮色红', out: '油润润肠、色红入血，活血润肠并施' },
+  '丹皮|血瘀': { look: '根皮色红、香气清郁', out: '色红入血凉血，芳香行气散瘀' },
+  '地龙|血瘀': { look: '虫体细长、善钻土', out: '钻土善通经隧，清热定惊通络' },
+  '牛膝|血瘀': { look: '根节状如膝、质柔韧', out: '节似膝故引血下行，质韧补肝肾' },
+  '莪术|血瘀': { look: '根茎块状、气香浓烈', out: '香烈走窜，行气破血力猛' },
+  '瓜蒂|痰饮水湿': { look: '瓜蒂味极苦、苦能涌吐', out: '苦极上行，涌吐痰食' },
+  '姜半夏|痰饮水湿': { look: '姜制后辛燥减、温性增', out: '生姜制其毒，降逆止呕专药' },
+  '杏仁|痰饮水湿': { look: '种仁油润', out: '油润润肺止咳，形似心而通大肠' },
+  '陈皮|痰饮水湿': { look: '橘皮陈久、气香燥烈减', out: '陈久则燥性减，理气而不伤阴' },
+  '茯苓|痰饮水湿': { look: '菌核质轻、色白多孔', out: '白入肺、多孔通调水道，利水不伤正' },
+  '猪苓|痰饮水湿': { look: '菌核色黑、质轻如木', out: '色黑入肾、质轻通利，利水最强' },
+  '泽泻|痰饮水湿': { look: '根茎类圆、质轻多粉', out: '形圆走水道、多粉能利水泄热' },
+  '防己|痰饮水湿': { look: '根粉质、木纤维重', out: '粉质祛湿、纤维通经，祛风湿止痛' },
+  '薏苡仁|痰饮水湿': { look: '种仁色白饱满、质硬', out: '色白入肺健脾、质硬能利湿排脓' },
+  '桔梗|痰饮水湿': { look: '根圆柱形、质实', out: '形直如气管，载药上浮宣肺' },
+  '前胡|痰饮水湿': { look: '根圆锥形、气香', out: '形似桔梗而偏降气，化痰降气' },
+  '赤小豆|痰饮水湿': { look: '豆粒色红、质实', out: '色红入心、质实利水，解毒排脓' },
+  '白蔻仁|痰饮水湿': { look: '果实芳香味辛', out: '芳香化湿醒脾，辛散行气温中' },
+  '通草|痰饮水湿': { look: '茎髓质轻、色白中间有孔', out: '质轻通利水道，色白入肺' },
+  '滑石|痰饮水湿': { look: '矿物质滑、入水即散', out: '质滑利窍通淋，性寒清热解暑' },
+  '淡竹叶|痰饮水湿': { look: '叶色绿质轻', out: '叶轻走表凉散心火，入小肠利尿' },
+  '生石膏|内火': { look: '矿石质重色白、纹理如丝', out: '质重沉降清透、清白入肺胃' },
+  '大黄|内火': { look: '根粗大色黄、断面红纹', out: '色黄入胃、红纹通血脉，推陈致新' },
+  '黄连|内火': { look: '根节密色黄、极苦', out: '节密则能量集中，极苦则泻火最强' },
+  '黄芩|内火': { look: '根中空色黄、质轻松', out: '中空走肺、色黄清热，清肺胆之火' },
+  '黄柏|内火': { look: '根皮色黄、质重', out: '色黄入下焦，清肾中湿热' },
+  '芒硝|内火': { look: '针状结晶、咸味极重', out: '咸能软坚、结晶能润燥，泻下通便' },
+  '栀子|内火': { look: '果实色红、质轻', out: '色红入心、质轻散郁，清三焦火' },
+  '淡豆豉|内火': { look: '黑豆发酵、香气外透', out: '发酵则升散，宣散郁热除烦' },
+  '茵陈蒿|内火': { look: '幼苗嫩绿、气清香', out: '嫩绿秉春生之气，清利肝胆湿热' },
+  '白头翁|内火': { look: '根有白毛如翁', out: '白毛清热解毒，专治热毒血痢' },
+  '秦皮|内火': { look: '树皮色青、味苦', out: '青入肝胆、苦燥湿热，治热痢' },
+  '荆芥|风邪': { look: '茎叶气香轻扬', out: '轻扬走表，祛风解表散邪' },
+  '防风|风邪': { look: '根柔韧如防风屏', out: '质柔不峻，祛风而不燥，风药中润剂' },
+  '麻黄|寒邪': { look: '茎中空质轻、色绿微黄', out: '中空轻扬、宣肺发汗力量最强' },
+  '细辛|寒邪': { look: '根细长辛烈、嚼之麻舌', out: '细辛入少阴、辛烈通彻表里' },
+  '清酒|寒邪': { look: '米酒温通、酒性行散', out: '酒行药势、温通血脉' },
+  '苍术|湿邪': { look: '根芳香油润、断面朱砂点', out: '芳香燥湿力强、朱砂点入血分' },
+  '升麻|外火': { look: '茎中空轻扬', out: '中空升提、轻扬走表，升阳举陷' },
+  '葛根|外火': { look: '根粗长纤维多、生嚼津多', out: '纤维撑肌、津多升津，解肌止渴' },
+  '金银花|外火': { look: '花初开色白后黄、形如金银', out: '花轻散风热，黄白相间清透热毒' },
+  '连翘|外火': { look: '果壳中空、形如心', out: '中空走表散热、形心如心清心火' },
+  '牛蒡子|外火': { look: '种子有钩刺、质硬', out: '钩刺疏散风热、质硬通利咽喉' },
+  '薄荷|外火': { look: '叶芳香清凉、嚼之凉爽', out: '芳香清爽，疏散风热利咽' },
+  '桑叶|热燥': { look: '叶薄脉密、质轻', out: '薄叶轻扬散风热，脉密入络清肝肺' },
+  '胡麻仁|热燥': { look: '种仁油润含油', out: '油脂润滑，润燥通便' },
+  '枇杷叶|热燥': { look: '叶大绒毛、色绿', out: '大叶降气、绒毛化痰止咳' },
+  '紫苏叶|凉燥': { look: '叶面紫背绿、气香散', out: '紫绿相间行气血，芳香解表散寒' },
+};
+
+const YAOXIANG_NAME_ALIASES = {
+  '生地黄（酒煎）': '生地黄',
+  '生牡蛎': '牡蛎',
+  '生龙骨': '龙骨',
+  '瓜蒌根（天花粉）': '天花粉',
+  '无硫黑顺片（附子）': '附子',
+  '生姜皮（姜皮）': '生姜',
+  '丹皮（牡丹皮）': '丹皮',
+};
+
+function mergeYaoxiang(herb) {
+  const name = YAOXIANG_NAME_ALIASES[herb.name] || herb.name;
+  // Try exact match: name|subcat
+  let key = name + '|' + herb.subcat;
+  let match = YAOXIANG_MAP[key];
+  if (match) {
+    herb.yaoxiang_look = match.look;
+    herb.yaoxiang_out = match.out;
+    return;
+  }
+  // Try name-only fallback
+  for (const [yk, yv] of Object.entries(YAOXIANG_MAP)) {
+    if (yk.startsWith(name + '|')) {
+      herb.yaoxiang_look = yv.look;
+      herb.yaoxiang_out = yv.out;
+      return;
+    }
+  }
+}
 
 const HERBS = [
   { name: "生黄芪", cat: "四虚", subcat: "气虚", xingwei: "甘，温", guijing: "脾、肺经", gongxiao: "补气固表、利水消肿、托毒排脓、敛疮生肌、行滞通痹、生津养血、升阳举陷。", daibiao: "黄芪甘草汤、黄芪糯米粥、补阳还五汤、黄芪桂枝五物汤、补中益气汤" },
@@ -482,11 +646,14 @@ function filterHerbs() {
     const catMatch = currentCat === "all" || h.cat === currentCat;
     const s = currentSearch;
     const searchMatch = !s ||
-      h.name.includes(s) || h.xingwei.includes(s) || h.guijing.includes(s) ||
+      h.name.includes(s) || h.xingwei.includes(s) || h.guijing.includes(s) || (h.yaoxiang_look && h.yaoxiang_look.includes(s)) || (h.yaoxiang_out && h.yaoxiang_out.includes(s)) ||
       h.gongxiao.includes(s) || (h.daibiao && h.daibiao.includes(s));
     return catMatch && searchMatch;
   });
 }
+
+// 合并药象法数据
+HERBS.forEach(mergeYaoxiang);
 
 function renderHerbs() {
   const container = document.getElementById('herbContainer');
@@ -515,7 +682,7 @@ function renderHerbs() {
     html += '<div class="herb-grid">';
     grouped[subcat].forEach(h => {
       const idx = HERBS.indexOf(h);
-      html += `<div class="herb-card" onclick="openModal(${idx})" role="button" tabindex="0" onkeydown="if(event.key==='Enter')openModal(${idx})">
+      html += `<div class="herb-card" onclick="toggleYaoxiangCard(this)" role="button" tabindex="0" onkeydown="if(event.key==='Enter')toggleYaoxiangCard(this)">
         <div class="card-top">
           <div class="herb-name">${h.name}</div>
           <div class="herb-tag ${catClass(h.cat)}">${h.subcat}</div>
@@ -523,6 +690,15 @@ function renderHerbs() {
         <div class="herb-xingwei">${h.xingwei} · ${h.guijing}</div>
         <div class="herb-gongxiao">${h.gongxiao}</div>
         ${h.daibiao ? `<div class="herb-daibiao"><span class="daibiao-label">代表方 </span>${h.daibiao}</div>` : ''}
+        ${h.yaoxiang_look || h.yaoxiang_out ? `
+        <div class="herb-yaoxiang-toggle" onclick="event.stopPropagation();toggleYaoxiangCard(this.parentElement)">
+          <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+          <span>看形识药性</span>
+        </div>
+        <div class="herb-yaoxiang">
+          <div class="yaoxiang-value">${h.yaoxiang_look || ''}</div>
+          ${h.yaoxiang_out ? `<div style="margin-top:4px"><span class="arrow-char">→</span> ${h.yaoxiang_out}</div>` : ''}
+        </div>` : '<div class="yaoxiang-void">暂无药象数据</div>'}
       </div>`;
     });
     html += '</div>';
@@ -551,27 +727,22 @@ document.querySelectorAll('.cat-tab').forEach(tab => {
   });
 });
 
-function openModal(idx) {
-  const h = HERBS[idx];
-  document.getElementById('modalName').textContent = h.name;
-  document.getElementById('modalCat').textContent = `${h.cat} · ${h.subcat}`;
-  document.getElementById('modalXingwei').textContent = h.xingwei;
-  document.getElementById('modalGuijing').textContent = h.guijing;
-  document.getElementById('modalGongxiao').textContent = h.gongxiao;
-  document.getElementById('modalDaibiao').textContent = h.daibiao || '暂无';
-  document.getElementById('modalDaibiaoSection').style.display = h.daibiao ? 'block' : 'none';
-  document.getElementById('modalOverlay').classList.add('active');
-  document.body.style.overflow = 'hidden';
+function toggleYaoxiangCard(el) {
+  const content = el.querySelector('.herb-yaoxiang');
+  if (content) {
+    content.classList.toggle('open');
+    const arrow = el.querySelector('.herb-yaoxiang-toggle .arrow');
+    if (arrow) arrow.classList.toggle('open');
+  }
 }
+
+const CAT_CLICK_HANDLED = true;
 
 function closeModal() {
   document.getElementById('modalOverlay').classList.remove('active');
   document.body.style.overflow = '';
 }
 
-document.getElementById('modalOverlay').addEventListener('click', e => {
-  if (e.target === e.currentTarget) closeModal();
-});
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closeModal();
 });
