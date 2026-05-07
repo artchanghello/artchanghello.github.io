@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>能量钟</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-text-size-adjust: 100%; }
+
+    :root {
+      --bg: #FFF8F0; --card: #FFFFFF;
+      --fg: #292524; --muted: #A8A29E;
+      --border: #E7E5E4;
+      --accent: #B45309; --accent-soft: rgba(180,83,9,0.12);
+      --rest: #65A30D;
+      --shadow: 0 2px 8px rgba(0,0,0,0.06);
+      --font: 'Noto Sans SC', system-ui, sans-serif;
+      --font-head: 'Noto Serif SC', serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    body {
+      font-family: var(--font); background: var(--bg); color: var(--fg);
+      line-height: 1.5; -webkit-font-smoothing: antialiased;
+      min-height: 100vh; display: flex; justify-content: center;
+      padding: 20px;
+    }
+
+    .app { max-width: 440px; width: 100%; padding: 24px 0; }
+
+    .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+    .logo { font-family: var(--font-head); font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+    .logo svg { width: 22px; height: 22px; color: var(--accent); }
+    .budget {
+      display: flex; align-items: center; gap: 6px; cursor: pointer;
+      font-size: 13px; color: var(--muted);
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 20px; padding: 5px 14px;
+    }
+    .budget .num { font-family: var(--font-mono); color: var(--accent); font-weight: 500; }
+
+    .panel { background: var(--card); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow); padding: 28px 24px; margin-bottom: 16px; }
+
+    .prompt { font-size: 16px; font-weight: 500; margin-bottom: 20px; text-align: center; text-wrap: pretty; }
+    .energy-grid { display: flex; gap: 12px; margin-bottom: 20px; }
+    .e-btn {
+      flex: 1; padding: 16px 8px; border-radius: 12px;
+      border: 1.5px solid var(--border); background: var(--card);
+      cursor: pointer; text-align: center; font-family: inherit;
+      transition: all 0.2s ease;
+    }
+    .e-btn:hover { border-color: var(--accent); }
+    .e-btn.selected { border-color: var(--accent); background: var(--accent-soft); }
+    .e-btn .e-icon { font-size: 24px; margin-bottom: 4px; display: block; }
+    .e-btn .e-label { font-size: 14px; font-weight: 500; }
+    .e-btn .e-desc { font-size: 11px; color: var(--muted); margin-top: 2px; display: block; }
+
+    .task-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
+    .t-btn {
+      padding: 12px; border-radius: 10px;
+      border: 1.5px solid var(--border); background: var(--card);
+      cursor: pointer; text-align: center; font-family: inherit; font-size: 14px;
+      transition: all 0.2s ease;
+    }
+    .t-btn:hover { border-color: var(--accent); }
+    .t-btn.selected { border-color: var(--accent); background: var(--accent-soft); font-weight: 500; }
+
+    .start-btn {
+      width: 100%; padding: 14px; border-radius: 12px;
+      border: none; background: var(--accent); color: white;
+      font-size: 16px; font-weight: 500; cursor: pointer;
+      font-family: inherit; transition: opacity 0.2s;
+    }
+    .start-btn:hover { opacity: 0.88; }
+
+    .mode-preview { text-align: center; font-size: 13px; color: var(--muted); margin-top: 12px; padding: 10px; background: var(--bg); border-radius: 10px; }
+    .mode-preview strong { color: var(--accent); }
+
+    .screen { display: none; }
+    .screen.active { display: block; animation: fadeIn 0.25s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes ringIn { from { transform: rotate(-90deg) scale(0.92); opacity: 0; } to { transform: rotate(-90deg) scale(1); opacity: 1; } }
+
+    .task-label { font-size: 13px; color: var(--muted); text-align: center; margin-bottom: 24px; }
+    .task-label .tag { display: inline-block; padding: 2px 10px; background: var(--accent-soft); color: var(--accent); border-radius: 999px; font-size: 12px; margin-left: 6px; }
+
+    .ring-wrap { width: 240px; height: 240px; margin: 0 auto 24px; position: relative; }
+    .ring-in .ring-wrap svg { animation: ringIn 0.4s ease-out; }
+    .ring-wrap svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+    .ring-bg { fill: none; stroke: var(--border); stroke-width: 5; }
+    .ring-fg { fill: none; stroke: var(--accent); stroke-width: 5; stroke-linecap: round; transition: stroke-dashoffset 0.4s ease, stroke 0.3s ease; }
+    .ring-fg.rest { stroke: var(--rest); }
+    .ring-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .ring-label { font-size: 12px; letter-spacing: 0.08em; color: var(--accent); padding: 3px 12px; border: 1px solid var(--accent); border-radius: 999px; margin-bottom: 8px; }
+    .ring-num { font-family: var(--font-mono); font-size: 52px; font-weight: 500; letter-spacing: 0.02em; font-variant-numeric: tabular-nums; }
+    .ring-reminder { font-size: 12px; color: var(--muted); text-align: center; margin-top: 8px; }
+
+    .ctrl-row { display: flex; justify-content: center; gap: 16px; }
+    .cta {
+      width: 52px; height: 52px; border-radius: 50%;
+      border: 1.5px solid var(--border); background: var(--card);
+      color: var(--muted); cursor: pointer;
+      display: grid; place-items: center;
+      transition: all 0.2s ease;
+    }
+    .cta:hover { border-color: var(--fg); color: var(--fg); }
+    .cta svg { width: 20px; height: 20px; }
+    .cta.primary { width: 64px; height: 64px; background: var(--accent); border-color: var(--accent); color: white; }
+    .cta.primary:hover { opacity: 0.88; }
+    .cta.primary svg { width: 26px; height: 26px; }
+    .cta.stopped svg { margin-left: 3px; }
+
+    .end-icon { margin-bottom: 8px; }
+    .end-icon svg { width: 40px; height: 40px; color: var(--accent); }
+    .end-title { font-family: var(--font-head); font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+    .end-sub { font-size: 14px; color: var(--muted); margin-bottom: 20px; }
+    .feedback-grid { display: flex; gap: 10px; margin-bottom: 20px; }
+    .f-btn {
+      flex: 1; padding: 14px 8px; border-radius: 10px;
+      border: 1.5px solid var(--border); background: var(--card);
+      cursor: pointer; text-align: center; font-family: inherit;
+      transition: all 0.2s ease;
+    }
+    .f-btn:hover { border-color: var(--accent); }
+    .f-btn.selected { border-color: var(--accent); background: var(--accent-soft); }
+    .f-btn .f-icon { font-size: 20px; display: block; margin-bottom: 2px; }
+    .f-btn .f-lbl { font-size: 13px; }
+    .end-actions { display: flex; gap: 10px; }
+    .end-actions button {
+      flex: 1; padding: 12px; border-radius: 10px;
+      border: 1.5px solid var(--border); background: var(--card);
+      cursor: pointer; font-family: inherit; font-size: 14px;
+      transition: all 0.2s ease;
+    }
+    .end-actions button:hover { border-color: var(--accent); }
+    .end-actions button.primary { background: var(--accent); border-color: var(--accent); color: white; }
+    .end-actions button.primary:hover { opacity: 0.88; }
+
+    .dash-title { font-family: var(--font-head); font-size: 18px; font-weight: 600; margin-bottom: 20px; }
+    .dash-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+    .dash-stat { text-align: center; padding: 14px; background: var(--bg); border-radius: 10px; }
+    .dash-stat .d-num { font-family: var(--font-head); font-size: 24px; font-weight: 600; color: var(--accent); }
+    .dash-stat .d-lbl { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .dash-list { list-style: none; }
+    .dash-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+    .dash-item:last-child { border-bottom: none; }
+    .dash-item .di-time { font-family: var(--font-mono); font-size: 12px; color: var(--muted); min-width: 44px; }
+    .dash-item .di-task { font-size: 12px; color: var(--accent); padding: 1px 8px; border-radius: 4px; background: var(--accent-soft); }
+    .dash-item .di-mood { font-size: 16px; margin-left: auto; }
+    .dash-empty { text-align: center; padding: 32px 0; color: var(--muted); font-size: 14px; }
+    .dash-back { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--card); cursor: pointer; font-family: inherit; font-size: 14px; margin-top: 16px; }
+    .dash-back:hover { border-color: var(--accent); }
+
+    @media (max-width: 480px) {
+      .app { padding: 16px 0; }
+      .panel { padding: 24px 16px; }
+      .ring-wrap { width: 200px; height: 200px; }
+      .ring-num { font-size: 40px; }
+      .dash-stats { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+
+    <div class="header">
+      <span class="logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        能量钟
+      </span>
+      <div class="budget" id="budgetWrap">
+        今日 <span class="num" id="budgetUsed">0</span>/<span class="num" id="budgetTotal">5</span>块
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>
+
+    <div class="screen active" id="screen-start">
+      <div class="panel">
+        <div class="prompt">你现在感觉怎么样？</div>
+        <div class="energy-grid">
+          <div class="e-btn" data-energy="high"><span class="e-icon">🔋</span><span class="e-label">有劲</span><span class="e-desc">35分钟 / 5分钟休息</span></div>
+          <div class="e-btn selected" data-energy="mid"><span class="e-icon">⚡</span><span class="e-label">还行</span><span class="e-desc">25分钟 / 5分钟休息</span></div>
+          <div class="e-btn" data-energy="low"><span class="e-icon">🪫</span><span class="e-label">累了</span><span class="e-desc">15分钟 / 10分钟休息</span></div>
+        </div>
+        <div class="prompt">今天想做什么？</div>
+        <div class="task-grid">
+          <div class="t-btn selected" data-task="study">📖 学习 446</div>
+          <div class="t-btn" data-task="tuina">✋ 练推拿</div>
+          <div class="t-btn" data-task="design">🎨 做设计</div>
+          <div class="t-btn" data-task="other">📝 其他</div>
+        </div>
+        <button class="start-btn" id="startBtn">开始</button>
+        <div class="mode-preview" id="modePreview">还行 · 25分钟专注 → 5分钟休息</div>
+      </div>
+    </div>
+
+    <div class="screen" id="screen-focus">
+      <div class="panel">
+        <div class="task-label">当前 <span class="tag" id="focusTaskTag">学习 446</span></div>
+        <div class="ring-wrap">
+          <svg viewBox="0 0 200 200">
+            <circle class="ring-bg" cx="100" cy="100" r="88"/>
+            <circle class="ring-fg" id="focusFg" cx="100" cy="100" r="88" stroke-dasharray="552.92" stroke-dashoffset="0"/>
+          </svg>
+          <div class="ring-center">
+            <span class="ring-label" id="focusLabel">专注</span>
+            <span class="ring-num" id="focusNum">25:00</span>
+          </div>
+        </div>
+        <div class="ring-reminder" id="focusReminder">第 <strong id="sessionNum">1</strong> 块 · 今日还剩 <strong id="remainBlock">4</strong></div>
+        <div class="ctrl-row">
+          <div class="cta" id="focusAbandon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg></div>
+          <div class="cta primary stopped" id="focusMainBtn"><svg viewBox="0 0 24 24" fill="currentColor" id="focusPlay"><polygon points="6 4 20 12 6 20 6 4"/></svg><svg viewBox="0 0 24 24" fill="currentColor" id="focusPause" style="display:none;"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="screen" id="screen-end">
+      <div class="panel" style="text-align:center;">
+        <div class="end-icon" id="endIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg></div>
+        <div class="end-title" id="endTitle">专注完成！</div>
+        <div class="end-sub" id="endSub">刚才感觉怎么样？</div>
+        <div class="feedback-grid">
+          <div class="f-btn" data-mood="good"><span class="f-icon">👍</span><span class="f-lbl">有状态</span></div>
+          <div class="f-btn" data-mood="ok"><span class="f-icon">👌</span><span class="f-lbl">还行</span></div>
+          <div class="f-btn" data-mood="bad"><span class="f-icon">👎</span><span class="f-lbl">走神了</span></div>
+        </div>
+        <div class="end-actions">
+          <button id="endBtnLeft">好</button>
+          <button class="primary" id="endBtnRight">再来一块</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="screen" id="screen-dash">
+      <div class="panel">
+        <div class="dash-title">今日记录</div>
+        <div class="dash-stats">
+          <div class="dash-stat"><div class="d-num" id="dashCount">0</div><div class="d-lbl">完成块数</div></div>
+          <div class="dash-stat"><div class="d-num" id="dashMins">0</div><div class="d-lbl">专注分钟</div></div>
+          <div class="dash-stat"><div class="d-num" id="dashGood">0%</div><div class="d-lbl">有状态率</div></div>
+        </div>
+        <div id="dashList"></div>
+        <button class="dash-back" id="dashBack">← 继续</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const ENERGY = { high: { work: 35, rest: 5, label: '有劲' }, mid: { work: 25, rest: 5, label: '还行' }, low: { work: 15, rest: 10, label: '累了' } };
+    const TASK_NAMES = { study: '学习 446', tuina: '练推拿', design: '做设计', other: '其他' };
+    const TASK_ICONS = { study: '📖', tuina: '✋', design: '🎨', other: '📝' };
+    const CIRC = 2 * Math.PI * 88;
+
+    function todayKey() { return new Date().toISOString().slice(0,10); }
+    function loadDay() { try { return JSON.parse(localStorage.getItem('ec_'+todayKey())) || {sessions:[],energy:'mid'}; } catch(e) { return {sessions:[],energy:'mid'}; } }
+    function saveDay(d) { localStorage.setItem('ec_'+todayKey(), JSON.stringify(d)); }
+
+    var energy = 'mid', task = 'study', mood = null, curSec = 0, maxSec = 0, running = false, interval = null;
+    var dayData = loadDay();
+    function $(id) { return document.getElementById(id); }
+
+    function showScreen(id) {
+      var s = document.querySelectorAll('.screen');
+      for (var i = 0; i < s.length; i++) s[i].classList.remove('active');
+      $(id).classList.add('active');
+    }
+
+    function fmt(s) { var m = Math.floor(s/60), sec = s%60; return (m<10?'0':'')+m+':'+(sec<10?'0':'')+sec; }
+
+    function updateBudget() { dayData = loadDay(); $('budgetUsed').textContent = dayData.sessions.length; }
+
+    // Energy buttons
+    document.querySelectorAll('.e-btn').forEach(function(el) {
+      el.onclick = function() {
+        document.querySelectorAll('.e-btn').forEach(function(b) { b.classList.remove('selected'); });
+        this.classList.add('selected'); energy = this.getAttribute('data-energy');
+        var e = ENERGY[energy];
+        $('modePreview').textContent = e.label + ' · ' + e.work + '分钟专注 → ' + e.rest + '分钟休息';
+      };
+    });
+
+    // Task buttons
+    document.querySelectorAll('.t-btn').forEach(function(el) {
+      el.onclick = function() {
+        document.querySelectorAll('.t-btn').forEach(function(b) { b.classList.remove('selected'); });
+        this.classList.add('selected'); task = this.getAttribute('data-task');
+      };
+    });
+
+    // Start
+    $('startBtn').onclick = function() {
+      var e = ENERGY[energy];
+      maxSec = curSec = e.work * 60; running = false;
+      if (interval) { clearInterval(interval); interval = null; }
+      $('sessionNum').textContent = dayData.sessions.length + 1;
+      $('remainBlock').textContent = Math.max(0, 5 - dayData.sessions.length - 1);
+      $('focusTaskTag').textContent = TASK_NAMES[task] || task;
+      $('focusLabel').textContent = '专注'; $('focusLabel').className = 'ring-label';
+      $('focusFg').className = 'ring-fg'; $('focusNum').textContent = fmt(curSec);
+      $('focusReminder').style.display = '';
+      $('focusFg').setAttribute('stroke-dashoffset', '0');
+      $('focusPlay').style.display = ''; $('focusPause').style.display = 'none';
+      $('focusMainBtn').classList.add('stopped');
+      $('screen-focus').classList.remove('ring-in');
+      void $('screen-focus').offsetWidth;
+      $('screen-focus').classList.add('ring-in');
+      showScreen('screen-focus');
+      setTimeout(function() {
+        running = true;
+        $('focusPlay').style.display = 'none'; $('focusPause').style.display = '';
+        $('focusMainBtn').classList.remove('stopped');
+        interval = setInterval(function() {
+          curSec--;
+          $('focusNum').textContent = fmt(curSec);
+          $('focusFg').setAttribute('stroke-dashoffset', String(CIRC * (1 - curSec / maxSec)));
+          if (curSec <= 0) {
+            clearInterval(interval); interval = null; running = false;
+            document.querySelectorAll('.f-btn').forEach(function(b) { b.classList.remove('selected'); });
+            mood = null;
+            $('endTitle').textContent = '专注完成！';
+            $('endSub').textContent = '刚才感觉怎么样？';
+            showScreen('screen-end');
+          }
+        }, 1000);
+      }, 300);
+    };
+
+    // Focus pause/resume
+    $('focusMainBtn').onclick = function() {
+      if (running) {
+        clearInterval(interval); interval = null; running = false;
+        $('focusPlay').style.display = ''; $('focusPause').style.display = 'none';
+        this.classList.add('stopped');
+      } else if (curSec > 0) {
+        running = true;
+        $('focusPlay').style.display = 'none'; $('focusPause').style.display = '';
+        this.classList.remove('stopped');
+        interval = setInterval(function() {
+          curSec--;
+          $('focusNum').textContent = fmt(curSec);
+          $('focusFg').setAttribute('stroke-dashoffset', String(CIRC * (1 - curSec / maxSec)));
+          if (curSec <= 0) {
+            clearInterval(interval); interval = null; running = false;
+            document.querySelectorAll('.f-btn').forEach(function(b) { b.classList.remove('selected'); });
+            mood = null;
+            $('endTitle').textContent = '专注完成！';
+            $('endSub').textContent = '刚才感觉怎么样？';
+            showScreen('screen-end');
+          }
+        }, 1000);
+      }
+    };
+
+    // Abandon
+    $('focusAbandon').onclick = function() {
+      if (interval) { clearInterval(interval); interval = null; running = false; }
+      showScreen('screen-start');
+    };
+
+    // End screen buttons
+    $('endBtnLeft').onclick = function() { showScreen('screen-start'); };
+    $('endBtnRight').onclick = function() { showScreen('screen-start'); };
+
+    // Feedback buttons - save session on click
+    document.querySelectorAll('.f-btn').forEach(function(el) {
+      el.onclick = function() {
+        document.querySelectorAll('.f-btn').forEach(function(b) { b.classList.remove('selected'); });
+        this.classList.add('selected'); mood = this.getAttribute('data-mood');
+        if (!mood) return;
+        var entry = { time: new Date().toLocaleTimeString('zh-CN', {hour:'2-digit',minute:'2-digit'}), task: task, energy: energy, duration: Math.round(maxSec/60), mood: mood };
+        dayData.sessions.push(entry); saveDay(dayData); updateBudget();
+      };
+    });
+
+    // Dashboard
+    $('budgetWrap').onclick = function() {
+      dayData = loadDay(); var s = dayData.sessions;
+      $('dashCount').textContent = s.length;
+      var totalMins = 0; for (var i=0;i<s.length;i++) totalMins += (s[i].duration||0);
+      $('dashMins').textContent = Math.round(totalMins);
+      var good = 0; for (var i=0;i<s.length;i++) if (s[i].mood==='good') good++;
+      $('dashGood').textContent = s.length ? Math.round(good/s.length*100)+'%' : '—';
+      var list = $('dashList');
+      if (s.length===0) { list.innerHTML = '<div class="dash-empty">今天还没有记录</div>'; }
+      else {
+        list.innerHTML = '<div style="font-size:12px;color:var(--muted);margin-bottom:8px;">最近记录</div>';
+        var moods = {good:'👍',ok:'👌',bad:'👎'};
+        for (var i=Math.max(0,s.length-10);i<s.length;i++) {
+          var e=s[i], d=document.createElement('div');
+          d.className='dash-item';
+          d.innerHTML='<span class="di-time">'+e.time+'</span><span class="di-task">'+(TASK_ICONS[e.task]||'')+' '+(TASK_NAMES[e.task]||e.task)+'</span><span style="font-size:11px;color:var(--muted);">'+e.duration+'min</span><span class="di-mood">'+(moods[e.mood]||'')+'</span>';
+          list.appendChild(d);
+        }
+      }
+      showScreen('screen-dash');
+    };
+    $('dashBack').onclick = function() { showScreen('screen-start'); };
+
+    updateBudget();
+    $('budgetTotal').textContent = '5';
+  </script>
+</body>
+</html>
