@@ -40,9 +40,8 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);line-he
 .search-box input::placeholder{color:rgba(255,255,255,0.55)}
 .search-box button{padding:0 18px;border:none;background:rgba(255,255,255,0.2);color:#fff;cursor:pointer;font-size:18px;line-height:1}
 
-.tab-scroll{overflow-x:auto;padding:14px 16px 0;margin:0 auto}
-.tab-row{display:flex;gap:6px;min-width:max-content;padding-bottom:4px}
-.tab-btn{padding:6px 14px;border-radius:20px;border:1.5px solid var(--line);background:var(--card);font-size:var(--fs-small);cursor:pointer;white-space:nowrap;transition:all .2s;color:var(--text2);font-family:inherit}
+.tab-wrap{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;padding:24px 24px 8px}
+.tab-btn{padding:8px 20px;border-radius:20px;border:1.5px solid var(--line);background:var(--card);font-size:13px;cursor:pointer;white-space:nowrap;transition:all .2s;color:var(--text2);font-family:inherit}
 .tab-btn:hover{border-color:var(--amber);color:var(--amber)}
 .tab-btn.active{background:var(--amber);border-color:var(--amber);color:#fff}
 
@@ -92,7 +91,7 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);line-he
   </div>
 </section>
 
-<div class="tab-scroll"><div class="tab-row" id="tabRow"><button class="tab-btn active" data-sec="all" onclick="sec('all')">全部</button></div></div>
+<div class="tab-wrap" id="tabWrap"><button class="tab-btn active" data-sec="all" onclick="sec('all')">全部</button></div>
 
 <div class="main">
   <div class="count" id="cnt"></div>
@@ -106,8 +105,8 @@ const D=[{"num": 1, "name": "黄芪甘草汤", "section": "一、四虚·气虚�
 let curSec='all',curQ='';
 const secs=[...new Set(D.map(f=>f.section))].filter(Boolean);
 const cs=s=>{let r=s.replace(/^[一二三四五六七八九十百]+\u3001/,'').replace(/（[^）]*）/g,'').trim();return r};
-const tr=document.getElementById('tabRow');
-secs.forEach(s=>{const b=document.createElement('button');b.className='tab-btn';b.textContent=cs(s);b.dataset.sec=s;b.onclick=()=>sec(s);tr.appendChild(b)});
+const tw=document.getElementById('tabWrap');
+secs.forEach(s=>{const b=document.createElement('button');b.className='tab-btn';b.textContent=cs(s);b.dataset.sec=s;b.onclick=()=>sec(s);tw.appendChild(b)});
 
 function sec(s){curSec=s;document.querySelectorAll('.tab-btn').forEach(t=>t.classList.remove('active'));const tb=document.querySelector('.tab-btn[data-sec="'+s+'"]');if(tb){tb.classList.add('active');tb.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'})}go()}
 
