@@ -105,10 +105,11 @@ const D=[{"num": 1, "name": "黄芪甘草汤", "section": "一、四虚·气虚�
 
 let curSec='all',curQ='';
 const secs=[...new Set(D.map(f=>f.section))].filter(Boolean);
+const cs=s=>{let r=s.replace(/^[一二三四五六七八九十百]+\u3001/,'').replace(/（[^）]*）/g,'').trim();return r};
 const tr=document.getElementById('tabRow');
-secs.forEach(s=>{const b=document.createElement('button');b.className='tab-btn';b.textContent=s;b.dataset.sec=s;b.onclick=()=>sec(s);tr.appendChild(b)});
+secs.forEach(s=>{const b=document.createElement('button');b.className='tab-btn';b.textContent=cs(s);b.dataset.sec=s;b.onclick=()=>sec(s);tr.appendChild(b)});
 
-function sec(s){curSec=s;document.querySelectorAll('.tab-btn').forEach(t=>t.classList.remove('active'));document.querySelector('.tab-btn[data-sec="'+s+'"]').classList.add('active');go()}
+function sec(s){curSec=s;document.querySelectorAll('.tab-btn').forEach(t=>t.classList.remove('active'));const tb=document.querySelector('.tab-btn[data-sec="'+s+'"]');if(tb){tb.classList.add('active');tb.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'})}go()}
 
 function go(){
   curQ=document.getElementById('s').value.trim();
