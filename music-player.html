@@ -253,30 +253,67 @@ body {
   color: #fff;
 }
 
-/* ===== Lyrics Panel ===== */
-.lyrics-panel {
-  flex: 1;
+/* ===== Sync Adjust Panel ===== */
+.btn-sync {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 4px 12px;
+  cursor: pointer;
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  transition: all var(--transition-base);
+}
+.btn-sync:hover { border-color: var(--primary); color: var(--primary); }
+.btn-sync.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+.sync-panel {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 6px;
+  padding: 8px;
+  background: var(--bg-alt);
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-caption);
+  color: var(--text-secondary);
+}
+.sync-panel.show { display: flex; }
+.sync-panel .offset-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 500;
+  color: var(--primary);
+  min-width: 4em;
+  text-align: center;
+}
+.sync-panel button {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  width: 32px; height: 28px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text-secondary);
+  display: flex; align-items: center; justify-content: center;
+  transition: all var(--transition-base);
+  font-family: var(--font-body);
+}
+.sync-panel button:hover { border-color: var(--primary); color: var(--primary); background: var(--bg-alt); }
+.sync-panel button:active { transform: scale(0.92); }
+.sync-panel .reset-btn { width: auto; padding: 0 8px; }
+
+/* ===== Lyrics Panel (static flow, no scroll) ===== */
+.lyrics-section {
   background: var(--bg-card);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
-  padding: 20px 0;
-  position: relative;
-  overflow: hidden;
-  min-height: 320px;
+  padding: 16px;
 }
-.lyrics-viewport {
-  height: 100%;
-  overflow-y: auto;
-  scroll-behavior: smooth;
-  padding: 0 20px;
-  -webkit-overflow-scrolling: touch;
-}
-.lyrics-viewport::-webkit-scrollbar { width: 4px; }
-.lyrics-viewport::-webkit-scrollbar-track { background: transparent; }
-.lyrics-viewport::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
 .lyric-line {
-  padding: 14px 16px;
+  padding: 10px 12px;
   text-align: center;
   font-size: var(--fs-body);
   line-height: 1.7;
@@ -284,8 +321,7 @@ body {
   transition: all var(--transition-slow);
   cursor: pointer;
   border-radius: var(--radius-sm);
-  position: relative;
-  min-height: 3em;
+  min-height: 2.8em;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -293,7 +329,6 @@ body {
 .lyric-line:hover { background: var(--bg-alt); }
 .lyric-line.active {
   color: var(--text-primary);
-  font-size: calc(var(--fs-body) * 1.1);
   font-weight: 500;
   background: var(--bg-alt);
   border-left: 3px solid var(--primary);
@@ -303,13 +338,6 @@ body {
   color: #D6D3D1;
   font-size: var(--fs-small);
 }
-.lyric-line.empty {
-  color: var(--text-muted);
-  opacity: 0.5;
-  font-size: var(--fs-small);
-  cursor: default;
-}
-.lyric-line.empty:hover { background: transparent; }
 
 /* ===== No Lyrics ===== */
 .no-lyrics {
@@ -346,13 +374,8 @@ body {
   .album-art { width: 60px; height: 60px; }
   .album-art::before { font-size: 24px; }
   .album-art::after { font-size: 44px; }
-  .lyrics-panel { min-height: 260px; }
-  .lyric-line { padding: 12px 12px; min-height: 2.8em; }
-  .lyric-line.active { font-size: calc(var(--fs-body) * 1.05); }
-  .controls { gap: 12px; }
-  .controls button { width: 36px; height: 36px; }
-  .controls .btn-play { width: 46px; height: 46px; }
-  .player-bar { padding: 10px 12px; }
+  .lyric-line { padding: 8px 8px; min-height: 2.4em; }
+  .lyric-line.active { font-size: var(--fs-body); }
 }
 </style>
 </head>
@@ -377,11 +400,9 @@ body {
     </div>
   </div>
 
-  <!-- Lyrics -->
-  <div class="lyrics-panel" id="lyricsPanel">
-    <div class="lyrics-viewport" id="lyricsViewport">
-      <div class="loading-lyrics">加载歌词中...</div>
-    </div>
+  <!-- Lyrics (static, page scrolls naturally) -->
+  <div class="lyrics-section" id="lyricsSection">
+    <div class="loading-lyrics" style="text-align:center;padding:40px 0;color:var(--text-muted);">加载歌词中...</div>
   </div>
 </div>
 
@@ -421,6 +442,15 @@ body {
       <button id="modeRepeat" class="active" data-mode="repeat">顺序</button>
       <button id="modeOnce" data-mode="once">单曲</button>
       <button id="modeShuffle" data-mode="shuffle">随机</button>
+      <button id="btnSync" class="btn-sync">调同步</button>
+    </div>
+    <div class="sync-panel" id="syncPanel">
+      <button id="syncDecCoarse" title="整体提前 1s">-1</button>
+      <button id="syncDecFine" title="整体提前 0.1s">-0.1</button>
+      <span class="offset-val" id="offsetDisplay">偏移: +0.0s</span>
+      <button id="syncIncFine" title="整体延后 0.1s">+0.1</button>
+      <button id="syncIncCoarse" title="整体延后 1s">+1</button>
+      <button class="reset-btn" id="syncReset">重置</button>
     </div>
   </div>
 </div>
@@ -518,6 +548,7 @@ let lyricLines = []; // [{time, text}]
 let lyricLineEls = [];
 let currentLineIdx = -1;
 let isSeeking = false;
+let timeOffset = 0; // 歌词时间偏移量（秒），正数=延后
 
 const audio = document.getElementById('audio');
 const btnPlay = document.getElementById('btnPlay');
@@ -532,7 +563,7 @@ const timeTotal = document.getElementById('timeTotal');
 const songTitle = document.getElementById('songTitle');
 const songArtist = document.getElementById('songArtist');
 const songDuration = document.getElementById('songDuration');
-const lyricsViewport = document.getElementById('lyricsViewport');
+const lyricsSection = document.getElementById('lyricsSection');
 const modeBtns = document.querySelectorAll('.mode-row button');
 
 // ============================================================
@@ -576,7 +607,7 @@ function loadSong(index) {
 // Render Lyrics
 // ============================================================
 function renderLyrics() {
-  lyricsViewport.innerHTML = '';
+  lyricsSection.innerHTML = '';
   lyricLineEls = [];
 
   if (lyricLines.length === 0) return;
@@ -592,7 +623,7 @@ function renderLyrics() {
         audio.play();
       }
     });
-    lyricsViewport.appendChild(div);
+    lyricsSection.appendChild(div);
     lyricLineEls.push(div);
   });
 }
@@ -603,10 +634,13 @@ function renderLyrics() {
 function updateLyrics(currentTime) {
   if (lyricLines.length === 0 || lyricLineEls.length === 0) return;
 
+  // 应用偏移量
+  const adjustedTime = currentTime + timeOffset;
+
   // Find current line
   let newIdx = -1;
   for (let i = lyricLines.length - 1; i >= 0; i--) {
-    if (currentTime >= lyricLines[i].time) {
+    if (adjustedTime >= lyricLines[i].time) {
       newIdx = i;
       break;
     }
@@ -620,15 +654,6 @@ function updateLyrics(currentTime) {
     if (i < currentLineIdx) el.classList.add('past');
     else if (i === currentLineIdx) el.classList.add('active');
   });
-
-  // Scroll active line into center
-  if (currentLineIdx >= 0 && lyricLineEls[currentLineIdx]) {
-    const el = lyricLineEls[currentLineIdx];
-    const viewportRect = lyricsViewport.getBoundingClientRect();
-    const elRect = el.getBoundingClientRect();
-    const offset = elRect.top - viewportRect.top - viewportRect.height / 2 + elRect.height / 2;
-    lyricsViewport.scrollBy({ top: offset, behavior: 'smooth' });
-  }
 }
 
 // ============================================================
@@ -711,6 +736,29 @@ function setMode(mode) {
 modeBtns.forEach(btn => {
   btn.addEventListener('click', () => setMode(btn.dataset.mode));
 });
+
+// ============================================================
+// Sync Adjustment
+// ============================================================
+const btnSync = document.getElementById('btnSync');
+const syncPanel = document.getElementById('syncPanel');
+const offsetDisplay = document.getElementById('offsetDisplay');
+
+function updateOffsetDisplay() {
+  const sign = timeOffset >= 0 ? '+' : '';
+  offsetDisplay.textContent = `偏移: ${sign}${timeOffset.toFixed(1)}s`;
+}
+
+btnSync.addEventListener('click', () => {
+  syncPanel.classList.toggle('show');
+  btnSync.classList.toggle('active');
+});
+
+document.getElementById('syncDecCoarse').addEventListener('click', () => { timeOffset -= 1; updateOffsetDisplay(); });
+document.getElementById('syncDecFine').addEventListener('click', () => { timeOffset -= 0.1; updateOffsetDisplay(); });
+document.getElementById('syncIncFine').addEventListener('click', () => { timeOffset += 0.1; updateOffsetDisplay(); });
+document.getElementById('syncIncCoarse').addEventListener('click', () => { timeOffset += 1; updateOffsetDisplay(); });
+document.getElementById('syncReset').addEventListener('click', () => { timeOffset = 0; updateOffsetDisplay(); });
 
 // ============================================================
 // Event Listeners
