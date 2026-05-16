@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>药材奇问歌 · 446辨证音乐馆</title>
+<link rel="icon" href="446-logo-og.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* meilin-design-system */
+  --primary: #B45309;
+  --primary-light: #D97706;
+  --secondary: #65A30D;
+  --accent: #C2410C;
+  --bg-warm: #FFF8F0;
+  --bg-card: #FFFFFF;
+  --bg-alt: #FFFBEB;
+  --text-primary: #292524;
+  --text-secondary: #57534E;
+  --text-muted: #A8A29E;
+  --border: #E7E5E4;
+  --font-heading: 'Noto Serif SC', 'Source Han Serif SC', serif;
+  --font-body: 'Noto Sans SC', 'Source Han Sans SC', sans-serif;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-elevated: 0 4px 6px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.03);
+  --transition-base: 250ms ease;
+  --transition-slow: 350ms ease;
+  --fs-h1: clamp(1.35rem, 3.5vw, 1.75rem);
+  --fs-body: clamp(0.95rem, 2vw, 1.05rem);
+  --fs-small: clamp(0.85rem, 1.5vw, 0.9rem);
+  --fs-caption: 0.75rem;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg-warm);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== Header ===== */
+.header {
+  background: linear-gradient(135deg, #92400E 0%, #B45309 50%, #D97706 100%);
+  color: #fff;
+  text-align: center;
+  padding: 32px 20px 28px;
+}
+.header h1 {
+  font-family: var(--font-heading);
+  font-size: var(--fs-h1);
+  font-weight: 600;
+  letter-spacing: 2px;
+  margin-bottom: 4px;
+}
+.header .sub {
+  font-size: var(--fs-caption);
+  opacity: 0.75;
+  letter-spacing: 3px;
+  font-weight: 300;
+}
+.header .home-link {
+  display: inline-block;
+  margin-top: 8px;
+  color: rgba(255,255,255,0.6);
+  font-size: var(--fs-caption);
+  text-decoration: none;
+  transition: color var(--transition-base);
+}
+.header .home-link:hover { color: #fff; }
+
+/* ===== Main Layout ===== */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 20px 16px 140px;
+  gap: 20px;
+}
+
+/* ===== Player Info ===== */
+.player-info {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-card);
+}
+.album-art {
+  width: 80px;
+  height: 80px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, #FDE68A, #FCD34D, #F59E0B);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+.album-art::before {
+  content: '『』';
+  font-size: 32px;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 4px;
+  font-family: var(--font-heading);
+}
+.album-art::after {
+  content: '藥';
+  position: absolute;
+  font-size: 60px;
+  font-family: var(--font-heading);
+  color: rgba(180,83,9,0.10);
+  font-weight: 700;
+  bottom: -10px; right: -10px;
+  transform: rotate(-15deg);
+}
+.song-meta { flex: 1; min-width: 0; }
+.song-meta .title {
+  font-family: var(--font-heading);
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.song-meta .artist {
+  font-size: var(--fs-small);
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+.song-meta .duration {
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* ===== Progress ===== */
+.progress-area {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--fs-caption);
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+  width: 100%;
+}
+.progress-bar-wrap {
+  flex: 1;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  cursor: pointer;
+  position: relative;
+  transition: height 150ms ease;
+}
+.progress-bar-wrap:hover { height: 6px; }
+.progress-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--primary), var(--primary-light));
+  border-radius: 2px;
+  position: relative;
+  transition: width 200ms linear;
+}
+.progress-bar-fill::after {
+  content: '';
+  position: absolute;
+  right: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--primary);
+  opacity: 0;
+  transition: opacity var(--transition-base);
+}
+.progress-bar-wrap:hover .progress-bar-fill::after {
+  opacity: 1;
+}
+
+/* ===== Controls ===== */
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 8px 0;
+}
+.controls button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  transition: all var(--transition-base);
+}
+.controls button:hover { background: var(--bg-alt); color: var(--primary); }
+.controls button:active { transform: scale(0.92); }
+.controls .btn-play {
+  width: 52px; height: 52px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(180,83,9,0.25);
+}
+.controls .btn-play:hover { box-shadow: 0 4px 14px rgba(180,83,9,0.35); color: #fff; }
+.controls .btn-play:active { transform: scale(0.95); }
+.controls button svg { width: 20px; height: 20px; }
+.controls .btn-play svg { width: 24px; height: 24px; }
+
+/* ===== Mode Toggle ===== */
+.mode-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+}
+.mode-row button {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 4px 12px;
+  cursor: pointer;
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  transition: all var(--transition-base);
+}
+.mode-row button:hover { border-color: var(--primary); color: var(--primary); }
+.mode-row button.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+/* ===== Lyrics Panel ===== */
+.lyrics-panel {
+  flex: 1;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 20px 0;
+  position: relative;
+  overflow: hidden;
+  min-height: 320px;
+}
+.lyrics-viewport {
+  height: 100%;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  padding: 0 20px;
+  -webkit-overflow-scrolling: touch;
+}
+.lyrics-viewport::-webkit-scrollbar { width: 4px; }
+.lyrics-viewport::-webkit-scrollbar-track { background: transparent; }
+.lyrics-viewport::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.lyric-line {
+  padding: 14px 16px;
+  text-align: center;
+  font-size: var(--fs-body);
+  line-height: 1.7;
+  color: var(--text-muted);
+  transition: all var(--transition-slow);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  position: relative;
+  min-height: 3em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.lyric-line:hover { background: var(--bg-alt); }
+.lyric-line.active {
+  color: var(--text-primary);
+  font-size: calc(var(--fs-body) * 1.1);
+  font-weight: 500;
+  background: var(--bg-alt);
+  border-left: 3px solid var(--primary);
+  margin-left: -3px;
+}
+.lyric-line.past {
+  color: #D6D3D1;
+  font-size: var(--fs-small);
+}
+.lyric-line.empty {
+  color: var(--text-muted);
+  opacity: 0.5;
+  font-size: var(--fs-small);
+  cursor: default;
+}
+.lyric-line.empty:hover { background: transparent; }
+
+/* ===== No Lyrics ===== */
+.no-lyrics {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  gap: 8px;
+}
+.no-lyrics svg { width: 48px; height: 48px; opacity: 0.3; }
+
+/* ===== Bottom Player Bar (fixed) ===== */
+.player-bar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: var(--bg-card);
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.06);
+  padding: 12px 16px;
+  z-index: 100;
+  border-top: 1px solid var(--border);
+}
+.player-bar-inner {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 600px) {
+  .main { padding: 12px 12px 160px; gap: 12px; }
+  .player-info { padding: 14px; }
+  .album-art { width: 60px; height: 60px; }
+  .album-art::before { font-size: 24px; }
+  .album-art::after { font-size: 44px; }
+  .lyrics-panel { min-height: 260px; }
+  .lyric-line { padding: 12px 12px; min-height: 2.8em; }
+  .lyric-line.active { font-size: calc(var(--fs-body) * 1.05); }
+  .controls { gap: 12px; }
+  .controls button { width: 36px; height: 36px; }
+  .controls .btn-play { width: 46px; height: 46px; }
+  .player-bar { padding: 10px 12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <h1>药材奇问歌</h1>
+  <div class="sub">446辨证体系 · 音乐馆</div>
+  <a href="index.html" class="home-link">← 返回首页</a>
+</div>
+
+<!-- Main Content -->
+<div class="main" id="app">
+  <!-- Player Info -->
+  <div class="player-info">
+    <div class="album-art"></div>
+    <div class="song-meta">
+      <div class="title" id="songTitle">药材奇问歌</div>
+      <div class="artist" id="songArtist">AI · 446辨证体系</div>
+      <div class="duration" id="songDuration">加载中...</div>
+    </div>
+  </div>
+
+  <!-- Lyrics -->
+  <div class="lyrics-panel" id="lyricsPanel">
+    <div class="lyrics-viewport" id="lyricsViewport">
+      <div class="loading-lyrics">加载歌词中...</div>
+    </div>
+  </div>
+</div>
+
+<!-- Bottom Player Bar -->
+<div class="player-bar">
+  <div class="player-bar-inner">
+    <div class="progress-area">
+      <span id="timeCurrent">00:00</span>
+      <div class="progress-bar-wrap" id="progressWrap">
+        <div class="progress-bar-fill" id="progressFill"></div>
+      </div>
+      <span id="timeTotal">00:00</span>
+    </div>
+
+    <div class="controls">
+      <button id="btnPrev" title="上一首" aria-label="上一首">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5"/>
+        </svg>
+      </button>
+      <button id="btnPlay" class="btn-play" title="播放/暂停" aria-label="播放/暂停">
+        <svg viewBox="0 0 24 24" fill="currentColor" id="playIcon">
+          <polygon points="5 3 19 12 5 21 5 3"/>
+        </svg>
+        <svg viewBox="0 0 24 24" fill="currentColor" id="pauseIcon" style="display:none">
+          <rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>
+        </svg>
+      </button>
+      <button id="btnNext" title="下一首" aria-label="下一首">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="mode-row">
+      <button id="modeRepeat" class="active" data-mode="repeat">顺序</button>
+      <button id="modeOnce" data-mode="once">单曲</button>
+      <button id="modeShuffle" data-mode="shuffle">随机</button>
+    </div>
+  </div>
+</div>
+
+<!-- Audio Element -->
+<audio id="audio" preload="auto"></audio>
+
+<script>
+// ============================================================
+// Song Data
+// ============================================================
+const SONGS = [
+  {
+    id: 0,
+    title: '药材奇问歌',
+    artist: 'AI · 446辨证体系',
+    src: 'music/药材奇问歌.mp3',
+  }
+];
+
+// 歌词数据直接内嵌，避免 file:// fetch 被拦截
+const LRC_DATA = `\
+[ti:药材奇问歌]
+[ar:AI]
+[by:446辨证体系]
+[00:00.00]老中医把病瞧 十八般武艺怀中揣好
+[00:03.75]谁气虚谁血少 一把草药见分晓
+[00:07.50]这是本草的战场 是辨证的较量
+[00:11.25]八十味药心中藏 每味都有它的强项
+[00:15.00]人没力气怎么办 气短懒言怎么办
+[00:21.25]生黄芪固表托疮走全身 人参大补元气是救命丸
+[00:27.50]炙甘草调和诸药像个和事官 白术健脾燥湿把源头管
+[00:33.75]糯米救脱像救火不能晚 粳米养胃白虎汤里把家安
+[00:40.00]寒从骨子里透出来怎么办
+[00:46.25]附子回阳救逆谁敢拦 干姜守中焦暖胃肠
+[00:52.50]桂枝通阳化气十二经都走完 生姜止呕开胃也是温阳的好搭档
+[00:58.75]吴茱萸降逆散寒力量强 寒凝一碰它就散
+[01:05.00]脸发白发晕怎么办 血虚的人血不够
+[01:10.50]当归补血圣药名声久 熟地补血益精骨髓里头走
+[01:16.00]白芍柔肝养血把阴脉守 阿胶滋阴润燥补血是大手
+[01:21.50]大枣养血安神家常必有
+[01:27.00]口干舌燥火往上冒怎么办
+[01:33.25]麦冬养阴润肺清心安 知母清热泻火把津液添
+[01:39.50]百合润肺清心不简单 火麻仁润肠通便不伤阴
+[01:45.75]山药补脾固肾平补最稳 麦芽糖缓急止痛甘甜入口
+[01:52.00]久泻不止收不住怎么办
+[01:58.25]赤石脂禹余粮涩肠固脱来接班
+[02:04.50]龙骨镇惊安神潜阳不散 牡蛎平肝潜阳软坚一揽子
+[02:10.75]五味子五味俱全敛汗又生津 山茱萸补益肝肾固脱最专
+[02:17.00]正气存内邪不可干 药为兵将证为关
+[02:21.50]气虚黄芪参术甘 温阳附子干姜悍
+[02:26.00]血虚归芍地胶枣 阴虚麦冬知母百合坛
+[02:30.50]本草如兵各有长 辨证清楚就是王
+[02:35.00]胀满不通怎么办 气滞的人胸闷烦
+[02:40.50]柴胡疏肝解郁把气升 枳实破气消积像个推土机
+[02:46.00]厚朴下气除满燥湿行 川芎活血行气是血中气药
+[02:51.50]气滞血瘀一次清 气顺了人才轻松
+[02:57.00]刺痛不移怎么办 瘀血堵在哪疼在哪
+[03:02.50]桃仁红花破血化瘀往前杀 赤芍丹皮凉血活血灭瘀炸
+[03:08.00]牛膝引血下行补肝肾下 地龙通经络走窜不拖沓
+[03:13.50]血府逐瘀桃红四物都是当家花
+[03:19.00]痰多水肿怎么办 水湿泛滥体内乱
+[03:24.50]半夏降逆止呕化痰最猛 陈皮理气健脾湿气散
+[03:30.00]茯苓利水渗湿安神又健脾 猪苓泽泻利水消肿通淋道
+[03:35.50]薏苡仁健脾利湿舒筋好 防己祛风利水双腿轻巧
+[03:41.00]热得像火烧怎么办 邪热嚣张谁来挡
+[03:46.19]石膏泻火除烦白虎汤的主将 大黄泻下攻积把肠道清场
+[03:51.40]黄连黄芩黄柏三兄弟苦寒力量 栀子泻火利湿除烦闷
+[03:56.59]茵陈蒿利胆退黄治阳黄 白头翁治热毒血痢专攻
+[04:01.80]芒硝润燥软坚通便不慌 清热大军一出手邪气全投降
+[04:07.00]感冒怕冷不出汗怎么办
+[04:12.00]麻黄发汗散寒第一把好伞 细辛温肺化饮散寒通窍管
+[04:17.00]荆芥防风祛风胜湿家常老搭档 苍术燥湿健脾又祛风不忙乱
+[04:22.00]解表的药一下肚 浑身轻松寒气散
+[04:27.00]嗓子疼发烧怎么办
+[04:31.39]金银花连翘清热解毒风热散 牛蒡子利咽消肿有奇算
+[04:35.80]薄荷疏散风热头目清亮 桑叶清肺润燥明目又凉
+[04:40.19]枇杷叶降逆止咳不慌 葛根解肌生津又止泻
+[04:44.60]升麻发表透疹把毒清场 风热一退百病让
+[04:49.00]八十味药记住了 辨证用药路路通
+[04:54.50]气虚补气先辨清 温阳附子干姜雄
+[05:00.00]血虚当归芍地枣 滋阴麦冬知母逢
+[05:05.50]利水茯苓猪苓泽 清热石膏连栀攻
+[05:11.00]外感麻黄桂枝起 风热银翘薄荷从
+[05:16.50]闭目一想药性在 从此开方不慌张
+`;
+
+// ============================================================
+// State
+// ============================================================
+let currentIndex = 0;
+let playMode = 'repeat'; // repeat | once | shuffle
+let isPlaying = false;
+let lyricLines = []; // [{time, text}]
+let lyricLineEls = [];
+let currentLineIdx = -1;
+let isSeeking = false;
+
+const audio = document.getElementById('audio');
+const btnPlay = document.getElementById('btnPlay');
+const playIcon = document.getElementById('playIcon');
+const pauseIcon = document.getElementById('pauseIcon');
+const btnPrev = document.getElementById('btnPrev');
+const btnNext = document.getElementById('btnNext');
+const progressFill = document.getElementById('progressFill');
+const progressWrap = document.getElementById('progressWrap');
+const timeCurrent = document.getElementById('timeCurrent');
+const timeTotal = document.getElementById('timeTotal');
+const songTitle = document.getElementById('songTitle');
+const songArtist = document.getElementById('songArtist');
+const songDuration = document.getElementById('songDuration');
+const lyricsViewport = document.getElementById('lyricsViewport');
+const modeBtns = document.querySelectorAll('.mode-row button');
+
+// ============================================================
+// LRC Parser
+// ============================================================
+function parseLRC(text) {
+  const lines = [];
+  const regex = /\[(\d{2}):(\d{2})\.(\d{2})\](.*)/;
+  text.split('\n').forEach(line => {
+    const m = line.match(regex);
+    if (m) {
+      const time = parseInt(m[1]) * 60 + parseInt(m[2]) + parseInt(m[3]) / 100;
+      const text = m[4].trim();
+      if (text) lines.push({ time, text });
+    }
+  });
+  lines.sort((a, b) => a.time - b.time);
+  return lines;
+}
+
+// ============================================================
+// Load Song
+// ============================================================
+function loadSong(index) {
+  const song = SONGS[index];
+  if (!song) return;
+
+  songTitle.textContent = song.title;
+  songArtist.textContent = song.artist;
+  audio.src = song.src;
+  audio.load();
+  currentLineIdx = -1;
+  lyricLines = [];
+
+  // Load LRC (inline, avoid file:// fetch restriction)
+  lyricLines = parseLRC(LRC_DATA);
+  renderLyrics();
+}
+
+// ============================================================
+// Render Lyrics
+// ============================================================
+function renderLyrics() {
+  lyricsViewport.innerHTML = '';
+  lyricLineEls = [];
+
+  if (lyricLines.length === 0) return;
+
+  lyricLines.forEach((line, i) => {
+    const div = document.createElement('div');
+    div.className = 'lyric-line';
+    div.textContent = line.text;
+    div.dataset.index = i;
+    div.addEventListener('click', () => {
+      audio.currentTime = line.time;
+      if (!isPlaying) {
+        audio.play();
+      }
+    });
+    lyricsViewport.appendChild(div);
+    lyricLineEls.push(div);
+  });
+}
+
+// ============================================================
+// Update Lyrics
+// ============================================================
+function updateLyrics(currentTime) {
+  if (lyricLines.length === 0 || lyricLineEls.length === 0) return;
+
+  // Find current line
+  let newIdx = -1;
+  for (let i = lyricLines.length - 1; i >= 0; i--) {
+    if (currentTime >= lyricLines[i].time) {
+      newIdx = i;
+      break;
+    }
+  }
+
+  if (newIdx === currentLineIdx) return;
+  currentLineIdx = newIdx;
+
+  lyricLineEls.forEach((el, i) => {
+    el.className = 'lyric-line';
+    if (i < currentLineIdx) el.classList.add('past');
+    else if (i === currentLineIdx) el.classList.add('active');
+  });
+
+  // Scroll active line into center
+  if (currentLineIdx >= 0 && lyricLineEls[currentLineIdx]) {
+    const el = lyricLineEls[currentLineIdx];
+    const viewportRect = lyricsViewport.getBoundingClientRect();
+    const elRect = el.getBoundingClientRect();
+    const offset = elRect.top - viewportRect.top - viewportRect.height / 2 + elRect.height / 2;
+    lyricsViewport.scrollBy({ top: offset, behavior: 'smooth' });
+  }
+}
+
+// ============================================================
+// Player Controls
+// ============================================================
+function togglePlay() {
+  if (audio.paused) {
+    audio.play();
+  } else {
+    audio.pause();
+  }
+}
+
+function updatePlayButton(playing) {
+  isPlaying = playing;
+  playIcon.style.display = playing ? 'none' : '';
+  pauseIcon.style.display = playing ? '' : 'none';
+}
+
+function formatTime(s) {
+  if (isNaN(s)) return '00:00';
+  const m = Math.floor(s / 60);
+  const sec = Math.floor(s % 60);
+  return `${m.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
+}
+
+function updateProgress() {
+  const pct = audio.duration ? (audio.currentTime / audio.duration * 100) : 0;
+  progressFill.style.width = pct + '%';
+  timeCurrent.textContent = formatTime(audio.currentTime);
+}
+
+function getNextIndex() {
+  if (playMode === 'once') return currentIndex;
+  if (playMode === 'shuffle') {
+    let next;
+    do { next = Math.floor(Math.random() * SONGS.length); } while (next === currentIndex && SONGS.length > 1);
+    return next;
+  }
+  // repeat
+  return (currentIndex + 1) % SONGS.length;
+}
+
+function getPrevIndex() {
+  if (playMode === 'shuffle') {
+    let prev;
+    do { prev = Math.floor(Math.random() * SONGS.length); } while (prev === currentIndex && SONGS.length > 1);
+    return prev;
+  }
+  return (currentIndex - 1 + SONGS.length) % SONGS.length;
+}
+
+function nextSong() {
+  currentIndex = getNextIndex();
+  loadSong(currentIndex);
+  audio.play();
+}
+
+function prevSong() {
+  // If more than 3s in, restart current song
+  if (audio.currentTime > 3) {
+    audio.currentTime = 0;
+    return;
+  }
+  currentIndex = getPrevIndex();
+  loadSong(currentIndex);
+  audio.play();
+}
+
+// ============================================================
+// Play Mode
+// ============================================================
+function setMode(mode) {
+  playMode = mode;
+  modeBtns.forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.mode === mode);
+  });
+}
+
+modeBtns.forEach(btn => {
+  btn.addEventListener('click', () => setMode(btn.dataset.mode));
+});
+
+// ============================================================
+// Event Listeners
+// ============================================================
+btnPlay.addEventListener('click', togglePlay);
+btnPrev.addEventListener('click', prevSong);
+btnNext.addEventListener('click', nextSong);
+
+audio.addEventListener('play', () => updatePlayButton(true));
+audio.addEventListener('pause', () => updatePlayButton(false));
+audio.addEventListener('ended', nextSong);
+
+audio.addEventListener('timeupdate', () => {
+  if (!isSeeking) updateProgress();
+  updateLyrics(audio.currentTime);
+});
+
+audio.addEventListener('loadedmetadata', () => {
+  timeTotal.textContent = formatTime(audio.duration);
+  songDuration.textContent = formatTime(audio.duration);
+});
+
+// Progress bar seeking
+let isDragging = false;
+
+progressWrap.addEventListener('mousedown', (e) => {
+  isDragging = true;
+  isSeeking = true;
+  setProgressFromEvent(e);
+});
+document.addEventListener('mousemove', (e) => {
+  if (isDragging) setProgressFromEvent(e);
+});
+document.addEventListener('mouseup', () => {
+  if (isDragging) {
+    isDragging = false;
+    isSeeking = false;
+  }
+});
+
+// Touch support
+progressWrap.addEventListener('touchstart', (e) => {
+  isDragging = true;
+  isSeeking = true;
+  setProgressFromEvent(e.touches[0]);
+});
+document.addEventListener('touchmove', (e) => {
+  if (isDragging) setProgressFromEvent(e.touches[0]);
+});
+document.addEventListener('touchend', () => {
+  if (isDragging) {
+    isDragging = false;
+    isSeeking = false;
+  }
+});
+
+function setProgressFromEvent(e) {
+  const rect = progressWrap.getBoundingClientRect();
+  let pct = (e.clientX - rect.left) / rect.width;
+  pct = Math.max(0, Math.min(1, pct));
+  progressFill.style.width = (pct * 100) + '%';
+  timeCurrent.textContent = formatTime(pct * audio.duration);
+  audio.currentTime = pct * audio.duration;
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (e.code === 'Space') { e.preventDefault(); togglePlay(); }
+  if (e.code === 'ArrowRight') { audio.currentTime = Math.min(audio.currentTime + 10, audio.duration); }
+  if (e.code === 'ArrowLeft') { audio.currentTime = Math.max(audio.currentTime - 10, 0); }
+  if (e.code === 'ArrowUp') { audio.volume = Math.min(audio.volume + 0.1, 1); }
+  if (e.code === 'ArrowDown') { audio.volume = Math.max(audio.volume - 0.1, 0); }
+});
+
+// ============================================================
+// Init
+// ============================================================
+loadSong(0);
+</script>
+</body>
+</html>
