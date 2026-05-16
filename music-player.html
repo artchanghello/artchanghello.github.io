@@ -319,14 +319,12 @@ body {
   line-height: 1.7;
   color: var(--text-muted);
   transition: all var(--transition-slow);
-  cursor: pointer;
   border-radius: var(--radius-sm);
   min-height: 2.8em;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.lyric-line:hover { background: var(--bg-alt); }
 .lyric-line.active {
   color: var(--text-primary);
   font-weight: 500;
@@ -338,6 +336,65 @@ body {
   color: #D6D3D1;
   font-size: var(--fs-small);
 }
+
+/* ===== Playlist ===== */
+.playlist {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+.playlist-header {
+  padding: 12px 16px 8px;
+  font-family: var(--font-heading);
+  font-size: var(--fs-small);
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+.playlist-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background var(--transition-base);
+  border-left: 3px solid transparent;
+}
+.playlist-item:hover { background: var(--bg-alt); }
+.playlist-item.active {
+  background: var(--bg-alt);
+  border-left-color: var(--primary);
+}
+.playlist-item .idx {
+  width: 20px;
+  text-align: right;
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.playlist-item.active .idx { color: var(--primary); font-weight: 600; }
+.playlist-item .info { flex: 1; min-width: 0; }
+.playlist-item .info .name {
+  font-size: var(--fs-body);
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.playlist-item.active .info .name { font-weight: 500; }
+.playlist-item .info .meta {
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+.playlist-item .play-indicator {
+  font-size: 10px;
+  color: var(--primary);
+  opacity: 0;
+  transition: opacity var(--transition-base);
+}
+.playlist-item.active .play-indicator { opacity: 1; }
 
 /* ===== No Lyrics ===== */
 .no-lyrics {
@@ -398,6 +455,11 @@ body {
       <div class="artist" id="songArtist">AI · 446辨证体系</div>
       <div class="duration" id="songDuration">加载中...</div>
     </div>
+  </div>
+
+  <!-- Playlist -->
+  <div class="playlist" id="playlist">
+    <div class="playlist-header">歌单</div>
   </div>
 
   <!-- Lyrics (static, page scrolls naturally) -->
@@ -672,6 +734,7 @@ function loadSong(index) {
   const lrc = LRC_LIST[index] || LRC_DATA;
   lyricLines = parseLRC(lrc);
   renderLyrics();
+  updatePlaylistActive();
 }
 
 // ============================================================
@@ -687,13 +750,6 @@ function renderLyrics() {
     const div = document.createElement('div');
     div.className = 'lyric-line';
     div.textContent = line.text;
-    div.dataset.index = i;
-    div.addEventListener('click', () => {
-      audio.currentTime = line.time;
-      if (!isPlaying) {
-        audio.play();
-      }
-    });
     lyricsSection.appendChild(div);
     lyricLineEls.push(div);
   });
@@ -724,6 +780,44 @@ function updateLyrics(currentTime) {
     el.className = 'lyric-line';
     if (i < currentLineIdx) el.classList.add('past');
     else if (i === currentLineIdx) el.classList.add('active');
+  });
+}
+
+// ============================================================
+// Playlist
+// ============================================================
+const playlist = document.getElementById('playlist');
+let playlistItems = [];
+
+function renderPlaylist() {
+  // Remove old items (keep header)
+  playlist.querySelectorAll('.playlist-item').forEach(el => el.remove());
+
+  SONGS.forEach((song, i) => {
+    const item = document.createElement('div');
+    item.className = 'playlist-item' + (i === currentIndex ? ' active' : '');
+    item.innerHTML = `
+      <span class="idx">${i + 1}</span>
+      <div class="info">
+        <div class="name">${song.title}</div>
+        <div class="meta">${song.artist}</div>
+      </div>
+      <span class="play-indicator">▶</span>
+    `;
+    item.addEventListener('click', () => {
+      if (i === currentIndex) return;
+      currentIndex = i;
+      loadSong(currentIndex);
+      audio.play();
+    });
+    playlist.appendChild(item);
+    playlistItems.push(item);
+  });
+}
+
+function updatePlaylistActive() {
+  playlistItems.forEach((item, i) => {
+    item.classList.toggle('active', i === currentIndex);
   });
 }
 
@@ -908,6 +1002,7 @@ document.addEventListener('keydown', (e) => {
 // ============================================================
 // Init
 // ============================================================
+renderPlaylist();
 loadSong(0);
 </script>
 </body>
