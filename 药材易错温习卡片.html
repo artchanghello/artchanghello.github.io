@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>药材扫荡学习 · 446辨证</title>
+<meta name="description" content="逐题扫荡全部80味药材，每味自评掌握程度，自动积累易错题库">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #B45309;
+  --primary-light: #D97706;
+  --secondary: #65A30D;
+  --accent: #C2410C;
+  --bg: #FFF8F0;
+  --surface: #FFFFFF;
+  --surface-alt: #FFFBEB;
+  --border: #E7E5E4;
+  --text: #292524;
+  --text-secondary: #57534E;
+  --text-muted: #A8A29E;
+  --error: #DC2626;
+  --success: #16A34A;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.03);
+  --shadow-lg: 0 10px 15px rgba(0,0,0,0.08), 0 4px 6px rgba(0,0,0,0.04);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --font-heading: 'Noto Serif SC', serif;
+  --font-body: 'Noto Sans SC', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Nav */
+.navbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px; height: 60px;
+  background: rgba(255,248,240,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 100;
+}
+.navbar .logo {
+  font-family: var(--font-heading);
+  font-size: 18px; font-weight: 600; color: var(--primary);
+}
+.navbar .logo span { color: var(--secondary); }
+.tabs { display: flex; gap: 4px; }
+.tab {
+  padding: 8px 16px; border: none; background: none;
+  font-size: 14px; font-weight: 500; color: var(--text-secondary);
+  cursor: pointer; border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.tab:hover { background: var(--surface-alt); color: var(--primary); }
+.tab.active { background: var(--primary); color: white; }
+
+/* Hero */
+.hero {
+  background: linear-gradient(135deg, #B45309 0%, #D97706 50%, #65A30D 100%);
+  color: white; text-align: center;
+  padding: 48px 24px 36px;
+}
+.hero h1 {
+  font-family: var(--font-heading);
+  font-size: clamp(1.5rem,3.5vw,2rem);
+  font-weight: 600; margin-bottom: 8px;
+}
+.hero p { font-size: 15px; opacity: 0.85; }
+
+/* Main */
+.main { max-width: 960px; margin: 0 auto; padding: 32px 16px 64px; }
+
+/* ===== Learn Mode (shared) ===== */
+.learn-area { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+
+/* Progress bar */
+.progress-section {
+  width: 100%; max-width: 520px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.progress-top {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 14px; color: var(--text-secondary); gap: 8px;
+}
+.progress-top .cat-label {
+  font-family: var(--font-heading); font-weight: 600; color: var(--primary);
+}
+.progress-bar-track {
+  width: 100%; height: 6px;
+  background: var(--border); border-radius: 3px; overflow: hidden;
+}
+.progress-bar-fill {
+  height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary));
+  border-radius: 3px; transition: width 0.4s ease;
+  width: 0%;
+}
+.progress-stats {
+  font-size: 13px; color: var(--text-muted);
+  display: flex; gap: 16px; justify-content: center;
+}
+
+/* Card */
+.learn-card {
+  width: 100%; max-width: 520px; min-height: 340px;
+  perspective: 1200px; cursor: pointer;
+}
+.learn-card-inner {
+  position: relative; width: 100%; min-height: 340px;
+  transition: transform 0.5s ease;
+  transform-style: preserve-3d;
+}
+.learn-card-inner.flipped { transform: rotateY(180deg); }
+.card-front, .card-back {
+  position: absolute; inset: 0;
+  backface-visibility: hidden;
+  border-radius: var(--radius-lg);
+  padding: 32px 28px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
+  display: flex; flex-direction: column;
+}
+.card-front {
+  background: linear-gradient(135deg, var(--surface-alt), var(--surface));
+  justify-content: center; align-items: center; text-align: center;
+}
+.card-front .herb-name-big {
+  font-family: var(--font-heading);
+  font-size: 42px; font-weight: 600; color: var(--primary);
+  margin-bottom: 8px;
+}
+.card-front .herb-meta {
+  font-size: 14px; color: var(--text-muted);
+  margin-bottom: 20px;
+}
+.card-front .tap-hint {
+  font-size: 13px; color: var(--text-muted);
+  display: flex; align-items: center; gap: 6px;
+}
+.card-back {
+  background: var(--surface);
+  transform: rotateY(180deg);
+  overflow-y: auto;
+}
+.card-back .cb-label {
+  font-size: 11px; font-weight: 500; color: var(--text-muted);
+  letter-spacing: 0.3px; margin-bottom: 2px;
+}
+.card-back .cb-row { margin-bottom: 14px; }
+.card-back .cb-value { font-size: 15px; line-height: 1.5; }
+.card-back .cb-value.highlight { color: var(--primary); font-weight: 500; }
+.card-back .cb-target-box {
+  background: #FFF8F0; border-left: 3px solid var(--secondary);
+  padding: 12px 14px; border-radius: 6px;
+  font-size: 14px; line-height: 1.6; color: var(--text-secondary);
+  margin-top: 6px;
+}
+.card-back .cb-wrong-note {
+  background: #FEF2E8; border-left: 3px solid var(--error);
+  padding: 10px 14px; border-radius: 6px;
+  font-size: 13px; color: var(--error); margin-top: 6px;
+}
+
+/* Judgment buttons - ONLY shown after flip */
+.judgment-btns {
+  display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+  min-height: 48px; align-items: center;
+}
+.judgment-btns .hint-text {
+  font-size: 14px; color: var(--text-muted);
+}
+
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 24px; border: none; border-radius: 40px;
+  font-size: 15px; font-weight: 500; cursor: pointer;
+  font-family: var(--font-body);
+  transition: all 0.2s;
+}
+.btn:hover { transform: translateY(-1px); }
+.btn-primary { background: var(--primary); color: white; }
+.btn-primary:hover { background: var(--primary-light); }
+.btn-secondary { background: var(--surface); color: var(--text-secondary); border: 1.5px solid var(--border); }
+.btn-secondary:hover { border-color: var(--primary); color: var(--primary); }
+.btn-success { background: var(--success); color: white; }
+.btn-success:hover { background: #15803D; }
+.btn-error { background: var(--error); color: white; }
+.btn-error:hover { background: #B91C1C; }
+.btn-warn { background: var(--primary); color: white; }
+.btn-warn:hover { background: var(--primary-light); }
+.btn-small { padding: 6px 14px; font-size: 13px; }
+
+/* Empty / Complete */
+.empty-state {
+  text-align: center; padding: 60px 24px; color: var(--text-muted);
+}
+.empty-state .big-icon { font-size: 48px; margin-bottom: 12px; }
+.empty-state p { font-size: 16px; margin-top: 8px; }
+.empty-state .sub { font-size: 14px; color: var(--text-muted); margin-top: 4px; }
+
+/* ===== Table Mode ===== */
+.table-controls {
+  display: flex; gap: 12px; margin-bottom: 24px;
+  flex-wrap: wrap; align-items: center;
+}
+.table-controls input {
+  flex: 1; min-width: 200px; padding: 10px 16px;
+  border: 1.5px solid var(--border); border-radius: 40px;
+  font-size: 14px; outline: none; font-family: var(--font-body);
+  background: var(--surface);
+}
+.table-controls input:focus { border-color: var(--primary); }
+.cat-filters { display: flex; gap: 6px; flex-wrap: wrap; }
+.cat-filter {
+  padding: 5px 14px; border: 1.5px solid var(--border);
+  border-radius: 20px; background: var(--surface);
+  font-size: 13px; cursor: pointer; transition: all 0.2s;
+  font-family: var(--font-body); color: var(--text-secondary);
+}
+.cat-filter.active { background: var(--primary); color: white; border-color: var(--primary); }
+.cat-filter:hover:not(.active) { border-color: var(--primary); color: var(--primary); }
+
+.herb-table-wrap { overflow-x: auto; }
+.herb-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 14px;
+}
+.herb-table th {
+  background: var(--surface-alt);
+  padding: 10px 12px; text-align: left;
+  font-weight: 500; color: var(--text-secondary);
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+  position: sticky; top: 0;
+}
+.herb-table td {
+  padding: 10px 12px; border-bottom: 1px solid var(--border);
+  vertical-align: top; line-height: 1.5;
+}
+.herb-table tr:hover td { background: var(--surface-alt); }
+.herb-table .herb-name-cell {
+  font-family: var(--font-heading);
+  color: var(--primary); font-weight: 600; white-space: nowrap;
+}
+.herb-table .herb-cat-tag {
+  display: inline-block; font-size: 11px; padding: 2px 8px;
+  border-radius: 12px; font-weight: 500;
+}
+.tag-xu { background: #EBF5FB; color: #1E6FA0; }
+.tag-shi { background: #FDEBD0; color: #A25E0A; }
+.tag-wai { background: #E8F8F0; color: #1D7A5E; }
+.herb-table .target-text {
+  font-size: 13px; color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+/* ===== Review Modal ===== */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.4); z-index: 1000;
+  justify-content: center; align-items: center;
+  padding: 24px;
+}
+.modal-overlay.active { display: flex; }
+.modal {
+  background: var(--surface); border-radius: var(--radius-lg);
+  max-width: 500px; width: 100%; padding: 32px;
+  box-shadow: var(--shadow-lg); max-height: 80vh; overflow-y: auto;
+  position: relative;
+}
+.modal h2 {
+  font-family: var(--font-heading);
+  font-size: 20px; color: var(--primary); margin-bottom: 4px;
+}
+.modal .modal-herb-name {
+  font-size: 14px; color: var(--text-secondary); margin-bottom: 12px;
+}
+/* Checkbox list */
+.checkbox-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 8px; margin-bottom: 16px;
+}
+.checkbox-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px; border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm); cursor: pointer;
+  transition: all 0.15s; user-select: none;
+  font-size: 14px;
+}
+.checkbox-item:hover { border-color: var(--primary); background: var(--surface-alt); }
+.checkbox-item.checked { border-color: var(--primary); background: #FEF3C7; }
+.checkbox-item input { display: none; }
+.checkbox-item .ck-icon { width: 18px; text-align: center; color: var(--text-muted); }
+.checkbox-item.checked .ck-icon { color: var(--primary); }
+.modal .form-group { margin-bottom: 14px; }
+.modal .form-group label {
+  display: block; font-size: 13px; font-weight: 500;
+  color: var(--text-secondary); margin-bottom: 4px;
+}
+.modal .form-group textarea {
+  width: 100%; padding: 10px 14px;
+  border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  font-size: 14px; outline: none; font-family: var(--font-body);
+  resize: vertical;
+}
+.modal .form-group textarea:focus { border-color: var(--primary); }
+.modal .form-actions {
+  display: flex; gap: 10px; justify-content: flex-end;
+  margin-top: 8px;
+}
+.modal-close {
+  position: absolute; top: 12px; right: 16px;
+  background: none; border: none; font-size: 24px;
+  color: var(--text-muted); cursor: pointer; line-height: 1;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .navbar { padding: 0 10px; height: 52px; }
+  .navbar .logo { font-size: 15px; }
+  .tabs { gap: 2px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab { padding: 6px 10px; font-size: 12px; white-space: nowrap; flex-shrink: 0; }
+  .hero { padding: 28px 16px 22px; }
+  .hero h1 { font-size: 1.3rem; }
+  .hero p { font-size: 13px; }
+  .main { padding: 20px 12px 64px; }
+  .learn-card { max-width: 100%; min-height: 280px; }
+  .learn-card-inner { min-height: 280px; }
+  .card-front, .card-back { padding: 20px 16px; }
+  .card-front .herb-name-big { font-size: 30px; }
+  .card-front .herb-meta { font-size: 13px; margin-bottom: 14px; }
+  .card-front .tap-hint { font-size: 12px; }
+  .card-back .cb-row { margin-bottom: 10px; }
+  .card-back .cb-value { font-size: 14px; }
+  .card-back .cb-target-box { padding: 10px 12px; font-size: 13px; }
+  .card-back .cb-wrong-note { padding: 8px 12px; font-size: 12px; }
+  .judgment-btns { gap: 8px; min-height: 40px; }
+  .judgment-btns .btn { font-size: 13px; padding: 8px 16px; }
+  .btn { padding: 8px 18px; font-size: 14px; }
+  .progress-top { font-size: 13px; flex-wrap: wrap; }
+  .progress-stats { font-size: 12px; gap: 10px; flex-wrap: wrap; }
+  .herb-table { font-size: 12px; }
+  .herb-table th, .herb-table td { padding: 6px 8px; }
+  .herb-table .herb-name-cell { font-size: 13px; }
+  .table-controls input { min-width: 140px; padding: 8px 14px; font-size: 13px; }
+  .cat-filter { font-size: 12px; padding: 4px 10px; }
+  .modal { padding: 24px 20px; margin: 0 12px; max-width: 100%; }
+  .modal h2 { font-size: 18px; }
+  .checkbox-grid { gap: 6px; }
+  .checkbox-item { padding: 6px 10px; font-size: 13px; }
+  .modal .form-actions { flex-wrap: wrap; }
+  .modal .form-actions .btn { flex: 1; justify-content: center; min-width: 80px; }
+}
+
+@media (max-width: 480px) {
+  .navbar { height: 48px; padding: 0 8px; }
+  .navbar .logo { font-size: 14px; }
+  .tab { padding: 5px 8px; font-size: 11px; }
+  .hero { padding: 22px 12px 18px; }
+  .hero h1 { font-size: 1.15rem; }
+  .main { padding: 16px 10px 56px; }
+  .learn-card { min-height: 240px; }
+  .learn-card-inner { min-height: 240px; }
+  .card-front, .card-back { padding: 16px 14px; border-radius: var(--radius-md); }
+  .card-front .herb-name-big { font-size: 26px; }
+  .card-front .herb-meta { font-size: 12px; margin-bottom: 10px; }
+  .card-front .tap-hint { font-size: 11px; }
+  .card-back .cb-value { font-size: 13px; }
+  .card-back .cb-target-box { padding: 8px 10px; font-size: 12px; }
+  .card-back .cb-wrong-note { padding: 6px 10px; font-size: 11px; }
+  /* 三档按钮垂直堆叠 */
+  .judgment-btns { flex-direction: column; align-items: stretch; gap: 6px; width: 100%; max-width: 280px; }
+  .judgment-btns .btn { justify-content: center; font-size: 14px; padding: 10px 16px; }
+  .progress-top { font-size: 12px; }
+  .progress-stats { font-size: 11px; gap: 6px; }
+  .table-controls { flex-direction: column; gap: 8px; }
+  .table-controls input { min-width: 0; width: 100%; }
+  .cat-filters { justify-content: center; }
+  .herb-table th:nth-child(5), .herb-table td:nth-child(5),
+  .herb-table th:nth-child(6), .herb-table td:nth-child(6) { display: none; }
+  .herb-table th:nth-child(3), .herb-table td:nth-child(3) { display: none; }
+  .herb-table { font-size: 11px; }
+  .herb-table th, .herb-table td { padding: 5px 6px; }
+  .modal { padding: 20px 16px; }
+  .modal h2 { font-size: 16px; }
+  .checkbox-grid { grid-template-columns: 1fr 1fr; gap: 5px; }
+  .checkbox-item { padding: 5px 8px; font-size: 12px; }
+  .modal .form-group textarea { font-size: 13px; padding: 8px 12px; }
+  .btn { padding: 7px 14px; font-size: 13px; }
+}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="logo">446<span>·药材</span></div>
+  <div class="tabs">
+    <button class="tab active" data-mode="sweep" onclick="switchMode('sweep')">📖 扫荡学习</button>
+    <button class="tab" data-mode="intensive" onclick="switchMode('intensive')">🎯 错题强化</button>
+    <button class="tab" data-mode="table" onclick="switchMode('table')">📋 归经靶点表</button>
+  </div>
+</nav>
+
+<section class="hero">
+  <h1>药材扫荡学习</h1>
+  <p>逐题过一遍，每味药都做判断，易错题库自动建成</p>
+</section>
+
+<main class="main">
+
+  <!-- ===== Learn Mode (扫荡学习 + 错题强化 共用) ===== -->
+  <div id="learnMode">
+    <div class="learn-area">
+
+      <!-- Progress -->
+      <div class="progress-section" id="progressSection">
+        <div class="progress-top">
+          <span><span class="cat-label" id="progressCat">四虚·气虚</span> <span id="progressIndex">1/8</span></span>
+          <span id="modeLabel">扫荡学习</span>
+        </div>
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
+        </div>
+        <div class="progress-stats">
+          <span>已掌握 <strong id="masteredCount">0</strong>/80</span>
+          <span>需复习 <strong id="reviewCount">0</strong></span>
+          <span>本轮 <strong id="sessionCount">0</strong></span>
+        </div>
+      </div>
+
+      <!-- Card -->
+      <div class="learn-card" id="learnCard" onclick="flipCard()">
+        <div class="learn-card-inner" id="cardInner">
+          <div class="card-front">
+            <div class="herb-name-big" id="cardName">—</div>
+            <div class="herb-meta" id="cardMeta"></div>
+            <div class="tap-hint" id="tapHint">👆 点击翻转查看完整信息</div>
+          </div>
+          <div class="card-back">
+            <div id="cardBackContent"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Judgment buttons -->
+      <div class="judgment-btns" id="judgmentBtns">
+        <span class="hint-text" id="judgeHint">翻转卡片后选择</span>
+      </div>
+
+      <!-- Extra actions -->
+      <div style="text-align:center;margin-top:4px">
+        <button class="btn btn-secondary btn-small" onclick="resetAll()">🔄 重置全部进度</button>
+      </div>
+
+      <!-- Empty / Complete state -->
+      <div class="empty-state" id="emptyState" style="display:none;">
+        <div class="big-icon" id="completeIcon">🎉</div>
+        <p id="completeMsg">全部药材已掌握！</p>
+        <p class="sub" id="completeSub">点击下方「重置全部进度」重新开始</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Table Mode ===== -->
+  <div id="tableMode" style="display:none;">
+    <div class="table-controls">
+      <input type="text" id="tableSearch" placeholder="搜索药名、性味、归经、功效…" oninput="renderTable()">
+      <div class="cat-filters">
+        <button class="cat-filter active" data-cat="all" onclick="filterTable('all')">全部</button>
+        <button class="cat-filter" data-cat="四虚" onclick="filterTable('四虚')">四虚</button>
+        <button class="cat-filter" data-cat="四实" onclick="filterTable('四实')">四实</button>
+        <button class="cat-filter" data-cat="六外感" onclick="filterTable('六外感')">六外感</button>
+        <button class="cat-filter" data-cat="易错" onclick="filterTable('易错')">需复习</button>
+      </div>
+    </div>
+    <div class="herb-table-wrap">
+      <table class="herb-table">
+        <thead>
+          <tr>
+            <th>药名</th>
+            <th>分类</th>
+            <th>性味</th>
+            <th>归经</th>
+            <th>功效</th>
+            <th style="min-width:180px">功能靶点</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+    <div class="empty-state" id="tableEmpty" style="display:none;">
+      <p>没有匹配的药材</p>
+    </div>
+  </div>
+
+</main>
+
+<!-- Review Modal -->
+<div class="modal-overlay" id="reviewModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeReviewModal()">&times;</button>
+    <h2>回顾：<span id="reviewHerbName"></span></h2>
+    <div class="modal-herb-name">哪些点没回忆起来？勾选后系统会针对性提醒</div>
+    <div class="checkbox-grid" id="reviewCheckboxGrid">
+      <label class="checkbox-item" data-key="xingwei" onclick="toggleCheckbox(this)">
+        <span class="ck-icon">☐</span> 性味
+      </label>
+      <label class="checkbox-item" data-key="guijing" onclick="toggleCheckbox(this)">
+        <span class="ck-icon">☐</span> 归经
+      </label>
+      <label class="checkbox-item" data-key="gongxiao" onclick="toggleCheckbox(this)">
+        <span class="ck-icon">☐</span> 功效
+      </label>
+      <label class="checkbox-item" data-key="target" onclick="toggleCheckbox(this)">
+        <span class="ck-icon">☐</span> 功能靶点
+      </label>
+    </div>
+    <div class="form-group">
+      <label>具体错在哪（选填）</label>
+      <textarea id="reviewDetail" rows="2" placeholder="如：性味记成甘寒了…"></textarea>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="skipReview()">跳过</button>
+      <button class="btn btn-primary" onclick="saveReview()">保存</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// HERB DATA — 80味药
+// ============================================================
+const HERBS = [
+  // ---- 四虚：气虚 ----
+  {name:"生黄芪",cat:"四虚",subcat:"气虚",xingwei:"甘，温",guijing:"脾、肺",gongxiao:"补气固表、利水消肿、托毒排脓、升阳举陷",daibiao:"补中益气汤、黄芪桂枝五物汤",
+   target:"入脾经→补中焦升清阳；入肺经→充表气固腠理。补而能走，从内充到外。"},
+  {name:"炙黄芪",cat:"四虚",subcat:"气虚",xingwei:"甘，温",guijing:"脾、肺",gongxiao:"补气固表，炙后温性增强偏补气健脾",daibiao:"补中益气汤",
+   target:"蜜炙增甘温之性→补力更专，入脾肺专注温补中焦，走表力减。"},
+  {name:"炙甘草",cat:"四虚",subcat:"气虚",xingwei:"甘，平",guijing:"心、肺、脾、胃",gongxiao:"补脾益气、清热解毒、缓急止痛、调和诸药",daibiao:"炙甘草汤、桂枝甘草汤",
+   target:"入脾胃→补中益气缓急迫；入心肺→养心气复脉。调和诸药靠的是甘平之性居中调和。"},
+  {name:"人参",cat:"四虚",subcat:"气虚",xingwei:"甘、微温",guijing:"脾、肺、心、肾",gongxiao:"大补元气、生津安神",daibiao:"四逆加人参汤、白虎加人参汤",
+   target:"入脾肺→大补一身之气；入心→安神定志；入肾→固元气根基。形似人，大补人体根本。"},
+  {name:"党参",cat:"四虚",subcat:"气虚",xingwei:"甘，平",guijing:"脾、肺",gongxiao:"健脾益肺、养血生津",daibiao:"",
+   target:"入脾肺平补中焦，力缓于人参但无温燥之弊，日常调理首选。"},
+  {name:"炒白术",cat:"四虚",subcat:"气虚",xingwei:"苦、甘，温",guijing:"脾、胃",gongxiao:"健脾益气、燥湿利水、止汗安胎",daibiao:"理中丸",
+   target:"入脾胃→苦温燥湿健脾、甘温补中。守而不走，专攻中焦湿困。"},
+  {name:"糯米",cat:"四虚",subcat:"气虚",xingwei:"甘，温",guijing:"脾、胃、肺",gongxiao:"补中益气、缩尿敛汗、解毒疗疮",daibiao:"黄芪糯米粥",
+   target:"入脾胃→黏滞甘补固中焦；入肺→充肺气縮尿敛汗。黏性就是它的补力来源。"},
+  {name:"粳米",cat:"四虚",subcat:"气虚",xingwei:"甘，平",guijing:"脾、胃、肺",gongxiao:"补气健脾、除烦止渴、止泻痢",daibiao:"白虎汤",
+   target:"入脾胃→平淡养胃气；入肺→生津止渴。白虎汤用它护中焦，不让石膏伤胃。"},
+
+  // ---- 四虚：阳虚 ----
+  {name:"附子",cat:"四虚",subcat:"阳虚",xingwei:"大辛，大热；有毒",guijing:"心、肾、脾",gongxiao:"回阳救逆、补火助阳、散寒止痛",daibiao:"四逆汤、真武汤",
+   target:"入心→回阳救逆（抢救心阳衰竭）；入肾→补火助阳（温补肾命门）；入脾→散寒止痛（暖中焦除寒）。三脏分主三个层级的阳。"},
+  {name:"干姜",cat:"四虚",subcat:"阳虚",xingwei:"辛，热",guijing:"脾、胃、肾、心、肺",gongxiao:"温中散寒、回阳通脉、温肺化饮",daibiao:"理中丸、四逆汤、甘草干姜汤",
+   target:"入脾胃→温中散寒（中焦虚寒第一线）；入肺→温肺化饮（寒饮咳喘）；入心肾→回阳助附子。守而不走，专守中焦。"},
+  {name:"炮姜",cat:"四虚",subcat:"阳虚",xingwei:"辛，热",guijing:"脾、胃、肾",gongxiao:"温经止血、温中止痛",daibiao:"",
+   target:"干姜炒炭→辛散减、涩性增。入脾肾→温经止血，守中焦兼固涩。"},
+  {name:"生姜",cat:"四虚",subcat:"阳虚",xingwei:"辛，微温",guijing:"肺、脾、胃",gongxiao:"解表散寒、温中止呕、化痰止咳",daibiao:"桂枝汤、吴茱萸汤",
+   target:"入肺→发散表寒；入脾胃→温中止呕。鲜品含水分多，走表散寒力胜干姜。"},
+  {name:"桂枝",cat:"四虚",subcat:"阳虚",xingwei:"辛、甘，温",guijing:"心、肺、膀胱",gongxiao:"发汗解肌、温通经脉、助阳化气",daibiao:"桂枝汤、桂枝甘草汤、苓桂术甘汤",
+   target:"入心肺→温通血脉（心主血、肺朝百脉）；入膀胱→化气行水（五苓散）。肉桂嫩枝，走肢节向外温通。"},
+  {name:"吴茱萸",cat:"四虚",subcat:"阳虚",xingwei:"辛、苦，热；有小毒",guijing:"肝、脾、胃、肾",gongxiao:"散寒止痛、降逆止呕、助阳止泻",daibiao:"吴茱萸汤、当归四逆加吴茱萸生姜汤",
+   target:"入肝经→散肝经寒凝止痛（巅顶头痛）；入脾胃→降逆止呕；入肾→助阳止泻。辛热直走肝经，和胃降逆。"},
+
+  // ---- 四虚：血虚 ----
+  {name:"炒白芍",cat:"四虚",subcat:"血虚",xingwei:"苦、酸，微寒",guijing:"肝、脾",gongxiao:"养血和营、敛阴止汗、柔肝止痛",daibiao:"芍药甘草汤、桂枝汤",
+   target:"入肝→养血柔肝止痛；入脾→敛阴和营。炒后寒性减，长于收敛。"},
+  {name:"生地黄（酒煎）",cat:"四虚",subcat:"血虚",xingwei:"甘、苦，寒",guijing:"心、肝、肾",gongxiao:"清热凉血、养阴生津",daibiao:"炙甘草汤、百合地黄汤",
+   target:"入心→清心凉血；入肝→养肝阴；入肾→滋肾水。酒煎减寒增活血，血中滋阴药。"},
+  {name:"熟地",cat:"四虚",subcat:"血虚",xingwei:"甘，微温",guijing:"肝、肾",gongxiao:"补血滋阴、益精填髓",daibiao:"六味地黄丸类",
+   target:"入肝肾→大补精血。九蒸九晒后色黑质润，黑入肾、润养精，纯补无泻。"},
+  {name:"当归",cat:"四虚",subcat:"血虚",xingwei:"甘、辛，温",guijing:"肝、心、脾",gongxiao:"补血活血、调经止痛、润肠通便",daibiao:"当归四逆汤、补阳还五汤",
+   target:"入肝→补血活血（血海）；入心→养心血安神；入脾→健脾生血。甘补血、辛行血，一药兼具补与通。"},
+  {name:"阿胶",cat:"四虚",subcat:"血虚",xingwei:"甘，平",guijing:"肺、肝、肾",gongxiao:"补血止血、滋阴润燥",daibiao:"炙甘草汤、黄连阿胶汤、猪苓汤",
+   target:"入肺→补肺阴润燥（皮属肺）；入肝→养血柔肝；入肾→滋肾填精。驴皮胶粘→止血养阴。"},
+  {name:"大枣",cat:"四虚",subcat:"血虚",xingwei:"甘，温",guijing:"脾、胃、心",gongxiao:"补中益气、养血安神",daibiao:"桂枝汤、吴茱萸汤",
+   target:"入脾胃→甘补中焦津液；入心→养血安神。桂枝汤中用之养脾胃津液以助汗源。"},
+
+  // ---- 四虚：阴虚 ----
+  {name:"生白芍",cat:"四虚",subcat:"阴虚",xingwei:"苦、酸，微寒",guijing:"肝、脾",gongxiao:"养血调经、敛阴止汗、柔肝止痛",daibiao:"小建中汤",
+   target:"生用凉润→入肝柔肝凉血，入脾敛阴。和炒白芍比，凉润力更强。"},
+  {name:"麦门冬",cat:"四虚",subcat:"阴虚",xingwei:"甘、微苦，微寒",guijing:"心、肺、胃",gongxiao:"养阴润肺、清心除烦",daibiao:"炙甘草汤、竹叶石膏汤",
+   target:"入肺→清润肺金止燥咳；入心→清心除烦安神；入胃→益胃生津。形如心、汁滋润，心肺胃三脏津枯之要药。"},
+  {name:"火麻仁",cat:"四虚",subcat:"阴虚",xingwei:"甘，平",guijing:"脾、胃、大肠",gongxiao:"润肠通便、滋养补虚",daibiao:"麻子仁丸",
+   target:"入脾胃大肠→油脂润滑肠道。不攻不泻，润通为主，阴虚便秘首选。"},
+  {name:"知母",cat:"四虚",subcat:"阴虚",xingwei:"苦、甘，寒",guijing:"肺、胃、肾",gongxiao:"清热泻火、滋阴润燥",daibiao:"白虎汤、白虎加人参汤",
+   target:"入肺→清气分热；入胃→泻胃火生津；入肾→滋肾阴降虚火。多汁滋阴、色白清气热。"},
+  {name:"百合",cat:"四虚",subcat:"阴虚",xingwei:"甘，寒",guijing:"心、肺",gongxiao:"养阴润肺、清心安神",daibiao:"百合地黄汤",
+   target:"入肺→清润肺金止干咳；入心→清心安神定魄。鳞茎层层类肺形，清中有润。"},
+  {name:"麦芽糖",cat:"四虚",subcat:"阴虚",xingwei:"甘，温",guijing:"脾、胃、肺",gongxiao:"补脾益气、缓急止痛",daibiao:"小建中汤",
+   target:"入脾胃→甘守中焦缓急补虚；入肺→润肺。黏稠甘甜，缓急之力强。"},
+  {name:"怀山药",cat:"四虚",subcat:"阴虚",xingwei:"甘，平",guijing:"脾、肺、肾",gongxiao:"补脾养胃、益肺固肾",daibiao:"",
+   target:"入脾肺→补气养阴；入肾→固精缩尿。质密黏液多故固涩力强。"},
+
+  // ---- 四虚：固涩 ----
+  {name:"赤石脂",cat:"四虚",subcat:"固涩",xingwei:"甘、酸、涩，温",guijing:"大肠、胃",gongxiao:"涩肠止泻、收敛止血、生肌敛疮",daibiao:"桃花汤、赤石脂禹余粮汤",
+   target:"入大肠→涩肠固脱止利；入胃→收敛止血。矿物质粘，涩性最强。"},
+  {name:"禹余粮",cat:"四虚",subcat:"固涩",xingwei:"甘、涩，平",guijing:"胃",gongxiao:"涩肠止泻、收敛止血、止带",daibiao:"赤石脂禹余粮汤",
+   target:"入胃→质重沉降固涩下焦。与赤石脂相须为用，一涩一固。"},
+  {name:"龙骨",cat:"四虚",subcat:"固涩",xingwei:"甘、涩，平",guijing:"心、肝、肾",gongxiao:"镇惊安神、平肝潜阳、收敛固涩",daibiao:"桂枝甘草龙骨牡蛎汤",
+   target:"入心→镇惊安神；入肝→平敛肝阳；入肾→固涩肾气。化石质重→能降能涩。"},
+  {name:"牡蛎",cat:"四虚",subcat:"固涩",xingwei:"咸、涩，微寒",guijing:"肝、肾",gongxiao:"平肝潜阳、软坚散结、收敛固涩",daibiao:"桂枝甘草龙骨牡蛎汤",
+   target:"入肝肾→咸能软坚散结、质重潜阳。贝壳类→收敛固涩兼散结。"},
+  {name:"五味子",cat:"四虚",subcat:"固涩",xingwei:"酸、甘，温",guijing:"肺、心、肾",gongxiao:"收敛固涩、益气生津、补肾宁心",daibiao:"小青龙汤",
+   target:"入肺→敛肺止咳；入心→宁心安神；入肾→固肾涩精。五味俱全，五脏皆可敛。"},
+  {name:"乌梅",cat:"四虚",subcat:"固涩",xingwei:"酸、涩，平",guijing:"肝、脾、肺、大肠",gongxiao:"敛肺止咳、涩肠止泻、安蛔止痛",daibiao:"乌梅丸",
+   target:"入肝脾→酸收安蛔；入肺→敛肺止咳；入大肠→涩肠止泻。极酸之品，收涩第一。"},
+  {name:"山茱萸",cat:"四虚",subcat:"固涩",xingwei:"酸、涩，微温",guijing:"肝、肾",gongxiao:"补益肝肾、收敛固涩、固冲止血",daibiao:"六味地黄丸类",
+   target:"入肝肾→酸收滋补。既能补又能收，补肝肾而固脱，防虚脱之要药。"},
+
+  // ---- 四实：气滞 ----
+  {name:"柴胡",cat:"四实",subcat:"气滞",xingwei:"苦、辛，微寒",guijing:"肝、胆、肺",gongxiao:"和解退热、疏肝解郁、升举阳气",daibiao:"四逆散、小柴胡汤",
+   target:"入肝胆→疏肝解郁（胁痛、郁证）；入肺→升举阳气（补中益气汤）。辛苦微寒→辛散解郁不是甘补。"},
+  {name:"川芎",cat:"四实",subcat:"气滞",xingwei:"辛，温",guijing:"肝、胆、心包",gongxiao:"活血行气、祛风止痛",daibiao:"血府逐瘀汤、补阳还五汤",
+   target:"入肝胆→行气活血（血中气药）；入心包→通行血脉。上行头目、下行血海，一药行遍三焦。"},
+  {name:"枳实",cat:"四实",subcat:"气滞",xingwei:"苦、辛，微寒",guijing:"脾、胃",gongxiao:"破气消积、化痰散痞",daibiao:"四逆散、大承气汤",
+   target:"入脾胃→破气消积力猛。形小质坚→力量集中，善破胃肠积滞。"},
+  {name:"枳壳",cat:"四实",subcat:"气滞",xingwei:"苦、辛，微寒",guijing:"脾、胃",gongxiao:"理气宽中、行滞消胀",daibiao:"四逆散、血府逐瘀汤",
+   target:"入脾胃→行气宽中力缓。形大力柔，宽中不猛。"},
+  {name:"厚朴",cat:"四实",subcat:"气滞",xingwei:"苦、辛，温",guijing:"脾、胃、肺、大肠",gongxiao:"燥湿消痰、下气除满",daibiao:"半夏厚朴汤、大承气汤",
+   target:"入脾胃→燥湿下气除满；入肺→降气化痰；入大肠→通腑。皮厚芳香，燥湿行气一药兼之。"},
+
+  // ---- 四实：血瘀 ----
+  {name:"赤芍",cat:"四实",subcat:"血瘀",xingwei:"苦，微寒",guijing:"肝",gongxiao:"清热凉血、散瘀止痛",daibiao:"桂枝茯苓丸",
+   target:"入肝→专行血分。色赤入血，凉血散瘀力专。"},
+  {name:"红花",cat:"四实",subcat:"血瘀",xingwei:"辛，温",guijing:"心、肝",gongxiao:"活血通经、散瘀止痛",daibiao:"血府逐瘀汤、补阳还五汤",
+   target:"入心肝→色红入血分。质轻上行→活血通经偏走全身经脉。"},
+  {name:"桃仁",cat:"四实",subcat:"血瘀",xingwei:"苦、甘，平",guijing:"心、肝、大肠",gongxiao:"活血祛瘀、润肠通便",daibiao:"桃核承气汤、桂枝茯苓丸",
+   target:"入心肝→破血逐瘀；入大肠→油润滑肠。一药管血分瘀+肠腑燥。"},
+  {name:"丹皮",cat:"四实",subcat:"血瘀",xingwei:"苦、辛，微寒",guijing:"心、肝、肾",gongxiao:"清热凉血、活血化瘀",daibiao:"桂枝茯苓丸、大黄牡丹汤",
+   target:"入心→清心凉血；入肝→活血散瘀；入肾→清透阴分伏热。"},
+  {name:"地龙",cat:"四实",subcat:"血瘀",xingwei:"咸，寒",guijing:"肝、脾、膀胱",gongxiao:"清热定惊、通络止痛",daibiao:"补阳还五汤",
+   target:"钻土善通→入肝脾通经活络。虫类药，通经隧之力非草木可比。"},
+  {name:"牛膝",cat:"四实",subcat:"血瘀",xingwei:"苦、酸，平",guijing:"肝、肾",gongxiao:"活血祛瘀、引血下行、补肝肾强筋骨",daibiao:"血府逐瘀汤",
+   target:"入肝肾→节似膝故引血下行。补肝肾+活血下行，血瘀兼肝肾虚者尤宜。"},
+  {name:"莪术",cat:"四实",subcat:"血瘀",xingwei:"辛、苦，温",guijing:"肝、脾",gongxiao:"行气破血、消积止痛",daibiao:"",
+   target:"入肝脾→香烈走窜，行气破血力猛。偏行气，与三棱（偏破血）相须使用。"},
+
+  // ---- 四实：痰饮水湿 ----
+  {name:"瓜蒂",cat:"四实",subcat:"痰饮湿",xingwei:"苦，寒；有毒",guijing:"胃",gongxiao:"涌吐痰食、祛湿退黄",daibiao:"瓜蒂散",
+   target:"入胃→苦极上行涌吐。催吐力最强，治痰食停于胸膈。"},
+  {name:"姜半夏",cat:"四实",subcat:"痰饮湿",xingwei:"辛，温",guijing:"脾、胃、肺",gongxiao:"降逆止呕、温中化痰",daibiao:"小半夏汤、半夏泻心汤",
+   target:"入脾胃→降逆止呕（呕家圣药）；入肺→燥湿化痰。姜制减毒增温中止呕之功。"},
+  {name:"杏仁",cat:"四实",subcat:"痰饮湿",xingwei:"苦，微温；有小毒",guijing:"肺、大肠",gongxiao:"止咳平喘、润肠通便",daibiao:"麻黄汤、麻杏石甘汤",
+   target:"入肺→降气止咳平喘；入大肠→油润滑肠通便。肺与大肠相表里，咳喘兼便秘时一箭双雕。"},
+  {name:"陈皮",cat:"四实",subcat:"痰饮湿",xingwei:"苦、辛，温",guijing:"脾、肺",gongxiao:"理气健脾、燥湿化痰",daibiao:"二陈汤类",
+   target:"入脾→理气健脾燥湿；入肺→燥湿化痰。陈久则燥性减，理气而不伤阴。"},
+  {name:"茯苓",cat:"四实",subcat:"痰饮湿",xingwei:"甘、淡，平",guijing:"心、脾、肾",gongxiao:"利水渗湿、健脾宁心",daibiao:"五苓散、苓桂术甘汤、真武汤",
+   target:"入肾→利水（肾主水）；入脾→健脾（脾运湿）；入心→宁心安神。色白多孔→通调水道而不伤正。"},
+  {name:"猪苓",cat:"四实",subcat:"痰饮湿",xingwei:"甘、淡，平",guijing:"肾、膀胱",gongxiao:"利水渗湿、通淋消肿",daibiao:"五苓散、猪苓汤",
+   target:"入肾膀胱→色黑入下焦，利水力量为诸药之最。纯利水不补。"},
+  {name:"泽泻",cat:"四实",subcat:"痰饮湿",xingwei:"甘、淡，寒",guijing:"肾、膀胱",gongxiao:"利水泄热、化浊降脂",daibiao:"五苓散、猪苓汤",
+   target:"入肾膀胱→利水兼泄热。形圆走水道，六味地黄丸中用之泻肾浊。"},
+  {name:"防己",cat:"四实",subcat:"痰饮湿",xingwei:"苦，寒",guijing:"膀胱、肾、脾",gongxiao:"祛风湿止痛、利水消肿",daibiao:"防己黄芪汤",
+   target:"入膀胱肾→祛风湿利水；入脾→健脾运湿。风湿痹痛兼水肿者宜。"},
+  {name:"薏苡仁",cat:"四实",subcat:"痰饮湿",xingwei:"甘、淡，凉",guijing:"脾、胃、肺",gongxiao:"利水渗湿、健脾止泻、排脓",daibiao:"三仁汤、麻杏薏甘汤",
+   target:"入脾胃→健脾利湿止泻；入肺→清肺排脓。色白入肺，质硬能利湿排脓。"},
+  {name:"桔梗",cat:"四实",subcat:"痰饮湿",xingwei:"苦、辛，平",guijing:"肺",gongxiao:"宣肺利咽、祛痰排脓",daibiao:"桔梗汤、杏苏散",
+   target:"专入肺→形直如气管，载药上浮宣肺。引药上行入肺的引经药。"},
+  {name:"前胡",cat:"四实",subcat:"痰饮湿",xingwei:"苦、辛，微寒",guijing:"肺",gongxiao:"降气化痰、散风清热",daibiao:"杏苏散",
+   target:"入肺→降气化痰止咳。形似桔梗但偏降气，一升一降配对使用。"},
+  {name:"赤小豆",cat:"四实",subcat:"痰饮湿",xingwei:"甘、酸，平",guijing:"心、小肠",gongxiao:"利水消肿、解毒排脓",daibiao:"赤小豆当归散",
+   target:"入心小肠→色红入心、利水走小肠。利水不伤正，兼能解毒排脓。"},
+  {name:"白蔻仁",cat:"四实",subcat:"痰饮湿",xingwei:"辛，温",guijing:"肺、脾、胃",gongxiao:"化湿行气、温中止呕",daibiao:"三仁汤",
+   target:"入肺脾→芳香化湿醒脾、辛散行气温中。三仁汤中宣上焦之湿。"},
+  {name:"通草",cat:"四实",subcat:"痰饮湿",xingwei:"甘、淡，微寒",guijing:"肺、胃",gongxiao:"利尿通淋、通气下乳",daibiao:"三仁汤",
+   target:"入肺胃→质轻通利水道。茎髓中空→通而不猛。"},
+  {name:"滑石",cat:"四实",subcat:"痰饮湿",xingwei:"甘、淡，寒",guijing:"膀胱、肺、胃",gongxiao:"利尿通淋、清热解暑",daibiao:"三仁汤、猪苓汤",
+   target:"入膀胱→滑利窍通淋；入肺胃→清暑利湿。质滑性寒，暑湿淋证首选。"},
+  {name:"淡竹叶",cat:"四实",subcat:"痰饮湿",xingwei:"甘、淡，寒",guijing:"心、胃、小肠",gongxiao:"清热除烦、利尿通淋",daibiao:"竹叶石膏汤",
+   target:"入心→清心除烦；入小肠→导热下行利小便。心火移热小肠的最佳搭档。"},
+
+  // ---- 四实：内火 ----
+  {name:"生石膏",cat:"四实",subcat:"内火",xingwei:"辛、甘，大寒",guijing:"肺、胃",gongxiao:"清热泻火、除烦止渴",daibiao:"白虎汤、麻杏石甘汤",
+   target:"入肺胃→质重沉降清透。清白入肺胃，专清气分大热。辛能透热出表。"},
+  {name:"大黄",cat:"四实",subcat:"内火",xingwei:"苦，寒",guijing:"脾、胃、大肠、肝、心包",gongxiao:"泻下攻积、清热凉血、逐瘀通经",daibiao:"大承气汤、大黄黄连泻心汤",
+   target:"入脾胃大肠→推陈致新泻下热结；入肝心包→凉血逐瘀通经。五脏皆通，将军之药。"},
+  {name:"黄连",cat:"四实",subcat:"内火",xingwei:"苦，寒",guijing:"心、脾、胃、肝、胆、大肠",gongxiao:"清热燥湿、泻火解毒",daibiao:"大黄黄连泻心汤、黄连阿胶汤",
+   target:"入心→泻心火（心中烦热第一药）；入脾胃肝胆大肠→清热燥湿。最苦之药，泻火最强。"},
+  {name:"黄芩",cat:"四实",subcat:"内火",xingwei:"苦，寒",guijing:"肺、胆、脾、大肠、小肠",gongxiao:"清热燥湿、凉血止血",daibiao:"葛根黄芩黄连汤、半夏泻心汤",
+   target:"入肺胆→清肺胆之热（肺热咳嗽）；入脾胃大小肠→燥湿清热。中空走肺，和黄连分工明确。"},
+  {name:"黄柏",cat:"四实",subcat:"内火",xingwei:"苦，寒",guijing:"肾、膀胱",gongxiao:"清热燥湿、泻火解毒",daibiao:"白头翁汤",
+   target:"入肾膀胱→清下焦湿热。色黄走下焦，肾中湿热下注之首选。"},
+  {name:"芒硝",cat:"四实",subcat:"内火",xingwei:"咸、苦，寒",guijing:"胃、大肠",gongxiao:"泻下通便、润燥软坚",daibiao:"大承气汤、桃核承气汤",
+   target:"入胃大肠→咸能软坚、结晶润燥。和大黄配，一攻积一软坚。"},
+  {name:"栀子",cat:"四实",subcat:"内火",xingwei:"苦，寒",guijing:"心、肺、三焦",gongxiao:"泻火除烦、清热利湿",daibiao:"栀子豆豉汤",
+   target:"入心→泻心火除烦；入三焦→清热利湿。质轻散郁，清三焦之火热。"},
+  {name:"淡豆豉",cat:"四实",subcat:"内火",xingwei:"苦、辛，凉",guijing:"肺、胃",gongxiao:"解表除烦、宣发郁热",daibiao:"栀子豆豉汤",
+   target:"入肺胃→发酵则升散，宣散郁热除烦。和栀子配，一清一散。"},
+  {name:"茵陈蒿",cat:"四实",subcat:"内火",xingwei:"苦、辛，微寒",guijing:"脾、胃、肝、胆",gongxiao:"清利湿热、利胆退黄",daibiao:"茵陈蒿汤",
+   target:"入肝胆→清肝胆湿热退黄。幼苗秉春生之气，茵陈治黄第一药。"},
+  {name:"白头翁",cat:"四实",subcat:"内火",xingwei:"苦，寒",guijing:"胃、大肠",gongxiao:"清热解毒、凉血止痢",daibiao:"白头翁汤",
+   target:"入胃大肠→专治热毒血痢。白头翁汤君药，清热解毒止痢。"},
+  {name:"秦皮",cat:"四实",subcat:"内火",xingwei:"苦、涩，寒",guijing:"肝、胆、大肠",gongxiao:"清热燥湿、收涩止痢",daibiao:"白头翁汤",
+   target:"入肝胆大肠→色青入肝胆、味苦燥湿热，兼涩能收痢。"},
+
+  // ---- 六外感 ----
+  {name:"桂枝",cat:"六外感",subcat:"风邪",xingwei:"辛、甘，温",guijing:"心、肺、膀胱",gongxiao:"发汗解肌、温通经脉、助阳化气",daibiao:"桂枝汤",
+   target:"入心肺→温通经脉助卫阳；入膀胱→化气行水。桂之嫩枝走表，散风邪不伤正。"},
+  {name:"荆芥",cat:"六外感",subcat:"风邪",xingwei:"辛，微温",guijing:"肺、肝",gongxiao:"祛风解表、透疹消疮",daibiao:"银翘散类",
+   target:"入肺→轻扬走表祛风；入肝→散血分风热。轻扬不峻，小儿外感常用。"},
+  {name:"防风",cat:"六外感",subcat:"风邪",xingwei:"辛、甘，微温",guijing:"膀胱、肝、脾",gongxiao:"祛风解表、胜湿止痛",daibiao:"",
+   target:"入膀胱→祛风解表（风药中润剂）；入肝脾→胜湿止痛。质柔不燥，祛风而不伤阴。"},
+  {name:"麻黄",cat:"六外感",subcat:"寒邪",xingwei:"辛、微苦，温",guijing:"肺、膀胱",gongxiao:"发汗散寒、宣肺平喘、利水消肿",daibiao:"麻黄汤、小青龙汤",
+   target:"入肺→宣肺平喘；入膀胱→发汗利水。茎中空轻扬，发汗力量最强。"},
+  {name:"细辛",cat:"六外感",subcat:"寒邪",xingwei:"辛，温",guijing:"心、肺、肾",gongxiao:"解表散寒、祛风止痛、温肺化饮",daibiao:"麻黄附子细辛汤、小青龙汤",
+   target:"入心肺→解表散寒通窍；入肾→温散少阴寒邪。细而入肾，辛烈通彻表里。"},
+  {name:"清酒",cat:"六外感",subcat:"寒邪",xingwei:"甘、辛，温",guijing:"肝、胃",gongxiao:"活血通络、祛风散寒、行药势",daibiao:"炙甘草汤",
+   target:"入肝→活血通脉；入胃→温散寒凝。酒行药势，使药力遍布全身。"},
+  {name:"苍术",cat:"六外感",subcat:"湿邪",xingwei:"辛、苦，温",guijing:"脾、胃、肝",gongxiao:"燥湿健脾、祛风散寒",daibiao:"平胃散",
+   target:"入脾胃→苦温燥湿健脾；入肝→祛风散寒。芳香油润，燥湿力强。"},
+  {name:"柴胡",cat:"六外感",subcat:"外火",xingwei:"苦、辛，微寒",guijing:"肝、胆、肺",gongxiao:"疏散退热、疏肝解郁",daibiao:"小柴胡汤",
+   target:"入肝胆→和解少阳退热；入肺→疏散外邪。"},
+  {name:"升麻",cat:"六外感",subcat:"外火",xingwei:"辛、甘，微寒",guijing:"肺、脾、胃、大肠",gongxiao:"发表透疹、清热解毒、升举阳气",daibiao:"升麻葛根汤",
+   target:"入肺胃→轻扬升散透疹解毒；入脾胃→升举清阳。中空轻扬故能升提。"},
+  {name:"葛根",cat:"六外感",subcat:"外火",xingwei:"甘、辛，凉",guijing:"脾、胃",gongxiao:"解肌退热、生津止渴、升阳止泻",daibiao:"葛根汤、葛根黄芩黄连汤",
+   target:"入脾胃→解肌升津。纤维撑肌故能解肌，生嚼津多故能升津止渴。"},
+  {name:"金银花",cat:"六外感",subcat:"外火",xingwei:"甘，寒",guijing:"肺、心、胃",gongxiao:"清热解毒、疏散风热",daibiao:"银翘散",
+   target:"入肺心胃→花轻散风热。黄白相间清透热毒，温病初起第一药。"},
+  {name:"连翘",cat:"六外感",subcat:"外火",xingwei:"苦，微寒",guijing:"肺、心、小肠",gongxiao:"清热解毒、消肿散结、疏散风热",daibiao:"银翘散",
+   target:"入肺心→果壳中空走表散热、形如心清心火。疮家圣药。"},
+  {name:"牛蒡子",cat:"六外感",subcat:"外火",xingwei:"辛、苦，寒",guijing:"肺、胃",gongxiao:"疏散风热、解毒透疹、利咽消肿",daibiao:"银翘散",
+   target:"入肺胃→钩刺疏散风热、质硬通利咽喉。咽喉肿痛兼风热者要药。"},
+  {name:"薄荷",cat:"六外感",subcat:"外火",xingwei:"辛，凉",guijing:"肺、肝",gongxiao:"疏散风热、清利头目、疏肝行气",daibiao:"银翘散",
+   target:"入肺→疏散风热利咽；入肝→疏肝行气。芳香清爽，凉而不寒。"},
+  {name:"桑叶",cat:"六外感",subcat:"热燥",xingwei:"苦、甘，寒",guijing:"肺、肝",gongxiao:"疏散风热、清肺润燥、平肝明目",daibiao:"清燥救肺汤",
+   target:"入肺→清肺润燥治干咳；入肝→平肝明目。薄叶轻扬散风热，脉密入络清肝肺。"},
+  {name:"胡麻仁",cat:"六外感",subcat:"热燥",xingwei:"甘，平",guijing:"肺、脾、肝、肾",gongxiao:"润燥滑肠、滋养肝肾",daibiao:"清燥救肺汤",
+   target:"入肺→油润滑肺燥；入肝肾→滋养阴血。油脂丰富，润燥通便。"},
+  {name:"枇杷叶",cat:"六外感",subcat:"热燥",xingwei:"苦，微寒",guijing:"肺、胃",gongxiao:"清肺止咳、降逆止呕",daibiao:"清燥救肺汤",
+   target:"入肺胃→大叶降气、绒毛化痰止咳。清燥救肺汤中清肺润燥。"},
+  {name:"杏仁",cat:"六外感",subcat:"凉燥",xingwei:"苦，微温；有小毒",guijing:"肺、大肠",gongxiao:"止咳平喘、润肠通便",daibiao:"杏苏散",
+   target:"入肺→苦温降气止咳；入大肠→油润滑肠。凉燥用苦温的杏苏散。"},
+  {name:"紫苏叶",cat:"六外感",subcat:"凉燥",xingwei:"辛，温",guijing:"肺、脾",gongxiao:"解表散寒、行气和胃、解鱼蟹毒",daibiao:"杏苏散",
+   target:"入肺脾→紫绿相间行气血、芳香解表散寒。杏苏散中用之散凉燥。"}
+];
+
+// ============================================================
+// STATE
+// ============================================================
+const STORAGE_KEY = 'herb_mastery_v2';
+
+let mastery = loadMastery();
+let currentMode = 'sweep'; // 'sweep' | 'intensive'
+let currentHerb = null;
+let sweepQueue = [];
+let sweepIndex = 0;
+let sessionCount = 0;
+let cardFlipped = false;
+
+// 分类顺序（按HERBS中的实际顺序）
+const CAT_ORDER = [];
+const CAT_MAP = {};
+HERBS.forEach(h => {
+  if (!CAT_MAP[h.subcat]) {
+    CAT_MAP[h.subcat] = {cat: h.cat, subcat: h.subcat, herbs: []};
+    CAT_ORDER.push(h.subcat);
+  }
+  CAT_MAP[h.subcat].herbs.push(h);
+});
+
+function loadMastery() {
+  try {
+    const d = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    // v1兼容：如果之前用的是mistakes格式，迁移
+    if (d && d.__version === undefined) {
+      const migrated = {};
+      Object.keys(d).forEach(k => {
+        if (k !== '__version') {
+          migrated[k] = {
+            status: d[k].mastered ? 'mastered' : 'reviewing',
+            wrong: d[k].wrong || 0,
+            correct: d[k].correct || 0,
+            wrongNote: d[k].wrongNote || ''
+          };
+        }
+      });
+      migrated.__version = 2;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
+      return migrated;
+    }
+    return d || {__version: 2};
+  } catch { return {__version: 2}; }
+}
+
+function saveMastery() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(mastery));
+}
+
+function getHerbStatus(herb) {
+  return mastery[herb.name] || {status: undefined, wrong: 0, correct: 0, wrongNote: ''};
+}
+
+function isMastered(herb) {
+  return getHerbStatus(herb).status === 'mastered';
+}
+
+function needsReview(herb) {
+  return getHerbStatus(herb).status === 'reviewing';
+}
+
+function getReviewHerbs() {
+  return HERBS.filter(h => needsReview(h));
+}
+
+function getMasteredCount() {
+  return HERBS.filter(h => isMastered(h)).length;
+}
+
+function getReviewCount() {
+  return getReviewHerbs().length;
+}
+
+// ============================================================
+// SWEEP MODE (扫荡学习) 
+// ============================================================
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function buildSweepQueue() {
+  sweepQueue = [];
+  CAT_ORDER.forEach(subcat => {
+    const herbs = CAT_MAP[subcat].herbs.filter(h => !isMastered(h));
+    shuffle(herbs);
+    sweepQueue.push(...herbs);
+  });
+  sweepIndex = 0;
+  // If all mastered, still give an empty queue
+}
+
+function showSweepCard() {
+  if (sweepIndex >= sweepQueue.length) {
+    // 当前轮扫荡完成
+    if (getMasteredCount() === HERBS.length) {
+      showComplete('🎉', '全部80味药材已掌握！', '下次可直接用「错题强化」巩固薄弱项');
+    } else {
+      showComplete('📊', '本轮扫荡完成！', `已掌握 ${getMasteredCount()}/${HERBS.length}，剩余未掌握的可继续扫荡或切到「错题强化」`);
+    }
+    return;
+  }
+
+  const herb = sweepQueue[sweepIndex];
+  showHerb(herb, 'sweep');
+}
+
+// ============================================================
+// INTENSIVE MODE (错题强化)
+// ============================================================
+function pickIntensiveCard() {
+  const review = getReviewHerbs();
+  if (review.length === 0) {
+    if (getMasteredCount() === HERBS.length) {
+      showComplete('🎉', '全部药材已掌握，没有需要强化的了！', '点击下方重置可重新开始');
+    } else {
+      showComplete('✅', '当前没有需要复习的药材！', `已掌握 ${getMasteredCount()}/${HERBS.length}，未掌握的还没标记，切到「扫荡学习」继续`);
+    }
+    return;
+  }
+  // 加权: 错误次数越多出现频率越高
+  const weighted = [];
+  review.forEach(h => {
+    const m = getHerbStatus(h);
+    const weight = Math.min(m.wrong || 0, 10) + 1;
+    for (let i = 0; i < weight; i++) weighted.push(h);
+  });
+  const herb = weighted[Math.floor(Math.random() * weighted.length)];
+  showHerb(herb, 'intensive');
+}
+
+// ============================================================
+// SHOW HERB (共用卡片展示)
+// ============================================================
+function showHerb(herb, mode) {
+  closeReviewModal();
+  currentHerb = herb;
+  cardFlipped = false;
+
+  // 重置卡片翻转
+  const inner = document.getElementById('cardInner');
+  inner.classList.remove('flipped');
+
+  document.getElementById('learnCard').style.display = '';
+  document.getElementById('emptyState').style.display = 'none';
+
+  // 正面
+  document.getElementById('cardName').textContent = herb.name;
+  document.getElementById('cardMeta').textContent = herb.cat + ' · ' + herb.subcat;
+  document.getElementById('tapHint').textContent = '👆 点击翻转查看完整信息';
+
+  // 反面内容
+  const m = getHerbStatus(herb);
+  const wrongInfo = m.wrongNote || '';
+  // 解析 wrongNote：逗号分隔的 key 列表，竖线后是补充文本
+  const wrongKeys = wrongInfo ? wrongInfo.split('|')[0].split(',').filter(k => k.length > 0 && !k.includes('错记')) : [];
+  const wrongExtra = wrongInfo && wrongInfo.includes('|') ? wrongInfo.split('|').slice(1).join('|') : '';
+  const wrongDetail = wrongInfo && !wrongInfo.includes('|') ? wrongInfo : '';
+
+  const backHTML = `
+    <div class="cb-row">
+      <div class="cb-label">性味</div>
+      <div class="cb-value highlight">${herb.xingwei}</div>
+    </div>
+    <div class="cb-row">
+      <div class="cb-label">归经</div>
+      <div class="cb-value highlight">${herb.guijing}经</div>
+    </div>
+    <div class="cb-row">
+      <div class="cb-label">功效</div>
+      <div class="cb-value">${herb.gongxiao}</div>
+    </div>
+    ${herb.daibiao ? `<div class="cb-row"><div class="cb-label">代表方</div><div class="cb-value">${herb.daibiao}</div></div>` : ''}
+    <div class="cb-row">
+      <div class="cb-label">🎯 归经功能靶点</div>
+      <div class="cb-target-box">${herb.target}</div>
+    </div>
+    ${wrongKeys.length > 0 ? `<div class="cb-row"><div class="cb-wrong-note">⚠️ 上次薄弱点：${wrongKeys.map(k => ({xingwei:'性味',guijing:'归经',gongxiao:'功效',target:'靶点'})[k] || k).join('、')}</div></div>` : ''}
+    ${wrongExtra || wrongDetail ? `<div class="cb-row"><div class="cb-wrong-note">💡 ${wrongExtra || wrongDetail}</div></div>` : ''}
+  `;
+  document.getElementById('cardBackContent').innerHTML = backHTML;
+
+  // 隐藏判断按钮（翻转后才显示）
+  document.getElementById('judgmentBtns').innerHTML = `<span class="hint-text">翻转卡片后做出判断</span>`;
+
+  // 更新进度
+  updateProgress(mode);
+}
+
+function updateProgress(mode) {
+  if (mode === 'sweep') {
+    // 计算当前分类进度
+    let totalInCat = 0, doneInCat = 0;
+    if (currentHerb) {
+      const catHerbs = CAT_MAP[currentHerb.subcat].herbs;
+      totalInCat = catHerbs.length;
+      doneInCat = sweepIndex;
+      // 从队列开始到当前索引，减去已掌握的
+      let masteredBefore = 0;
+      for (let i = 0; i < sweepIndex; i++) {
+        if (isMastered(sweepQueue[i])) masteredBefore++;
+      }
+      doneInCat = sweepIndex - masteredBefore;
+      // 更准确地算：看当前分类中排在当前药之前的有多少
+      let idxInCat = 0;
+      for (let i = 0; i < sweepQueue.length && sweepQueue[i] !== currentHerb; i++) {
+        if (sweepQueue[i].subcat === currentHerb.subcat && !isMastered(sweepQueue[i])) {
+          idxInCat++;
+        }
+      }
+      doneInCat = idxInCat;
+    }
+
+    // 当前剩余队列中此分类的药
+    const remainingInCat = sweepQueue.filter((h, i) => i >= sweepIndex && h.subcat === currentHerb.subcat).length;
+    const catTotalForDisplay = totalInCat - (totalInCat - remainingInCat - doneInCat); // 不太好算...
+
+    // 简化：直接显示分类名 + 当前是第几题
+    document.getElementById('progressCat').textContent = (currentHerb ? currentHerb.cat + '·' + currentHerb.subcat : '完成');
+    document.getElementById('progressIndex').textContent = `第 ${sweepIndex+1}/${sweepQueue.length} 题`;
+
+    const pct = sweepQueue.length > 0 ? (sweepIndex / sweepQueue.length * 100) : 100;
+    document.getElementById('progressBar').style.width = Math.min(pct, 100) + '%';
+
+    document.getElementById('modeLabel').textContent = '📖 扫荡学习';
+  } else {
+    // 错题强化
+    const review = getReviewHerbs();
+    document.getElementById('progressCat').textContent = (currentHerb ? currentHerb.cat + '·' + currentHerb.subcat : '—');
+    document.getElementById('progressIndex').textContent = `错题库 ${review.length} 味`;
+    document.getElementById('progressBar').style.width = (getMasteredCount() / HERBS.length * 100) + '%';
+    document.getElementById('modeLabel').textContent = '🎯 错题强化';
+  }
+
+  document.getElementById('masteredCount').textContent = getMasteredCount();
+  document.getElementById('reviewCount').textContent = getReviewCount();
+  document.getElementById('sessionCount').textContent = sessionCount;
+}
+
+// ============================================================
+// FLIP & JUDGE
+// ============================================================
+function flipCard() {
+  if (!currentHerb) return;
+  const inner = document.getElementById('cardInner');
+  inner.classList.toggle('flipped');
+  cardFlipped = !cardFlipped;
+
+  if (cardFlipped) {
+    // 显示判断按钮 — 三档：全对 / 部分 / 全错
+    if (currentMode === 'sweep') {
+      document.getElementById('judgmentBtns').innerHTML = `
+        <button class="btn btn-success" onclick="judgeSweep('correct')">✅ 全对了</button>
+        <button class="btn btn-warn" onclick="judgeSweep('partial')">⚠️ 部分对</button>
+        <button class="btn btn-error" onclick="judgeSweep('wrong')">❌ 全错了</button>
+      `;
+    } else {
+      document.getElementById('judgmentBtns').innerHTML = `
+        <button class="btn btn-success" onclick="judgeIntensive('correct')">✅ 这次全对</button>
+        <button class="btn btn-warn" onclick="judgeIntensive('partial')">⚠️ 部分对</button>
+        <button class="btn btn-error" onclick="judgeIntensive('wrong')">❌ 还是错了</button>
+      `;
+    }
+  } else {
+    document.getElementById('judgmentBtns').innerHTML = `<span class="hint-text">翻转卡片后做出判断</span>`;
+  }
+}
+
+// 扫荡模式判断 — 三档
+function judgeSweep(result) {
+  if (!currentHerb) return;
+  const name = currentHerb.name;
+  if (!mastery[name]) mastery[name] = {status: undefined, wrong: 0, correct: 0, partial: 0, wrongNote: ''};
+
+  if (result === 'correct') {
+    mastery[name].status = 'mastered';
+    mastery[name].correct = (mastery[name].correct || 0) + 1;
+    saveMastery();
+    sessionCount++;
+    sweepIndex++;
+    showSweepCard();
+  } else if (result === 'partial') {
+    mastery[name].status = 'reviewing';
+    mastery[name].partial = (mastery[name].partial || 0) + 1;
+    saveMastery();
+    sessionCount++;
+    showReviewModal(name, () => {
+      sweepIndex++;
+      showSweepCard();
+    });
+  } else {
+    mastery[name].status = 'reviewing';
+    mastery[name].wrong = (mastery[name].wrong || 0) + 1;
+    saveMastery();
+    sessionCount++;
+    showReviewModal(name, () => {
+      sweepIndex++;
+      showSweepCard();
+    });
+  }
+}
+
+// 错题强化判断 — 三档
+function judgeIntensive(result) {
+  if (!currentHerb) return;
+  const name = currentHerb.name;
+  if (!mastery[name]) mastery[name] = {status: undefined, wrong: 0, correct: 0, partial: 0, wrongNote: ''};
+
+  if (result === 'correct') {
+    mastery[name].correct = (mastery[name].correct || 0) + 1;
+    // 连续正确3次以上且错误率低 → 标记为掌握
+    if (mastery[name].correct >= 3 && (mastery[name].wrong || 0) <= mastery[name].correct / 1.5) {
+      mastery[name].status = 'mastered';
+    }
+    saveMastery();
+    sessionCount++;
+    pickIntensiveCard();
+  } else if (result === 'partial') {
+    mastery[name].status = 'reviewing';
+    mastery[name].partial = (mastery[name].partial || 0) + 1;
+    saveMastery();
+    sessionCount++;
+    showReviewModal(name, () => {
+      pickIntensiveCard();
+    });
+  } else {
+    mastery[name].status = 'reviewing';
+    mastery[name].wrong = (mastery[name].wrong || 0) + 1;
+    mastery[name].correct = 0;
+    saveMastery();
+    sessionCount++;
+    showReviewModal(name, () => {
+      pickIntensiveCard();
+    });
+  }
+}
+
+// ============================================================
+// COMPLETE STATE
+// ============================================================
+function showComplete(icon, msg, sub) {
+  currentHerb = null;
+  document.getElementById('learnCard').style.display = 'none';
+  document.getElementById('judgmentBtns').innerHTML = '';
+  document.getElementById('emptyState').style.display = '';
+  document.getElementById('completeIcon').textContent = icon;
+  document.getElementById('completeMsg').textContent = msg;
+  document.getElementById('completeSub').textContent = sub;
+  
+  document.getElementById('masteredCount').textContent = getMasteredCount();
+  document.getElementById('reviewCount').textContent = getReviewCount();
+  document.getElementById('sessionCount').textContent = sessionCount;
+  document.getElementById('progressBar').style.width = '100%';
+}
+
+// ============================================================
+// REVIEW MODAL (统一弹窗：部分对/全错 均可记录)
+// ============================================================
+let reviewCallback = null;
+let reviewHerbName = '';
+
+function toggleCheckbox(el) {
+  el.classList.toggle('checked');
+  const icon = el.querySelector('.ck-icon');
+  icon.textContent = el.classList.contains('checked') ? '☑' : '☐';
+}
+
+function showReviewModal(herbName, callback) {
+  reviewHerbName = herbName;
+  reviewCallback = callback;
+  document.getElementById('reviewHerbName').textContent = herbName;
+  // 重置 checkbox
+  document.querySelectorAll('.checkbox-item').forEach(el => {
+    el.classList.remove('checked');
+    el.querySelector('.ck-icon').textContent = '☐';
+  });
+  document.getElementById('reviewDetail').value = '';
+  document.getElementById('reviewModal').classList.add('active');
+  setTimeout(() => document.getElementById('reviewDetail').focus(), 100);
+}
+
+function closeReviewModal() {
+  document.getElementById('reviewModal').classList.remove('active');
+}
+
+function getCheckedKeys() {
+  const checked = [];
+  document.querySelectorAll('.checkbox-item.checked').forEach(el => {
+    checked.push(el.dataset.key);
+  });
+  return checked;
+}
+
+function saveReview() {
+  const keys = getCheckedKeys();
+  const detail = document.getElementById('reviewDetail').value.trim();
+  const parts = [];
+  if (keys.length > 0) parts.push(keys.join(','));
+  if (detail) parts.push(detail);
+  const note = parts.join('|');
+  if (note && mastery[reviewHerbName]) {
+    mastery[reviewHerbName].wrongNote = note;
+    saveMastery();
+  }
+  closeReviewModal();
+  if (reviewCallback) {
+    const cb = reviewCallback;
+    reviewCallback = null;
+    cb();
+  }
+}
+
+function skipReview() {
+  closeReviewModal();
+  if (reviewCallback) {
+    const cb = reviewCallback;
+    reviewCallback = null;
+    cb();
+  }
+}
+
+// ============================================================
+// SWITCH MODE
+// ============================================================
+function switchMode(mode) {
+  currentMode = mode;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`.tab[data-mode="${mode}"]`).classList.add('active');
+
+  if (mode === 'table') {
+    document.getElementById('learnMode').style.display = 'none';
+    document.getElementById('tableMode').style.display = '';
+    renderTable();
+    return;
+  }
+
+  document.getElementById('learnMode').style.display = '';
+  document.getElementById('tableMode').style.display = 'none';
+
+  sessionCount = 0;
+  closeReviewModal();
+
+  if (mode === 'sweep') {
+    buildSweepQueue();
+    showSweepCard();
+  } else {
+    pickIntensiveCard();
+  }
+}
+
+// ============================================================
+// TABLE MODE
+// ============================================================
+let currentFilterCat = 'all';
+
+function renderTable() {
+  const q = document.getElementById('tableSearch').value.trim().toLowerCase();
+  let herbs = [...HERBS];
+
+  if (currentFilterCat === '易错') {
+    herbs = herbs.filter(h => needsReview(h));
+  } else if (currentFilterCat !== 'all') {
+    herbs = herbs.filter(h => h.cat === currentFilterCat);
+  }
+  if (q) {
+    herbs = herbs.filter(h =>
+      h.name.includes(q) || h.xingwei.includes(q) || h.guijing.includes(q) ||
+      h.gongxiao.includes(q) || (h.target && h.target.includes(q))
+    );
+  }
+
+  const tbody = document.getElementById('tableBody');
+  const empty = document.getElementById('tableEmpty');
+
+  if (herbs.length === 0) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  tbody.innerHTML = herbs.map(h => {
+    const tagClass = h.cat === '四虚' ? 'tag-xu' : h.cat === '四实' ? 'tag-shi' : 'tag-wai';
+    const status = getHerbStatus(h);
+    const badge = status.status === 'mastered' ? ' ✅' : status.status === 'reviewing' ? ' 🔄' : '';
+    const rowBg = status.status === 'reviewing' ? 'style="background:#FEF2E8"' : status.status === 'mastered' ? 'style="background:#F0FDF4"' : '';
+    return `<tr ${rowBg}>
+      <td class="herb-name-cell">${h.name}${badge}</td>
+      <td><span class="herb-cat-tag ${tagClass}">${h.cat}</span> ${h.subcat}</td>
+      <td>${h.xingwei}</td>
+      <td>${h.guijing}经</td>
+      <td style="font-size:13px">${h.gongxiao}</td>
+      <td><div class="target-text">${h.target}</div></td>
+    </tr>`;
+  }).join('');
+}
+
+function filterTable(cat) {
+  currentFilterCat = cat;
+  document.querySelectorAll('.cat-filter').forEach(b => {
+    b.classList.toggle('active', b.dataset.cat === cat);
+  });
+  renderTable();
+}
+
+// ============================================================
+// RESET
+// ============================================================
+function resetAll() {
+  if (!confirm('确定重置所有药材的掌握记录？这将清除你的学习进度。')) return;
+  mastery = {__version: 2};
+  saveMastery();
+  sessionCount = 0;
+  if (currentMode === 'sweep') {
+    buildSweepQueue();
+    showSweepCard();
+  } else {
+    pickIntensiveCard();
+  }
+}
+
+// ============================================================
+// KEYBOARD
+// ============================================================
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (document.getElementById('reviewModal').classList.contains('active')) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); saveReview(); }
+    if (e.key === 'Escape') { skipReview(); }
+    return;
+  }
+  if (document.getElementById('learnMode').style.display !== 'none' && currentHerb) {
+    if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); flipCard(); }
+    if (cardFlipped) {
+      if (e.key === 'ArrowRight') {
+        currentMode === 'sweep' ? judgeSweep('correct') : judgeIntensive('correct');
+      }
+      if (e.key === 'ArrowUp') {
+        currentMode === 'sweep' ? judgeSweep('partial') : judgeIntensive('partial');
+      }
+      if (e.key === 'ArrowLeft') {
+        currentMode === 'sweep' ? judgeSweep('wrong') : judgeIntensive('wrong');
+      }
+    }
+  }
+  if (e.key === 'Escape') closeReviewModal();
+});
+
+// ============================================================
+// INIT
+// ============================================================
+buildSweepQueue();
+showSweepCard();
+</script>
+</body>
+</html>
