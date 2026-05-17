@@ -266,6 +266,17 @@ body {
   line-height: 1.55;
 }
 
+/* ===== Toast ===== */
+.toast {
+  position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+  background: #292524; color: white; padding: 10px 24px;
+  border-radius: 40px; font-size: 14px; font-weight: 500;
+  box-shadow: var(--shadow-lg); z-index: 2000;
+  opacity: 0; transition: opacity 0.3s ease; pointer-events: none;
+  white-space: nowrap; font-family: var(--font-body);
+}
+.toast.show { opacity: 1; }
+
 /* ===== Review Modal ===== */
 .modal-overlay {
   display: none; position: fixed; inset: 0;
@@ -461,8 +472,10 @@ body {
       </div>
 
       <!-- Extra actions -->
-      <div style="text-align:center;margin-top:4px">
+      <div style="text-align:center;margin-top:4px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
         <button class="btn btn-secondary btn-small" onclick="resetAll()">🔄 重置全部进度</button>
+        <button class="btn btn-secondary btn-small" onclick="exportMastery()">💾 导出记录</button>
+        <button class="btn btn-secondary btn-small" onclick="importMastery()">📂 导入记录</button>
       </div>
 
       <!-- Empty / Complete state -->
@@ -538,6 +551,9 @@ body {
     </div>
   </div>
 </div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
 
 <script>
 // ============================================================
@@ -775,7 +791,10 @@ HERBS.forEach(h => {
 
 function loadMastery() {
   try {
-    const d = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    const raw = localStorage.getItem(STORAGE_KEY);
+    const d = JSON.parse(raw);
+    const herbKeys = Object.keys(d || {}).filter(k => k !== '__version');
+    console.log(`loadMastery: raw="${raw ? (raw.slice(0,50)+'…') : 'null'}", herbs=${herbKeys.length}`);
     // v1兼容：如果之前用的是mistakes格式，迁移
     if (d && d.__version === undefined) {
       const migrated = {};
@@ -791,14 +810,88 @@ function loadMastery() {
       });
       migrated.__version = 2;
       localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
+      console.log('v1→v2 迁移完成');
       return migrated;
     }
     return d || {__version: 2};
-  } catch { return {__version: 2}; }
+  } catch(e) {
+    console.error('loadMastery 出错:', e.message);
+    return {__version: 2};
+  }
 }
 
 function saveMastery() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(mastery));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(mastery));
+    showToast('✅ 已保存');
+  } catch(e) {
+    console.error('localStorage 保存失败:', e);
+    showToast('❌ 保存失败，请检查存储空间');
+  }
+}
+
+let toastTimer = null;
+function showToast(msg, duration) {
+  const el = document.getElementById('toast');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), duration || 1500);
+}
+
+// ======== 导出/导入 ========
+function exportMastery() {
+  const data = JSON.stringify(mastery, null, 2);
+  const blob = new Blob([data], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `药材学习记录_${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('✅ 已导出为 JSON 文件');
+}
+
+function importMastery() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      try {
+        const data = JSON.parse(ev.target.result);
+        // 验证格式
+        if (typeof data !== 'object' || data === null) throw new Error('无效格式');
+        const herbCount = Object.keys(data).filter(k => k !== '__version').length;
+        if (herbCount === 0 && !data.__version) throw new Error('无有效数据');
+        if (!confirm(`导入后将覆盖当前学习记录（${herbCount} 味药材），确定？`)) return;
+        mastery = data;
+        saveMastery();
+        // 重建视图
+        if (currentMode === 'sweep') {
+          buildSweepQueue();
+          showSweepCard();
+        } else if (currentMode === 'intensive') {
+          pickIntensiveCard();
+        } else {
+          renderTable();
+        }
+        updateProgress(currentMode);
+        showToast(`✅ 导入成功：${herbCount} 条记录`);
+      } catch(err) {
+        showToast('❌ 导入失败：文件格式错误');
+        console.error('导入错误:', err);
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
 }
 
 function getHerbStatus(herb) {
@@ -1306,6 +1399,27 @@ document.addEventListener('keydown', e => {
 // ============================================================
 // INIT
 // ============================================================
+// 检查 localStorage 可用性
+(function checkStorage() {
+  try {
+    const testKey = '__storage_test__';
+    localStorage.setItem(testKey, '1');
+    localStorage.removeItem(testKey);
+  } catch(e) {
+    console.warn('localStorage 不可用:', e.message);
+    document.getElementById('progressSection').innerHTML +=
+      '<div style="color:var(--error);text-align:center;font-size:13px;padding:8px;background:#FEF2E8;border-radius:8px;">⚠️ 浏览器存储不可用，刷新后数据会丢失。<br>请使用「导出记录」保存到本地，下次使用时「导入记录」</div>';
+  }
+})();
+
+// 显示已加载的数据量，帮助诊断数据是否持久化
+const loadedCount = Object.keys(mastery).filter(k => k !== '__version').length;
+if (loadedCount > 0) {
+  setTimeout(() => showToast(`📂 已加载 ${loadedCount} 条学习记录`), 800);
+} else {
+  console.log('本地无已保存的学习记录，首次使用或数据已清空');
+}
+
 buildSweepQueue();
 showSweepCard();
 </script>
