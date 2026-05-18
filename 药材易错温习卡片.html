@@ -112,74 +112,122 @@ body {
   display: flex; gap: 16px; justify-content: center;
 }
 
-/* Card */
-.learn-card {
-  width: 100%; max-width: 520px; min-height: 340px;
-  perspective: 1200px; cursor: pointer;
-}
-.learn-card-inner {
-  position: relative; width: 100%; min-height: 340px;
-  transition: transform 0.5s ease;
-  transform-style: preserve-3d;
-}
-.learn-card-inner.flipped { transform: rotateY(180deg); }
-.card-front, .card-back {
-  position: absolute; inset: 0;
-  backface-visibility: hidden;
+/* ===== Fill Form (填空交互) ===== */
+.fill-form {
+  width: 100%; max-width: 520px;
+  background: var(--surface);
   border-radius: var(--radius-lg);
-  padding: 32px 28px;
+  padding: 28px 24px;
   box-shadow: var(--shadow-md);
   border: 1px solid var(--border);
-  display: flex; flex-direction: column;
 }
-.card-front {
-  background: linear-gradient(135deg, var(--surface-alt), var(--surface));
-  justify-content: center; align-items: center; text-align: center;
+
+.herb-header {
+  text-align: center; margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
 }
-.card-front .herb-name-big {
+.herb-header .herb-name-big {
   font-family: var(--font-heading);
-  font-size: 42px; font-weight: 600; color: var(--primary);
-  margin-bottom: 8px;
+  font-size: 32px; font-weight: 600; color: var(--primary);
+  line-height: 1.2;
 }
-.card-front .herb-meta {
-  font-size: 14px; color: var(--text-muted);
-  margin-bottom: 20px;
+.herb-header .herb-meta {
+  font-size: 13px; color: var(--text-muted); margin-top: 4px;
 }
-.card-front .tap-hint {
-  font-size: 13px; color: var(--text-muted);
-  display: flex; align-items: center; gap: 6px;
+.herb-header .wrong-note-box {
+  background: #FEF2E8; border-left: 3px solid var(--error);
+  padding: 8px 12px; border-radius: 6px;
+  font-size: 13px; color: var(--error); margin-top: 10px; text-align: left;
+  line-height: 1.5;
 }
-.card-back {
-  background: var(--surface);
-  transform: rotateY(180deg);
-  overflow-y: auto;
+
+.efficacy-panel {
+  background: var(--surface-alt);
+  padding: 12px 16px; border-radius: var(--radius-sm);
+  margin-bottom: 18px;
+  font-size: 14px; line-height: 1.6; color: var(--text-secondary);
 }
-.card-back .cb-label {
+.efficacy-panel .ep-label {
   font-size: 11px; font-weight: 500; color: var(--text-muted);
   letter-spacing: 0.3px; margin-bottom: 2px;
 }
-.card-back .cb-row { margin-bottom: 14px; }
-.card-back .cb-value { font-size: 15px; line-height: 1.5; }
-.card-back .cb-value.highlight { color: var(--primary); font-weight: 500; }
-.card-back .cb-target-box {
-  background: #FFF8F0; border-left: 3px solid var(--secondary);
-  padding: 12px 14px; border-radius: 6px;
-  font-size: 14px; line-height: 1.6; color: var(--text-secondary);
-  margin-top: 6px;
+
+/* 填空区 */
+.fill-section {
+  margin-bottom: 14px;
 }
-.card-back .cb-wrong-note {
-  background: #FEF2E8; border-left: 3px solid var(--error);
-  padding: 10px 14px; border-radius: 6px;
-  font-size: 13px; color: var(--error); margin-top: 6px;
+.fill-label {
+  font-size: 11px; font-weight: 500; color: var(--text-muted);
+  letter-spacing: 0.3px; margin-bottom: 6px;
+}
+.fill-blank-row {
+  font-size: 15px; line-height: 1.8; color: var(--text-secondary);
+  display: flex; align-items: center; gap: 4px; flex-wrap: wrap;
 }
 
-/* Judgment buttons - ONLY shown after flip */
-.judgment-btns {
-  display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
-  min-height: 48px; align-items: center;
+.fill-slot {
+  display: inline-block; min-width: 60px; padding: 2px 10px;
+  border: 2px dashed var(--border); border-radius: 6px;
+  text-align: center; font-size: 15px; font-weight: 500; color: var(--text-muted);
+  transition: all 0.2s; cursor: default;
 }
-.judgment-btns .hint-text {
-  font-size: 14px; color: var(--text-muted);
+.fill-slot.multi { min-width: 100px; }
+.fill-slot.correct {
+  border-color: var(--success); background: #F0FDF4; color: var(--success);
+}
+.fill-slot.wrong {
+  border-color: var(--error); background: #FEF2E8; color: var(--error);
+}
+.fill-slot.filled {
+  color: var(--text); border-color: var(--primary);
+}
+.slot-count {
+  font-size: 12px; color: var(--text-muted); margin-left: 6px;
+}
+
+/* Chip 选项卡片 */
+.chip-group {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px;
+}
+.chip {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 5px 14px; border: 1.5px solid var(--border);
+  border-radius: 20px; font-size: 14px; font-family: var(--font-body);
+  color: var(--text-secondary); background: var(--surface);
+  cursor: pointer; transition: all 0.15s; user-select: none;
+}
+.chip:hover { border-color: var(--primary); color: var(--primary); background: var(--surface-alt); }
+.chip.selected {
+  background: var(--primary); color: white; border-color: var(--primary);
+}
+.chip.disabled {
+  opacity: 0.5; cursor: not-allowed; pointer-events: none;
+}
+.chip.correct-show {
+  background: var(--success); color: white; border-color: var(--success); opacity: 0.85;
+}
+.chip.wrong-show {
+  background: var(--error); color: white; border-color: var(--error); opacity: 0.85;
+}
+
+/* 功能归经靶点（统批后显示） */
+.target-display {
+  background: #FFF8F0; border-left: 3px solid var(--secondary);
+  padding: 12px 16px; border-radius: 6px;
+  margin-bottom: 16px;
+}
+.target-display .td-label {
+  font-size: 11px; font-weight: 500; color: var(--text-muted);
+  letter-spacing: 0.3px; margin-bottom: 4px;
+}
+.target-display .td-content {
+  font-size: 14px; line-height: 1.6; color: var(--text-secondary);
+}
+
+/* 底部操作 */
+.form-actions {
+  display: flex; gap: 10px; justify-content: center; margin-top: 8px;
 }
 
 .btn {
@@ -298,23 +346,16 @@ body {
 .modal .modal-herb-name {
   font-size: 14px; color: var(--text-secondary); margin-bottom: 12px;
 }
-/* Checkbox list */
-.checkbox-grid {
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 8px; margin-bottom: 16px;
+/* 错误项摘要 */
+.error-item {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 10px 14px; border-radius: var(--radius-sm);
+  font-size: 14px; line-height: 1.5;
 }
-.checkbox-item {
-  display: flex; align-items: center; gap: 8px;
-  padding: 8px 12px; border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm); cursor: pointer;
-  transition: all 0.15s; user-select: none;
-  font-size: 14px;
-}
-.checkbox-item:hover { border-color: var(--primary); background: var(--surface-alt); }
-.checkbox-item.checked { border-color: var(--primary); background: #FEF3C7; }
-.checkbox-item input { display: none; }
-.checkbox-item .ck-icon { width: 18px; text-align: center; color: var(--text-muted); }
-.checkbox-item.checked .ck-icon { color: var(--primary); }
+.error-item.err-xingwei { background: #FEF2E8; border-left: 3px solid var(--error); }
+.error-item.err-guijing { background: #FEF2E8; border-left: 3px solid var(--error); }
+.error-item .ei-label { font-weight: 600; color: var(--error); white-space: nowrap; }
+.error-item .ei-correct { color: var(--text-secondary); }
 .modal .form-group { margin-bottom: 14px; }
 .modal .form-group label {
   display: block; font-size: 13px; font-weight: 500;
@@ -348,18 +389,16 @@ body {
   .hero h1 { font-size: 1.3rem; }
   .hero p { font-size: 13px; }
   .main { padding: 20px 12px 64px; }
-  .learn-card { max-width: 100%; min-height: 280px; }
-  .learn-card-inner { min-height: 280px; }
-  .card-front, .card-back { padding: 20px 16px; }
-  .card-front .herb-name-big { font-size: 30px; }
-  .card-front .herb-meta { font-size: 13px; margin-bottom: 14px; }
-  .card-front .tap-hint { font-size: 12px; }
-  .card-back .cb-row { margin-bottom: 10px; }
-  .card-back .cb-value { font-size: 14px; }
-  .card-back .cb-target-box { padding: 10px 12px; font-size: 13px; }
-  .card-back .cb-wrong-note { padding: 8px 12px; font-size: 12px; }
-  .judgment-btns { gap: 8px; min-height: 40px; }
-  .judgment-btns .btn { font-size: 13px; padding: 8px 16px; }
+  .fill-form { padding: 20px 16px; }
+  .herb-header .herb-name-big { font-size: 26px; }
+  .herb-header .herb-meta { font-size: 12px; }
+  .efficacy-panel { padding: 10px 14px; font-size: 13px; }
+  .fill-blank-row { font-size: 14px; }
+  .fill-slot { min-width: 50px; font-size: 14px; padding: 1px 8px; }
+  .fill-slot.multi { min-width: 80px; }
+  .chip { font-size: 13px; padding: 4px 12px; }
+  .target-display { padding: 10px 14px; }
+  .target-display .td-content { font-size: 13px; }
   .btn { padding: 8px 18px; font-size: 14px; }
   .progress-top { font-size: 13px; flex-wrap: wrap; }
   .progress-stats { font-size: 12px; gap: 10px; flex-wrap: wrap; }
@@ -370,8 +409,7 @@ body {
   .cat-filter { font-size: 12px; padding: 4px 10px; }
   .modal { padding: 24px 20px; margin: 0 12px; max-width: 100%; }
   .modal h2 { font-size: 18px; }
-  .checkbox-grid { gap: 6px; }
-  .checkbox-item { padding: 6px 10px; font-size: 13px; }
+  .error-item { font-size: 13px; padding: 8px 12px; }
   .modal .form-actions { flex-wrap: wrap; }
   .modal .form-actions .btn { flex: 1; justify-content: center; min-width: 80px; }
 }
@@ -383,18 +421,16 @@ body {
   .hero { padding: 22px 12px 18px; }
   .hero h1 { font-size: 1.15rem; }
   .main { padding: 16px 10px 56px; }
-  .learn-card { min-height: 240px; }
-  .learn-card-inner { min-height: 240px; }
-  .card-front, .card-back { padding: 16px 14px; border-radius: var(--radius-md); }
-  .card-front .herb-name-big { font-size: 26px; }
-  .card-front .herb-meta { font-size: 12px; margin-bottom: 10px; }
-  .card-front .tap-hint { font-size: 11px; }
-  .card-back .cb-value { font-size: 13px; }
-  .card-back .cb-target-box { padding: 8px 10px; font-size: 12px; }
-  .card-back .cb-wrong-note { padding: 6px 10px; font-size: 11px; }
-  /* 三档按钮垂直堆叠 */
-  .judgment-btns { flex-direction: column; align-items: stretch; gap: 6px; width: 100%; max-width: 280px; }
-  .judgment-btns .btn { justify-content: center; font-size: 14px; padding: 10px 16px; }
+  .fill-form { padding: 16px 12px; border-radius: var(--radius-md); }
+  .herb-header .herb-name-big { font-size: 22px; }
+  .efficacy-panel { padding: 8px 12px; font-size: 12px; }
+  .fill-blank-row { font-size: 13px; }
+  .fill-slot { min-width: 40px; font-size: 13px; padding: 1px 6px; }
+  .fill-slot.multi { min-width: 70px; }
+  .chip { font-size: 12px; padding: 3px 10px; }
+  .target-display .td-content { font-size: 12px; }
+  .form-actions { flex-direction: column; align-items: stretch; gap: 8px; }
+  .form-actions .btn { justify-content: center; }
   .progress-top { font-size: 12px; }
   .progress-stats { font-size: 11px; gap: 6px; }
   .table-controls { flex-direction: column; gap: 8px; }
@@ -407,8 +443,7 @@ body {
   .herb-table th, .herb-table td { padding: 5px 6px; }
   .modal { padding: 20px 16px; }
   .modal h2 { font-size: 16px; }
-  .checkbox-grid { grid-template-columns: 1fr 1fr; gap: 5px; }
-  .checkbox-item { padding: 5px 8px; font-size: 12px; }
+  .error-item { font-size: 12px; padding: 6px 10px; }
   .modal .form-group textarea { font-size: 13px; padding: 8px 12px; }
   .btn { padding: 7px 14px; font-size: 13px; }
 }
@@ -452,23 +487,88 @@ body {
         </div>
       </div>
 
-      <!-- Card -->
-      <div class="learn-card" id="learnCard" onclick="flipCard()">
-        <div class="learn-card-inner" id="cardInner">
-          <div class="card-front">
-            <div class="herb-name-big" id="cardName">—</div>
-            <div class="herb-meta" id="cardMeta"></div>
-            <div class="tap-hint" id="tapHint">👆 点击翻转查看完整信息</div>
-          </div>
-          <div class="card-back">
-            <div id="cardBackContent"></div>
+      <!-- Fill Form (填空交互) -->
+      <div class="fill-form" id="fillForm">
+        <!-- 药材名 + 分类标签 + 薄弱点提示 -->
+        <div class="herb-header">
+          <div class="herb-name-big" id="herbName">—</div>
+          <div class="herb-meta" id="herbMeta"></div>
+          <div class="wrong-note-box" id="wrongNoteBox" style="display:none"></div>
+        </div>
+
+        <!-- 功效（显示，不可交互） -->
+        <div class="efficacy-panel">
+          <div class="ep-label">功效</div>
+          <div id="herbEfficacy">—</div>
+        </div>
+
+        <!-- 四性五味 填空区 -->
+        <div class="fill-section">
+          <div class="fill-label">四性五味</div>
+          <div class="fill-blank-row">
+            <span>性 </span><span class="fill-slot" id="slotSiXing" data-ans="四性">?</span>
+            <span>，味 </span><span class="fill-slot" id="slotXingWei" data-ans="五味">?</span>
           </div>
         </div>
-      </div>
 
-      <!-- Judgment buttons -->
-      <div class="judgment-btns" id="judgmentBtns">
-        <span class="hint-text" id="judgeHint">翻转卡片后选择</span>
+        <!-- 四性选项卡片 -->
+        <div class="chip-group" id="sixingChips">
+          <span class="chip" data-value="寒">寒</span>
+          <span class="chip" data-value="热">热</span>
+          <span class="chip" data-value="温">温</span>
+          <span class="chip" data-value="凉">凉</span>
+          <span class="chip" data-value="平">平</span>
+          <span class="chip" data-value="微寒">微寒</span>
+          <span class="chip" data-value="微温">微温</span>
+        </div>
+
+        <!-- 五味选项卡片 -->
+        <div class="chip-group" id="wuweiChips">
+          <span class="chip" data-value="酸">酸</span>
+          <span class="chip" data-value="苦">苦</span>
+          <span class="chip" data-value="甘">甘</span>
+          <span class="chip" data-value="辛">辛</span>
+          <span class="chip" data-value="咸">咸</span>
+          <span class="chip" data-value="淡">淡</span>
+          <span class="chip" data-value="涩">涩</span>
+        </div>
+
+        <!-- 归经 填空区 -->
+        <div class="fill-section">
+          <div class="fill-label">归经</div>
+          <div class="fill-blank-row">
+            归 <span class="fill-slot multi" id="slotGuijing">?</span> 经
+            <span class="slot-count" id="guijingCount">已选 0</span>
+          </div>
+        </div>
+
+        <!-- 十二经选项卡片 -->
+        <div class="chip-group" id="meridianChips">
+          <span class="chip" data-value="心">心</span>
+          <span class="chip" data-value="肝">肝</span>
+          <span class="chip" data-value="脾">脾</span>
+          <span class="chip" data-value="肺">肺</span>
+          <span class="chip" data-value="肾">肾</span>
+          <span class="chip" data-value="胃">胃</span>
+          <span class="chip" data-value="大肠">大肠</span>
+          <span class="chip" data-value="小肠">小肠</span>
+          <span class="chip" data-value="胆">胆</span>
+          <span class="chip" data-value="膀胱">膀胱</span>
+          <span class="chip" data-value="三焦">三焦</span>
+          <span class="chip" data-value="心包">心包</span>
+        </div>
+
+        <!-- 功能归经靶点（统批后显示） -->
+        <div class="target-display" id="targetDisplay" style="display:none">
+          <div class="td-label">🎯 归经功能靶点</div>
+          <div class="td-content" id="targetContent"></div>
+        </div>
+
+        <!-- 底部操作 -->
+        <div class="form-actions">
+          <button class="btn btn-primary" id="checkBtn" onclick="checkAll()">检查答案</button>
+          <button class="btn btn-success" id="nextBtn" style="display:none" onclick="nextCard()">下一味 →</button>
+        </div>
       </div>
 
       <!-- Extra actions -->
@@ -526,21 +626,8 @@ body {
   <div class="modal">
     <button class="modal-close" onclick="closeReviewModal()">&times;</button>
     <h2>回顾：<span id="reviewHerbName"></span></h2>
-    <div class="modal-herb-name">哪些点没回忆起来？勾选后系统会针对性提醒</div>
-    <div class="checkbox-grid" id="reviewCheckboxGrid">
-      <label class="checkbox-item" data-key="xingwei" onclick="toggleCheckbox(this)">
-        <span class="ck-icon">☐</span> 性味
-      </label>
-      <label class="checkbox-item" data-key="guijing" onclick="toggleCheckbox(this)">
-        <span class="ck-icon">☐</span> 归经
-      </label>
-      <label class="checkbox-item" data-key="gongxiao" onclick="toggleCheckbox(this)">
-        <span class="ck-icon">☐</span> 功效
-      </label>
-      <label class="checkbox-item" data-key="target" onclick="toggleCheckbox(this)">
-        <span class="ck-icon">☐</span> 功能靶点
-      </label>
-    </div>
+    <div class="modal-herb-name">以下内容没有回忆对：</div>
+    <div id="errorSummary" style="margin-bottom:16px;display:flex;flex-direction:column;gap:8px;"></div>
     <div class="form-group">
       <label>具体错在哪（选填）</label>
       <textarea id="reviewDetail" rows="2" placeholder="如：性味记成甘寒了…"></textarea>
@@ -549,7 +636,6 @@ body {
       <button class="btn btn-secondary" onclick="skipReview()">跳过</button>
       <button class="btn btn-primary" onclick="saveReview()">保存</button>
     </div>
-  </div>
 </div>
 
 <!-- Toast -->
@@ -776,7 +862,6 @@ let currentHerb = null;
 let sweepQueue = [];
 let sweepIndex = 0;
 let sessionCount = 0;
-let cardFlipped = false;
 
 // 分类顺序（按HERBS中的实际顺序）
 const CAT_ORDER = [];
@@ -812,6 +897,25 @@ function loadMastery() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
       console.log('v1→v2 迁移完成');
       return migrated;
+    }
+    // 清理废弃的 wrongNote key（checkbox 时代遗留的 gongxiao, target）
+    if (d) {
+      Object.keys(d).forEach(k => {
+        if (k === '__version') return;
+        const entry = d[k];
+        if (entry && entry.wrongNote) {
+          const parts = entry.wrongNote.split('|');
+          const keys = parts[0].split(',').filter(kk => kk && kk !== 'gongxiao' && kk !== 'target');
+          if (keys.length === 0 && parts.length === 1) {
+            // 全都是废弃 key → 清空
+            delete entry.wrongNote;
+          } else if (keys.join(',') !== parts[0]) {
+            // 部分废弃 → 更新
+            parts[0] = keys.join(',');
+            entry.wrongNote = parts.join('|');
+          }
+        }
+      });
     }
     return d || {__version: 2};
   } catch(e) {
@@ -980,61 +1084,142 @@ function pickIntensiveCard() {
 }
 
 // ============================================================
-// SHOW HERB (共用卡片展示)
+// SHOW HERB (填空表单渲染)
 // ============================================================
 function showHerb(herb, mode) {
   closeReviewModal();
   currentHerb = herb;
-  cardFlipped = false;
 
-  // 重置卡片翻转
-  const inner = document.getElementById('cardInner');
-  inner.classList.remove('flipped');
-
-  document.getElementById('learnCard').style.display = '';
+  document.getElementById('fillForm').style.display = '';
   document.getElementById('emptyState').style.display = 'none';
 
-  // 正面
-  document.getElementById('cardName').textContent = herb.name;
-  document.getElementById('cardMeta').textContent = herb.cat + ' · ' + herb.subcat;
-  document.getElementById('tapHint').textContent = '👆 点击翻转查看完整信息';
+  // 药材名 + 分类
+  document.getElementById('herbName').textContent = herb.name;
+  document.getElementById('herbMeta').textContent = herb.cat + ' · ' + herb.subcat;
 
-  // 反面内容
-  const m = getHerbStatus(herb);
-  const wrongInfo = m.wrongNote || '';
-  // 解析 wrongNote：逗号分隔的 key 列表，竖线后是补充文本
-  const wrongKeys = wrongInfo ? wrongInfo.split('|')[0].split(',').filter(k => k.length > 0 && !k.includes('错记')) : [];
-  const wrongExtra = wrongInfo && wrongInfo.includes('|') ? wrongInfo.split('|').slice(1).join('|') : '';
-  const wrongDetail = wrongInfo && !wrongInfo.includes('|') ? wrongInfo : '';
+  // 薄弱点提示（扫荡模式不显示上次错记内容）
+  const wrongNoteBox = document.getElementById('wrongNoteBox');
+  if (mode === 'sweep') {
+    wrongNoteBox.style.display = 'none';
+  } else {
+    const m = getHerbStatus(herb);
+    const wrongInfo = m.wrongNote || '';
+    const wrongKeys = wrongInfo ? wrongInfo.split('|')[0].split(',').filter(k => k.length > 0 && !k.includes('错记') && k !== 'gongxiao' && k !== 'target') : [];
+    const wrongExtra = wrongInfo && wrongInfo.includes('|') ? wrongInfo.split('|').slice(1).join('|') : '';
+    const wrongDetail = wrongInfo && !wrongInfo.includes('|') ? wrongInfo : '';
+    if (wrongKeys.length > 0 || wrongExtra || wrongDetail) {
+      const parts = [];
+      if (wrongKeys.length > 0) parts.push('⚠️ 上次薄弱点：' + wrongKeys.map(k => ({xingwei:'性味',guijing:'归经',gongxiao:'功效',target:'靶点'})[k] || k).join('、'));
+      if (wrongExtra || wrongDetail) parts.push('💡 ' + (wrongExtra || wrongDetail));
+      wrongNoteBox.innerHTML = parts.join('<br>');
+      wrongNoteBox.style.display = 'block';
+    } else {
+      wrongNoteBox.style.display = 'none';
+    }
+  }
 
-  const backHTML = `
-    <div class="cb-row">
-      <div class="cb-label">性味</div>
-      <div class="cb-value highlight">${herb.xingwei}</div>
-    </div>
-    <div class="cb-row">
-      <div class="cb-label">归经</div>
-      <div class="cb-value highlight">${herb.guijing}经</div>
-    </div>
-    <div class="cb-row">
-      <div class="cb-label">功效</div>
-      <div class="cb-value">${herb.gongxiao}</div>
-    </div>
-    ${herb.daibiao ? `<div class="cb-row"><div class="cb-label">代表方</div><div class="cb-value">${herb.daibiao}</div></div>` : ''}
-    <div class="cb-row">
-      <div class="cb-label">🎯 归经功能靶点</div>
-      <div class="cb-target-box">${herb.target}</div>
-    </div>
-    ${wrongKeys.length > 0 ? `<div class="cb-row"><div class="cb-wrong-note">⚠️ 上次薄弱点：${wrongKeys.map(k => ({xingwei:'性味',guijing:'归经',gongxiao:'功效',target:'靶点'})[k] || k).join('、')}</div></div>` : ''}
-    ${wrongExtra || wrongDetail ? `<div class="cb-row"><div class="cb-wrong-note">💡 ${wrongExtra || wrongDetail}</div></div>` : ''}
-  `;
-  document.getElementById('cardBackContent').innerHTML = backHTML;
+  // 功效
+  document.getElementById('herbEfficacy').textContent = herb.gongxiao;
 
-  // 隐藏判断按钮（翻转后才显示）
-  document.getElementById('judgmentBtns').innerHTML = `<span class="hint-text">翻转卡片后做出判断</span>`;
+  // 重置填空 slot
+  resetSlots();
+
+  // 重置 chip 选择
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected', 'disabled', 'correct-show', 'wrong-show'));
+
+  // 隐藏统批后元素
+  document.getElementById('targetDisplay').style.display = 'none';
+
+  // 按钮状态
+  document.getElementById('checkBtn').disabled = false;
+  document.getElementById('checkBtn').style.display = '';
+  document.getElementById('nextBtn').style.display = 'none';
+
+  // 启用所有 chip
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('disabled'));
 
   // 更新进度
   updateProgress(mode);
+}
+
+function resetSlots() {
+  ['slotXingWei', 'slotSiXing', 'slotGuijing'].forEach(id => {
+    const el = document.getElementById(id);
+    el.textContent = '?';
+    el.className = 'fill-slot' + (id === 'slotGuijing' ? ' multi' : '');
+  });
+  document.getElementById('guijingCount').textContent = '已选 0';
+}
+
+function resetAllChips() {
+  document.querySelectorAll('.chip').forEach(c => {
+    c.classList.remove('selected', 'disabled', 'correct-show', 'wrong-show');
+  });
+}
+
+// 初始化 chip 交互
+document.querySelectorAll('.chip').forEach(chip => {
+  chip.addEventListener('click', function() {
+    if (this.classList.contains('disabled')) return;
+    const group = this.parentElement;
+    const groupId = group.id;
+
+    if (groupId === 'sixingChips') {
+      // 四性：single-select
+      group.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+      this.classList.add('selected');
+      updateSlotSiXing();
+    } else if (groupId === 'wuweiChips') {
+      // 五味：multi-select toggle
+      this.classList.toggle('selected');
+      updateSlotXingWei();
+    } else if (groupId === 'meridianChips') {
+      // 归经：multi-select toggle
+      this.classList.toggle('selected');
+      updateSlotGuijing();
+    }
+  });
+});
+
+function updateSlotSiXing() {
+  const selected = document.querySelector('#sixingChips .chip.selected');
+  const slot = document.getElementById('slotSiXing');
+  if (selected) {
+    slot.textContent = selected.dataset.value;
+    slot.classList.add('filled');
+  } else {
+    slot.textContent = '?';
+    slot.classList.remove('filled');
+  }
+}
+
+function updateSlotXingWei() {
+  const selected = document.querySelectorAll('#wuweiChips .chip.selected');
+  const slot = document.getElementById('slotXingWei');
+  if (selected.length > 0) {
+    const vals = Array.from(selected).map(c => c.dataset.value);
+    slot.textContent = vals.join('、');
+    slot.classList.add('filled');
+  } else {
+    slot.textContent = '?';
+    slot.classList.remove('filled');
+  }
+}
+
+function updateSlotGuijing() {
+  const selected = document.querySelectorAll('#meridianChips .chip.selected');
+  const slot = document.getElementById('slotGuijing');
+  const count = document.getElementById('guijingCount');
+  if (selected.length > 0) {
+    const vals = Array.from(selected).map(c => c.dataset.value);
+    slot.textContent = vals.join('、');
+    slot.classList.add('filled');
+    count.textContent = '已选 ' + selected.length;
+  } else {
+    slot.textContent = '?';
+    slot.classList.remove('filled');
+    count.textContent = '已选 0';
+  }
 }
 
 function updateProgress(mode) {
@@ -1088,101 +1273,238 @@ function updateProgress(mode) {
 }
 
 // ============================================================
-// FLIP & JUDGE
+// CHECK ALL (统批校验)
 // ============================================================
-function flipCard() {
-  if (!currentHerb) return;
-  const inner = document.getElementById('cardInner');
-  inner.classList.toggle('flipped');
-  cardFlipped = !cardFlipped;
+function parseXingWei(xingwei) {
+  // "甘，温" → 五味=["甘"], 四性="温"
+  // "苦、甘，温" → 五味=["苦","甘"], 四性="温"
+  // "甘、微温" → 五味=["甘"], 四性="微温"
+  // "大辛，大热；有毒" → 五味=["辛"], 四性="热"
+  // "辛、甘，温" → 五味=["辛","甘"], 四性="温"
+  // "甘、酸、涩，温" → 五味=["甘","酸","涩"], 四性="温"
+  // "甘，平" → 五味=["甘"], 四性="平"
+  const cleaned = xingwei.replace(/大/g, '').replace(/；有毒/g, '').replace(/；有小毒/g, '').trim();
+  
+  // 优先用中文逗号分割
+  const lastComma = cleaned.lastIndexOf('，');
+  if (lastComma > 0) {
+    // 有逗号：逗号左=五味，右=四性
+    const wuweiStr = cleaned.slice(0, lastComma);
+    const sixingStr = cleaned.slice(lastComma + 1);
+    const wuwei = wuweiStr.split(/[、,，]/).map(s => s.trim()).filter(s => s.length > 0);
+    const sixing = sixingStr.trim();
+    return { wuwei, sixing };
+  }
+  
+  // 无逗号（如"甘、微温"）：全部用顿号，最后一项是四性
+  const parts = cleaned.split('、').map(s => s.trim()).filter(s => s.length > 0);
+  if (parts.length <= 1) {
+    return { wuwei: [], sixing: parts[0] || '' };
+  }
+  return { wuwei: parts.slice(0, -1), sixing: parts[parts.length - 1] };
+}
 
-  if (cardFlipped) {
-    // 显示判断按钮 — 三档：全对 / 部分 / 全错
-    if (currentMode === 'sweep') {
-      document.getElementById('judgmentBtns').innerHTML = `
-        <button class="btn btn-success" onclick="judgeSweep('correct')">✅ 全对了</button>
-        <button class="btn btn-warn" onclick="judgeSweep('partial')">⚠️ 部分对</button>
-        <button class="btn btn-error" onclick="judgeSweep('wrong')">❌ 全错了</button>
-      `;
-    } else {
-      document.getElementById('judgmentBtns').innerHTML = `
-        <button class="btn btn-success" onclick="judgeIntensive('correct')">✅ 这次全对</button>
-        <button class="btn btn-warn" onclick="judgeIntensive('partial')">⚠️ 部分对</button>
-        <button class="btn btn-error" onclick="judgeIntensive('wrong')">❌ 还是错了</button>
-      `;
-    }
+function checkAll() {
+  if (!currentHerb) return;
+
+  // 防止重复点击
+  const checkBtn = document.getElementById('checkBtn');
+  if (checkBtn.disabled) return;
+  checkBtn.disabled = true;
+
+  // 禁用所有 chip，防止修改
+  document.querySelectorAll('.chip').forEach(c => c.classList.add('disabled'));
+
+  const herb = currentHerb;
+
+  // 解析正确答案
+  const { wuwei: ansWuwei, sixing: ansSixing } = parseXingWei(herb.xingwei);
+  const ansGuijing = herb.guijing.split(/[、,，]/).map(s => s.trim()).filter(s => s.length > 0);
+
+  // 收集用户选择
+  const userSixing = document.querySelector('#sixingChips .chip.selected');
+  const userSixingVal = userSixing ? userSixing.dataset.value : '';
+
+  const userWuwei = Array.from(document.querySelectorAll('#wuweiChips .chip.selected')).map(c => c.dataset.value);
+  const userGuijing = Array.from(document.querySelectorAll('#meridianChips .chip.selected')).map(c => c.dataset.value);
+
+  // 校验结果
+  let allCorrect = true;
+  let anyCorrect = false;
+
+  // 四性校验
+  const slotSiXing = document.getElementById('slotSiXing');
+  const sixingCorrect = userSixingVal === ansSixing;
+  if (sixingCorrect) {
+    slotSiXing.className = 'fill-slot correct';
+    slotSiXing.textContent = ansSixing;
+    anyCorrect = true;
   } else {
-    document.getElementById('judgmentBtns').innerHTML = `<span class="hint-text">翻转卡片后做出判断</span>`;
+    slotSiXing.className = 'fill-slot wrong';
+    slotSiXing.textContent = userSixingVal || '?';
+    allCorrect = false;
+  }
+
+  // 五味校验（order无关）
+  const wuweiCorrect = arraysMatchIgnoringOrder(userWuwei, ansWuwei);
+  const slotXingWei = document.getElementById('slotXingWei');
+  if (wuweiCorrect) {
+    slotXingWei.className = 'fill-slot correct';
+    slotXingWei.textContent = ansWuwei.join('、');
+    anyCorrect = true;
+  } else {
+    slotXingWei.className = 'fill-slot wrong';
+    slotXingWei.textContent = userWuwei.length > 0 ? userWuwei.join('、') : '?';
+    allCorrect = false;
+  }
+
+  // 归经校验（order无关）
+  const guijingCorrect = arraysMatchIgnoringOrder(userGuijing, ansGuijing);
+  const slotGuijing = document.getElementById('slotGuijing');
+  if (guijingCorrect) {
+    slotGuijing.className = 'fill-slot multi correct';
+    slotGuijing.textContent = ansGuijing.join('、');
+    anyCorrect = true;
+  } else {
+    slotGuijing.className = 'fill-slot multi wrong';
+    slotGuijing.textContent = userGuijing.length > 0 ? userGuijing.join('、') : '?';
+    allCorrect = false;
+  }
+
+  // Chip 高亮：正确变绿，错误变红
+  // 四性 chips
+  document.querySelectorAll('#sixingChips .chip').forEach(c => {
+    if (c.dataset.value === ansSixing) {
+      c.classList.add('correct-show');
+    } else if (c.classList.contains('selected')) {
+      c.classList.add('wrong-show');
+    }
+  });
+  // 五味 chips
+  document.querySelectorAll('#wuweiChips .chip').forEach(c => {
+    if (c.classList.contains('selected') && !ansWuwei.includes(c.dataset.value)) {
+      c.classList.add('wrong-show');
+    } else if (!c.classList.contains('selected') && ansWuwei.includes(c.dataset.value)) {
+      c.classList.add('correct-show');
+    } else if (c.classList.contains('selected') && ansWuwei.includes(c.dataset.value)) {
+      c.classList.add('correct-show');
+    }
+  });
+  // 归经 chips
+  document.querySelectorAll('#meridianChips .chip').forEach(c => {
+    if (c.classList.contains('selected') && !ansGuijing.includes(c.dataset.value)) {
+      c.classList.add('wrong-show');
+    } else if (!c.classList.contains('selected') && ansGuijing.includes(c.dataset.value)) {
+      c.classList.add('correct-show');
+    } else if (c.classList.contains('selected') && ansGuijing.includes(c.dataset.value)) {
+      c.classList.add('correct-show');
+    }
+  });
+
+  // 显示功能归经靶点
+  document.getElementById('targetContent').textContent = herb.target;
+  document.getElementById('targetDisplay').style.display = '';
+
+  // 判断结果 + 收集错误项
+  const wrongParts = [];
+  if (!sixingCorrect || !wuweiCorrect) wrongParts.push('xingwei');
+  if (!guijingCorrect) wrongParts.push('guijing');
+
+  let result;
+  if (allCorrect) {
+    result = 'correct';
+    showToast('✅ 全对了！');
+  } else if (anyCorrect) {
+    result = 'partial';
+    showToast('⚠️ 部分正确，继续加油');
+  } else {
+    result = 'wrong';
+    showToast('❌ 全错了，看看正确答案吧');
+  }
+
+  // 调用判断逻辑（传递错误项以便弹窗显示）
+  if (currentMode === 'sweep') {
+    judgeSweep(result, wrongParts);
+  } else {
+    judgeIntensive(result, wrongParts);
   }
 }
 
-// 扫荡模式判断 — 三档
-function judgeSweep(result) {
+function arraysMatchIgnoringOrder(a, b) {
+  if (a.length !== b.length) return false;
+  const sortedA = [...a].sort();
+  const sortedB = [...b].sort();
+  return sortedA.every((v, i) => v === sortedB[i]);
+}
+
+function nextCard() {
+  if (currentMode === 'sweep') {
+    showSweepCard();
+  } else {
+    pickIntensiveCard();
+  }
+}
+
+// 扫荡模式判断 — 三档（仅记录状态，不自动推进）
+function judgeSweep(result, wrongParts) {
   if (!currentHerb) return;
   const name = currentHerb.name;
   if (!mastery[name]) mastery[name] = {status: undefined, wrong: 0, correct: 0, partial: 0, wrongNote: ''};
+
+  sessionCount++;
 
   if (result === 'correct') {
     mastery[name].status = 'mastered';
     mastery[name].correct = (mastery[name].correct || 0) + 1;
     saveMastery();
-    sessionCount++;
     sweepIndex++;
-    showSweepCard();
-  } else if (result === 'partial') {
-    mastery[name].status = 'reviewing';
-    mastery[name].partial = (mastery[name].partial || 0) + 1;
-    saveMastery();
-    sessionCount++;
-    showReviewModal(name, () => {
-      sweepIndex++;
-      showSweepCard();
-    });
+    showNextBtn();
   } else {
     mastery[name].status = 'reviewing';
-    mastery[name].wrong = (mastery[name].wrong || 0) + 1;
+    if (result === 'partial') {
+      mastery[name].partial = (mastery[name].partial || 0) + 1;
+    } else {
+      mastery[name].wrong = (mastery[name].wrong || 0) + 1;
+    }
     saveMastery();
-    sessionCount++;
-    showReviewModal(name, () => {
-      sweepIndex++;
-      showSweepCard();
-    });
+    sweepIndex++;
+    showReviewModal(name, wrongParts, () => { showNextBtn(); });
   }
 }
 
-// 错题强化判断 — 三档
-function judgeIntensive(result) {
+// 错题强化判断 — 三档（仅记录状态，不自动推进）
+function judgeIntensive(result, wrongParts) {
   if (!currentHerb) return;
   const name = currentHerb.name;
   if (!mastery[name]) mastery[name] = {status: undefined, wrong: 0, correct: 0, partial: 0, wrongNote: ''};
 
+  sessionCount++;
+
   if (result === 'correct') {
     mastery[name].correct = (mastery[name].correct || 0) + 1;
-    // 连续正确3次以上且错误率低 → 标记为掌握
     if (mastery[name].correct >= 3 && (mastery[name].wrong || 0) <= mastery[name].correct / 1.5) {
       mastery[name].status = 'mastered';
     }
     saveMastery();
-    sessionCount++;
-    pickIntensiveCard();
-  } else if (result === 'partial') {
-    mastery[name].status = 'reviewing';
-    mastery[name].partial = (mastery[name].partial || 0) + 1;
-    saveMastery();
-    sessionCount++;
-    showReviewModal(name, () => {
-      pickIntensiveCard();
-    });
+    showNextBtn();
   } else {
     mastery[name].status = 'reviewing';
-    mastery[name].wrong = (mastery[name].wrong || 0) + 1;
-    mastery[name].correct = 0;
+    if (result === 'partial') {
+      mastery[name].partial = (mastery[name].partial || 0) + 1;
+    } else {
+      mastery[name].wrong = (mastery[name].wrong || 0) + 1;
+      mastery[name].correct = 0;
+    }
     saveMastery();
-    sessionCount++;
-    showReviewModal(name, () => {
-      pickIntensiveCard();
-    });
+    showReviewModal(name, wrongParts, () => { showNextBtn(); });
   }
+}
+
+function showNextBtn() {
+  document.getElementById('checkBtn').style.display = 'none';
+  document.getElementById('checkBtn').disabled = false;
+  document.getElementById('nextBtn').style.display = '';
+  updateProgress(currentMode);
 }
 
 // ============================================================
@@ -1190,8 +1512,7 @@ function judgeIntensive(result) {
 // ============================================================
 function showComplete(icon, msg, sub) {
   currentHerb = null;
-  document.getElementById('learnCard').style.display = 'none';
-  document.getElementById('judgmentBtns').innerHTML = '';
+  document.getElementById('fillForm').style.display = 'none';
   document.getElementById('emptyState').style.display = '';
   document.getElementById('completeIcon').textContent = icon;
   document.getElementById('completeMsg').textContent = msg;
@@ -1204,27 +1525,68 @@ function showComplete(icon, msg, sub) {
 }
 
 // ============================================================
-// REVIEW MODAL (统一弹窗：部分对/全错 均可记录)
+// REVIEW MODAL (自动记录错误项 + 显示正确答案)
 // ============================================================
 let reviewCallback = null;
 let reviewHerbName = '';
 
-function toggleCheckbox(el) {
-  el.classList.toggle('checked');
-  const icon = el.querySelector('.ck-icon');
-  icon.textContent = el.classList.contains('checked') ? '☑' : '☐';
-}
+const LABEL_MAP = { xingwei:'性味', guijing:'归经' };
 
-function showReviewModal(herbName, callback) {
+function showReviewModal(herbName, wrongParts, callback) {
   reviewHerbName = herbName;
   reviewCallback = callback;
+
   document.getElementById('reviewHerbName').textContent = herbName;
-  // 重置 checkbox
-  document.querySelectorAll('.checkbox-item').forEach(el => {
-    el.classList.remove('checked');
-    el.querySelector('.ck-icon').textContent = '☐';
-  });
   document.getElementById('reviewDetail').value = '';
+
+  // 构建错误摘要
+  const summary = document.getElementById('errorSummary');
+  summary.innerHTML = '';
+
+  // 如果有历史薄弱点，先显示
+  const m = mastery[herbName] || {};
+  if (m.wrongNote) {
+    const oldKeys = m.wrongNote.split('|')[0].split(',').filter(k => k && !k.includes('错记') && k !== 'gongxiao' && k !== 'target');
+    if (oldKeys.length > 0) {
+      const extra = document.createElement('div');
+      extra.className = 'error-item err-xingwei';
+      extra.style.borderLeftColor = '#D97706';
+      extra.style.background = '#FFFBEB';
+      extra.innerHTML = `<span class="ei-label" style="color:#D97706">📌</span><span class="ei-correct">上次薄弱：${oldKeys.map(k => LABEL_MAP[k] || k).join('、')}</span>`;
+      summary.appendChild(extra);
+    }
+  }
+
+  // 显示本次错误项 + 正确答案
+  if (!wrongParts || wrongParts.length === 0) {
+    // 兜底：不应发生，以防万一
+    const item = document.createElement('div');
+    item.className = 'error-item err-xingwei';
+    item.innerHTML = `<span class="ei-label">❌</span><span class="ei-correct">有内容未答对，看看上方标红的区域</span>`;
+    summary.appendChild(item);
+  } else {
+    wrongParts.forEach(key => {
+      const item = document.createElement('div');
+      item.className = 'error-item err-' + key;
+      const label = LABEL_MAP[key] || key;
+      let correctText = '';
+      if (key === 'xingwei' && currentHerb) {
+        correctText = '正确答案：' + currentHerb.xingwei.replace(/；有毒|；有小毒/g, '');
+      } else if (key === 'guijing' && currentHerb) {
+        correctText = '正确答案：' + currentHerb.guijing + '经';
+      }
+      item.innerHTML = `<span class="ei-label">❌ ${label}</span><span class="ei-correct">${correctText}</span>`;
+      summary.appendChild(item);
+    });
+  }
+
+  // 自动记录错误项到 wrongNote
+  if (wrongParts && wrongParts.length > 0 && mastery[herbName]) {
+    const note = wrongParts.join(',');
+    mastery[herbName].wrongNote = note;
+    saveMastery();
+  }
+
   document.getElementById('reviewModal').classList.add('active');
   setTimeout(() => document.getElementById('reviewDetail').focus(), 100);
 }
@@ -1233,23 +1595,18 @@ function closeReviewModal() {
   document.getElementById('reviewModal').classList.remove('active');
 }
 
-function getCheckedKeys() {
-  const checked = [];
-  document.querySelectorAll('.checkbox-item.checked').forEach(el => {
-    checked.push(el.dataset.key);
-  });
-  return checked;
-}
-
 function saveReview() {
-  const keys = getCheckedKeys();
+  // 保存补充文本（如果有）
   const detail = document.getElementById('reviewDetail').value.trim();
-  const parts = [];
-  if (keys.length > 0) parts.push(keys.join(','));
-  if (detail) parts.push(detail);
-  const note = parts.join('|');
-  if (note && mastery[reviewHerbName]) {
-    mastery[reviewHerbName].wrongNote = note;
+  if (detail && mastery[reviewHerbName]) {
+    const existing = mastery[reviewHerbName].wrongNote || '';
+    const parts = existing.split('|');
+    if (parts.length >= 1) {
+      parts[1] = detail;
+    } else {
+      parts.push(detail);
+    }
+    mastery[reviewHerbName].wrongNote = parts.join('|');
     saveMastery();
   }
   closeReviewModal();
@@ -1380,18 +1737,8 @@ document.addEventListener('keydown', e => {
     return;
   }
   if (document.getElementById('learnMode').style.display !== 'none' && currentHerb) {
-    if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); flipCard(); }
-    if (cardFlipped) {
-      if (e.key === 'ArrowRight') {
-        currentMode === 'sweep' ? judgeSweep('correct') : judgeIntensive('correct');
-      }
-      if (e.key === 'ArrowUp') {
-        currentMode === 'sweep' ? judgeSweep('partial') : judgeIntensive('partial');
-      }
-      if (e.key === 'ArrowLeft') {
-        currentMode === 'sweep' ? judgeSweep('wrong') : judgeIntensive('wrong');
-      }
-    }
+    // 填空交互：无快捷判断键，仅通过「检查答案」按钮
+    // 保留 Escape 用于关闭弹窗
   }
   if (e.key === 'Escape') closeReviewModal();
 });
