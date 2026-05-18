@@ -624,7 +624,7 @@ body {
 <!-- Review Modal -->
 <div class="modal-overlay" id="reviewModal">
   <div class="modal">
-    <button class="modal-close" onclick="closeReviewModal()">&times;</button>
+    <button class="modal-close" onclick="skipReview()">&times;</button>
     <h2>回顾：<span id="reviewHerbName"></span></h2>
     <div class="modal-herb-name">以下内容没有回忆对：</div>
     <div id="errorSummary" style="margin-bottom:16px;display:flex;flex-direction:column;gap:8px;"></div>
@@ -861,6 +861,7 @@ let currentMode = 'sweep'; // 'sweep' | 'intensive'
 let currentHerb = null;
 let sweepQueue = [];
 let sweepIndex = 0;
+let lastSweepHerb = null; // 离开扫荡模式时记录的当前位置药材名
 let sessionCount = 0;
 
 // 分类顺序（按HERBS中的实际顺序）
@@ -1041,7 +1042,12 @@ function buildSweepQueue() {
     sweepQueue.push(...herbs);
   });
   sweepIndex = 0;
-  // If all mastered, still give an empty queue
+  // 如有记录的上次位置，在新队列中找回去
+  if (lastSweepHerb) {
+    const idx = sweepQueue.findIndex(h => h.name === lastSweepHerb);
+    if (idx >= 0) sweepIndex = idx;
+    lastSweepHerb = null; // 用完即弃，避免后续重建也偏移
+  }
 }
 
 function showSweepCard() {
@@ -1630,6 +1636,10 @@ function skipReview() {
 // SWITCH MODE
 // ============================================================
 function switchMode(mode) {
+  // 离开扫荡模式前记录当前位置
+  if (currentMode === 'sweep' && mode !== 'sweep') {
+    lastSweepHerb = sweepQueue[sweepIndex]?.name || null;
+  }
   currentMode = mode;
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelector(`.tab[data-mode="${mode}"]`).classList.add('active');
