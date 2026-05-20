@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>446 药材三阶记忆</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Noto Serif SC','STSong','SimSun','PingFang SC',serif;
+  background:#F5F0E8;color:#292524;padding:8px;
+  -webkit-font-smoothing:antialiased;
+  font-size:14px;line-height:1.65;
+}
+.back-home{display:flex;align-items:center;gap:4px;max-width:520px;margin:0 auto 6px;padding:0 2px;font-size:12px;color:#78716C;text-decoration:none;cursor:pointer;font-family:inherit;-webkit-tap-highlight-color:transparent}
+.back-home:hover{color:#7C5E10}
+.back-home svg{width:14px;height:14px;flex-shrink:0}
+.wrap{max-width:520px;margin:0 auto;background:#FFFCF7;border-radius:14px;overflow:hidden;border:0.5px solid #E8E0D0}
+.accent{height:4px;background:linear-gradient(90deg,#A32D2D,#D85A30,#BA7517,#F1EFE8,#85B7EB,#378ADD,#0C447C)}
+.inner{padding:14px 10px 18px}
+h1{font-size:20px;font-weight:700;text-align:center;letter-spacing:2px;margin-bottom:2px;color:#292524}
+.sub{text-align:center;font-size:12px;color:#A8A29E;margin-bottom:10px}
+
+/* Controls */
+.controls{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;align-items:center}
+.filter-btn{padding:5px 14px;border-radius:14px;border:0.5px solid #D3D1C7;background:transparent;font-size:12px;cursor:pointer;transition:all .2s;color:#5F5E5A;font-family:inherit}
+.filter-btn.active{background:#7C5E10;color:#fff;border-color:#7C5E10}
+.filter-btn:hover:not(.active){background:#F1EFE8}
+
+/* Stage tabs */
+.stage-tabs{display:flex;gap:4px;margin-bottom:12px;background:#F5F0E8;border-radius:10px;padding:3px}
+.stage-tab{flex:1;padding:8px 6px;border-radius:8px;border:none;background:transparent;font-size:12px;cursor:pointer;color:#A8A29E;font-family:inherit;text-align:center;transition:all .2s}
+.stage-tab.active{background:#FFFCF7;color:#292524;box-shadow:0 1px 4px rgba(0,0,0,0.06);font-weight:600}
+.stage-tab .st-num{display:block;font-size:10px;color:#A8A29E;margin-bottom:1px}
+.stage-tab.active .st-num{color:#7C5E10}
+
+/* Legend */
+.legend{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;align-items:center}
+.legend-item{display:flex;align-items:center;gap:3px;font-size:10px;color:#78716C}
+.legend-dot{width:10px;height:10px;border-radius:3px;border:0.5px solid #E8E0D0}
+.l-h{background:#FEF2F2}.l-w{background:#FFF7ED}.l-m{background:#FAFAF5}.l-c{background:#F0F7FF}.l-cd{background:#EFF6FF}
+
+/* ====== 性味景观 ====== */
+.landscape-toggle{display:flex;align-items:center;gap:6px;margin-bottom:10px;cursor:pointer;user-select:none}
+.landscape-toggle .lt-arrow{font-size:10px;transition:transform .2s;color:#A8A29E}
+.landscape-toggle.open .lt-arrow{transform:rotate(90deg)}
+.landscape-toggle .lt-label{font-size:12px;color:#5F5E5A}
+#landscapeView{margin-bottom:8px;overflow:hidden}
+.flavor-band{margin-bottom:6px;padding:6px 8px;background:#FFFCF7;border-radius:8px;border:0.5px solid #E8E0D0}
+.flavor-band-header{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+.flavor-label{font-size:14px;font-weight:700;min-width:20px;text-align:center}
+.flavor-sense{font-size:10px;color:#A8A29E;line-height:1.4}
+.flavor-chips{display:flex;flex-wrap:wrap;gap:2px}
+.flavor-chip{padding:1px 6px;border-radius:3px;font-size:10px;cursor:pointer;white-space:nowrap;border:0.5px solid transparent}
+.flavor-chip:active{opacity:.7}
+.flavor-hot{background:#FEF2F2;color:#A32D2D;border-color:#FECACA}
+.flavor-warm{background:#FFF7ED;color:#BA7517;border-color:#FED7AA}
+.flavor-mid{background:#FAFAF5;color:#5F5E5A;border-color:#E8E0D0}
+.flavor-cool{background:#F0F7FF;color:#378ADD;border-color:#BFDBFE}
+.flavor-cold{background:#EFF6FF;color:#185FA5;border-color:#BFDBFE}
+#stage1View{}
+.meri-card{margin-bottom:8px;padding:12px;background:#FFFCF7;border-radius:10px;border:0.5px solid #E8E0D0;overflow:hidden}
+.meri-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.meri-name{font-size:16px;font-weight:700;color:#292524}
+.meri-tag{font-size:11px;padding:2px 8px;border-radius:10px;font-weight:500}
+.meri-count{font-size:12px;color:#A8A29E}
+.meri-pattern{font-size:12px;color:#78716C;margin-bottom:8px;line-height:1.7}
+.meri-herbs{display:flex;flex-wrap:wrap;gap:4px}
+.meri-chip{padding:4px 9px;border-radius:5px;font-size:11px;border:0.5px solid #E8E0D0;cursor:pointer;transition:.15s;white-space:nowrap}
+.meri-chip:active{opacity:.7}
+.pair-divider{text-align:center;font-size:10px;color:#C5C0BB;margin:0 0 4px;letter-spacing:2px}
+.pair-divider span{font-size:9px;margin:0 4px;color:#D3D1C7}
+
+/* ====== STAGE 2: 方剂锚定 ====== */
+#stage2View{display:none}
+.fang-card{margin-bottom:10px;padding:12px 14px;background:#FFFCF7;border-radius:10px;border:0.5px solid #E8E0D0;overflow:hidden}
+.fang-card-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:4px}
+.fang-num{font-size:10px;color:#A8A29E;font-weight:400}
+.fang-name{font-size:17px;font-weight:700;color:#292524;letter-spacing:1px}
+.fang-meta{font-size:11px;color:#A8A29E}
+.fang-zhuzhi{font-size:12px;color:#78716C;margin-bottom:8px;line-height:1.6;padding:6px 10px;background:#F5F0E8;border-radius:6px}
+.fang-herbs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+.fang-herb-chip{padding:6px 10px;border-radius:6px;font-size:12px;line-height:1.6;border:0.5px solid #E8E0D0;min-width:0}
+.fang-herb-chip .fh-name{font-weight:600;font-size:13px;color:#292524;display:block;margin-bottom:1px}
+.fang-herb-chip .fh-meta{color:#A8A29E;font-size:11px;line-height:1.5}
+.fang-herb-chip .fh-meta-nf{color:#C5C0BB;font-size:11px;font-style:italic}
+.fang-herb-chip .fh-xing{font-weight:500;color:#7C5E10}
+/* 3D 映射药材 */
+.fang-herb-3d{padding:10px 12px;border-radius:8px;border:0.5px solid #E8E0D0;min-width:0;width:100%}
+.fh3d-name{font-size:14px;font-weight:700;color:#292524;display:block;margin-bottom:4px;letter-spacing:0.5px}
+.fh3d-dose{font-size:10px;font-weight:400;color:#A8A29E;display:inline-block;margin-left:2px;text-transform:none}
+.fh3d-row{display:flex;gap:3px;align-items:baseline;font-size:11px;line-height:1.75;margin:0}
+.fh3d-label{font-size:9px;color:#A8A29E;min-width:18px;flex-shrink:0}
+.fh3d-val{color:#5F5E5A;font-size:11px}
+.fh3d-ding{font-weight:600;color:#7C5E10;font-size:11px}
+.fh3d-task{margin-top:5px;padding-top:4px;border-top:0.5px dashed #E8E0D0;font-size:12px;font-weight:600;color:#292524;line-height:1.5}
+.fh3d-task .fh3d-task-label{font-size:9px;color:#A8A29E;font-weight:400;display:inline-block;margin-right:3px}
+.fang-pattern{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.fang-pattern-chip{padding:3px 8px;border-radius:4px;font-size:10px;border:0.5px solid #E8E0D0;background:#FAFAF5;color:#78716C}
+.fang-pattern-chip strong{color:#292524;font-size:11px}
+
+/* ====== STAGE 3: 鉴别对比 ====== */
+#stage3View{display:none}
+.contrast-pair{margin-bottom:10px;padding:12px 14px;background:#FFFCF7;border-radius:10px;border:0.5px solid #E8E0D0}
+.contrast-title{font-size:14px;font-weight:600;margin-bottom:8px;color:#292524;padding-bottom:6px;border-bottom:0.5px solid #E8E0D0}
+.contrast-herbs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.contrast-herb{padding:10px 12px;border-radius:8px;border:0.5px solid #E8E0D0;font-size:12px;line-height:1.8}
+.contrast-herb .ch-name{font-size:15px;font-weight:600;color:#292524;display:block;margin-bottom:2px}
+.contrast-herb .ch-row{display:flex;gap:6px;align-items:baseline;margin:1px 0}
+.contrast-herb .ch-label{font-size:10px;color:#A8A29E;min-width:20px}
+.contrast-herb .ch-val{font-size:12px;color:#444441}
+.contrast-herb .ch-diff{font-weight:600;color:#7C5E10}
+
+/* Orphan section */
+.orphan-section{margin-top:14px;padding:12px;text-align:center;color:#A8A29E;font-size:12px;background:#FAFAF5;border-radius:10px;border:0.5px dashed #E8E0D0;line-height:1.8}
+.orphan-section strong{color:#78716C}
+</style>
+</head>
+<body>
+<a href="index.html" class="back-home">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5m7-7-7 7 7 7"/></svg>
+  首页
+</a>
+<div class="wrap">
+<div class="accent"></div>
+<div class="inner">
+<h1>药材三阶记忆</h1>
+<p class="sub">归经谱系 → 方剂锚定 → 鉴别对比 · 72首方</p>
+
+<div class="stage-tabs">
+<button class="stage-tab active" data-stage="1">
+  <span class="st-num">第一阶</span>归经谱系
+</button>
+<button class="stage-tab" data-stage="2">
+  <span class="st-num">第二阶</span>方剂锚定
+</button>
+<button class="stage-tab" data-stage="3">
+  <span class="st-num">第三阶</span>鉴别对比
+</button>
+</div>
+
+<div class="controls">
+<button class="filter-btn active" data-cat="all">全部</button>
+<button class="filter-btn" data-cat="四虚">四虚</button>
+<button class="filter-btn" data-cat="四实">四实</button>
+<button class="filter-btn" data-cat="六外感">六外感</button>
+</div>
+
+<div class="legend">
+<span class="legend-item"><span class="legend-dot l-h"></span>大热·热</span>
+<span class="legend-item"><span class="legend-dot l-w"></span>温·微温</span>
+<span class="legend-item"><span class="legend-dot l-m"></span>平</span>
+<span class="legend-item"><span class="legend-dot l-c"></span>微寒·凉</span>
+<span class="legend-item"><span class="legend-dot l-cd"></span>寒·大寒</span>
+</div>
+
+<div class="landscape-toggle open" onclick="toggleLandscape()">
+  <span class="lt-arrow">▶</span>
+  <span class="lt-label">性味景观 · 感官映射</span>
+</div>
+<div id="landscapeView"></div>
+
+<div id="stage1View"></div>
+<div id="stage2View"></div>
+<div id="stage3View"></div>
+</div>
+</div>
+
+<script>
+// ====== 药材数据 ======
+const HERBS = [
+  {name:"生黄芪",cat:"四虚",subcat:"气虚",xing:"温",wei:"甘",gui:["脾","肺"],gongxiao:"补气固表·利水·托毒"},
+  {name:"炙黄芪",cat:"四虚",subcat:"气虚",xing:"温",wei:"甘",gui:["脾","肺"],gongxiao:"补气健脾"},
+  {name:"炙甘草",cat:"四虚",subcat:"气虚",xing:"平",wei:"甘",gui:["心","肺","脾","胃"],gongxiao:"补脾益气·缓急·调和"},
+  {name:"人参",cat:"四虚",subcat:"气虚",xing:"微温",wei:"甘",gui:["脾","肺","心","肾"],gongxiao:"大补元气·生津安神"},
+  {name:"党参",cat:"四虚",subcat:"气虚",xing:"平",wei:"甘",gui:["脾","肺"],gongxiao:"健脾益肺·养血生津"},
+  {name:"炒白术",cat:"四虚",subcat:"气虚",xing:"温",wei:"苦、甘",gui:["脾","胃"],gongxiao:"健脾益气·燥湿利水"},
+  {name:"糯米",cat:"四虚",subcat:"气虚",xing:"温",wei:"甘",gui:["脾","胃","肺"],gongxiao:"补中益气·缩尿"},
+  {name:"粳米",cat:"四虚",subcat:"气虚",xing:"平",wei:"甘",gui:["脾","胃","肺"],gongxiao:"补气健脾·除烦止渴"},
+  {name:"附子",cat:"四虚",subcat:"阳虚",xing:"大热",wei:"辛",gui:["心","肾","脾"],gongxiao:"回阳救逆·补火助阳"},
+  {name:"干姜",cat:"四虚",subcat:"阳虚",xing:"热",wei:"辛",gui:["脾","胃","肾","心","肺"],gongxiao:"温中散寒·回阳通脉"},
+  {name:"炮姜",cat:"四虚",subcat:"阳虚",xing:"热",wei:"辛",gui:["脾","胃","肾"],gongxiao:"温经止血·温中止痛"},
+  {name:"生姜",cat:"四虚",subcat:"阳虚",xing:"微温",wei:"辛",gui:["肺","脾","胃"],gongxiao:"解表散寒·温中止呕"},
+  {name:"桂枝",cat:"四虚",subcat:"阳虚",xing:"温",wei:"辛、甘",gui:["心","肺","膀胱"],gongxiao:"发汗解肌·温通经脉"},
+  {name:"吴茱萸",cat:"四虚",subcat:"阳虚",xing:"热",wei:"辛、苦",gui:["肝","脾","胃","肾"],gongxiao:"散寒止痛·降逆止呕"},
+  {name:"炒白芍",cat:"四虚",subcat:"血虚",xing:"微寒",wei:"苦、酸",gui:["肝","脾"],gongxiao:"养血和营·柔肝止痛"},
+  {name:"生地黄",cat:"四虚",subcat:"血虚",xing:"寒",wei:"甘、苦",gui:["心","肝","肾"],gongxiao:"清热凉血·养阴生津"},
+  {name:"熟地",cat:"四虚",subcat:"血虚",xing:"微温",wei:"甘",gui:["肝","肾"],gongxiao:"补血滋阴·益精填髓"},
+  {name:"当归",cat:"四虚",subcat:"血虚",xing:"温",wei:"甘、辛",gui:["肝","心","脾"],gongxiao:"补血活血·调经止痛"},
+  {name:"阿胶",cat:"四虚",subcat:"血虚",xing:"平",wei:"甘",gui:["肺","肝","肾"],gongxiao:"补血止血·滋阴润燥"},
+  {name:"大枣",cat:"四虚",subcat:"血虚",xing:"温",wei:"甘",gui:["脾","胃","心"],gongxiao:"补中益气·养血安神"},
+  {name:"生白芍",cat:"四虚",subcat:"阴虚",xing:"微寒",wei:"苦、酸",gui:["肝","脾"],gongxiao:"养血调经·柔肝止痛"},
+  {name:"麦门冬",cat:"四虚",subcat:"阴虚",xing:"微寒",wei:"甘、微苦",gui:["心","肺","胃"],gongxiao:"养阴润肺·清心除烦"},
+  {name:"火麻仁",cat:"四虚",subcat:"阴虚",xing:"平",wei:"甘",gui:["脾","胃","大肠"],gongxiao:"润肠通便"},
+  {name:"知母",cat:"四虚",subcat:"阴虚",xing:"寒",wei:"苦、甘",gui:["肺","胃","肾"],gongxiao:"清热泻火·滋阴润燥"},
+  {name:"百合",cat:"四虚",subcat:"阴虚",xing:"寒",wei:"甘",gui:["心","肺"],gongxiao:"养阴润肺·清心安神"},
+  {name:"麦芽糖",cat:"四虚",subcat:"阴虚",xing:"温",wei:"甘",gui:["脾","胃","肺"],gongxiao:"补脾益气·缓急止痛"},
+  {name:"怀山药",cat:"四虚",subcat:"阴虚",xing:"平",wei:"甘",gui:["脾","肺","肾"],gongxiao:"补脾养胃·益肺固肾"},
+  {name:"赤石脂",cat:"四虚",subcat:"固涩",xing:"温",wei:"甘、酸、涩",gui:["大肠","胃"],gongxiao:"涩肠止泻·收敛止血"},
+  {name:"禹余粮",cat:"四虚",subcat:"固涩",xing:"平",wei:"甘、涩",gui:["胃"],gongxiao:"涩肠止泻"},
+  {name:"龙骨",cat:"四虚",subcat:"固涩",xing:"平",wei:"甘、涩",gui:["心","肝","肾"],gongxiao:"镇惊安神·收敛固涩"},
+  {name:"牡蛎",cat:"四虚",subcat:"固涩",xing:"微寒",wei:"咸、涩",gui:["肝","肾"],gongxiao:"平肝潜阳·软坚散结"},
+  {name:"五味子",cat:"四虚",subcat:"固涩",xing:"温",wei:"酸、甘",gui:["肺","心","肾"],gongxiao:"收敛固涩·益气生津"},
+  {name:"乌梅",cat:"四虚",subcat:"固涩",xing:"平",wei:"酸、涩",gui:["肝","脾","肺","大肠"],gongxiao:"敛肺止咳·涩肠止泻"},
+  {name:"山茱萸",cat:"四虚",subcat:"固涩",xing:"微温",wei:"酸、涩",gui:["肝","肾"],gongxiao:"补益肝肾·收敛固涩"},
+  {name:"柴胡",cat:"四实",subcat:"气滞",xing:"微寒",wei:"苦、辛",gui:["肝","胆","肺"],gongxiao:"和解退热·疏肝解郁"},
+  {name:"川芎",cat:"四实",subcat:"气滞",xing:"温",wei:"辛",gui:["肝","胆","心包"],gongxiao:"活血行气·祛风止痛"},
+  {name:"枳实",cat:"四实",subcat:"气滞",xing:"微寒",wei:"苦、辛",gui:["脾","胃"],gongxiao:"破气消积·化痰散痞"},
+  {name:"枳壳",cat:"四实",subcat:"气滞",xing:"微寒",wei:"苦、辛",gui:["脾","胃"],gongxiao:"理气宽中·行滞消胀"},
+  {name:"厚朴",cat:"四实",subcat:"气滞",xing:"温",wei:"苦、辛",gui:["脾","胃","肺","大肠"],gongxiao:"燥湿消痰·下气除满"},
+  {name:"赤芍",cat:"四实",subcat:"血瘀",xing:"微寒",wei:"苦",gui:["肝"],gongxiao:"清热凉血·散瘀止痛"},
+  {name:"红花",cat:"四实",subcat:"血瘀",xing:"温",wei:"辛",gui:["心","肝"],gongxiao:"活血通经·散瘀止痛"},
+  {name:"桃仁",cat:"四实",subcat:"血瘀",xing:"平",wei:"苦、甘",gui:["心","肝","大肠"],gongxiao:"活血祛瘀·润肠通便"},
+  {name:"丹皮",cat:"四实",subcat:"血瘀",xing:"微寒",wei:"苦、辛",gui:["心","肝","肾"],gongxiao:"清热凉血·活血化瘀"},
+  {name:"地龙",cat:"四实",subcat:"血瘀",xing:"寒",wei:"咸",gui:["肝","脾","膀胱"],gongxiao:"清热定惊·通络止痛"},
+  {name:"牛膝",cat:"四实",subcat:"血瘀",xing:"平",wei:"苦、酸",gui:["肝","肾"],gongxiao:"活血祛瘀·引血下行"},
+  {name:"莪术",cat:"四实",subcat:"血瘀",xing:"温",wei:"辛、苦",gui:["肝","脾"],gongxiao:"行气破血·消积止痛"},
+  {name:"瓜蒂",cat:"四实",subcat:"痰饮水湿",xing:"寒",wei:"苦",gui:["胃"],gongxiao:"涌吐痰食·祛湿退黄"},
+  {name:"姜半夏",cat:"四实",subcat:"痰饮水湿",xing:"温",wei:"辛",gui:["脾","胃","肺"],gongxiao:"降逆止呕·温中化痰"},
+  {name:"杏仁",cat:"四实",subcat:"痰饮水湿",xing:"微温",wei:"苦",gui:["肺","大肠"],gongxiao:"止咳平喘·润肠通便"},
+  {name:"陈皮",cat:"四实",subcat:"痰饮水湿",xing:"温",wei:"苦、辛",gui:["脾","肺"],gongxiao:"理气健脾·燥湿化痰"},
+  {name:"茯苓",cat:"四实",subcat:"痰饮水湿",xing:"平",wei:"甘、淡",gui:["心","脾","肾"],gongxiao:"利水渗湿·健脾宁心"},
+  {name:"猪苓",cat:"四实",subcat:"痰饮水湿",xing:"平",wei:"甘、淡",gui:["肾","膀胱"],gongxiao:"利水渗湿"},
+  {name:"泽泻",cat:"四实",subcat:"痰饮水湿",xing:"寒",wei:"甘、淡",gui:["肾","膀胱"],gongxiao:"利水泄热"},
+  {name:"防己",cat:"四实",subcat:"痰饮水湿",xing:"寒",wei:"苦",gui:["膀胱","肾","脾"],gongxiao:"祛风湿·利水消肿"},
+  {name:"薏苡仁",cat:"四实",subcat:"痰饮水湿",xing:"凉",wei:"甘、淡",gui:["脾","胃","肺"],gongxiao:"利水渗湿·健脾止泻"},
+  {name:"桔梗",cat:"四实",subcat:"痰饮水湿",xing:"平",wei:"苦、辛",gui:["肺"],gongxiao:"宣肺利咽·祛痰排脓"},
+  {name:"前胡",cat:"四实",subcat:"痰饮水湿",xing:"微寒",wei:"苦、辛",gui:["肺"],gongxiao:"降气化痰·散风清热"},
+  {name:"赤小豆",cat:"四实",subcat:"痰饮水湿",xing:"平",wei:"甘、酸",gui:["心","小肠"],gongxiao:"利水消肿·解毒排脓"},
+  {name:"白蔻仁",cat:"四实",subcat:"痰饮水湿",xing:"温",wei:"辛",gui:["肺","脾","胃"],gongxiao:"化湿行气·温中止呕"},
+  {name:"通草",cat:"四实",subcat:"痰饮水湿",xing:"微寒",wei:"甘、淡",gui:["肺","胃"],gongxiao:"利尿通淋"},
+  {name:"滑石",cat:"四实",subcat:"痰饮水湿",xing:"寒",wei:"甘、淡",gui:["膀胱","肺","胃"],gongxiao:"利尿通淋·清热解暑"},
+  {name:"淡竹叶",cat:"四实",subcat:"痰饮水湿",xing:"寒",wei:"甘、淡",gui:["心","胃","小肠"],gongxiao:"清热除烦·利尿通淋"},
+  {name:"生石膏",cat:"四实",subcat:"内火",xing:"大寒",wei:"辛、甘",gui:["肺","胃"],gongxiao:"清热泻火·除烦止渴"},
+  {name:"大黄",cat:"四实",subcat:"内火",xing:"寒",wei:"苦",gui:["脾","胃","大肠","肝","心包"],gongxiao:"泻下攻积·清热凉血"},
+  {name:"黄连",cat:"四实",subcat:"内火",xing:"寒",wei:"苦",gui:["心","脾","胃","肝","胆","大肠"],gongxiao:"清热燥湿·泻火解毒"},
+  {name:"黄芩",cat:"四实",subcat:"内火",xing:"寒",wei:"苦",gui:["肺","胆","脾","大肠","小肠"],gongxiao:"清热燥湿·凉血止血"},
+  {name:"黄柏",cat:"四实",subcat:"内火",xing:"寒",wei:"苦",gui:["肾","膀胱"],gongxiao:"清热燥湿·泻火解毒"},
+  {name:"芒硝",cat:"四实",subcat:"内火",xing:"寒",wei:"咸、苦",gui:["胃","大肠"],gongxiao:"泻下通便·润燥软坚"},
+  {name:"栀子",cat:"四实",subcat:"内火",xing:"寒",wei:"苦",gui:["心","肺","三焦"],gongxiao:"泻火除烦·清热利湿"},
+  {name:"淡豆豉",cat:"四实",subcat:"内火",xing:"凉",wei:"苦、辛",gui:["肺","胃"],gongxiao:"解表除烦·宣发郁热"},
+  {name:"茵陈蒿",cat:"四实",subcat:"内火",xing:"微寒",wei:"苦、辛",gui:["脾","胃","肝","胆"],gongxiao:"清利湿热·利胆退黄"},
+  {name:"白头翁",cat:"四实",subcat:"内火",xing:"寒",wei:"苦",gui:["胃","大肠"],gongxiao:"清热解毒·凉血止痢"},
+  {name:"秦皮",cat:"四实",subcat:"内火",xing:"寒",wei:"苦、涩",gui:["肝","胆","大肠"],gongxiao:"清热燥湿·收涩止痢"},
+  {name:"荆芥",cat:"六外感",subcat:"风邪",xing:"微温",wei:"辛",gui:["肺","肝"],gongxiao:"祛风解表·透疹"},
+  {name:"防风",cat:"六外感",subcat:"风邪",xing:"微温",wei:"辛、甘",gui:["膀胱","肝","脾"],gongxiao:"祛风解表·胜湿止痛"},
+  {name:"麻黄",cat:"六外感",subcat:"寒邪",xing:"温",wei:"辛、微苦",gui:["肺","膀胱"],gongxiao:"发汗散寒·宣肺平喘"},
+  {name:"细辛",cat:"六外感",subcat:"寒邪",xing:"温",wei:"辛",gui:["心","肺","肾"],gongxiao:"解表散寒·祛风止痛"},
+  {name:"清酒",cat:"六外感",subcat:"寒邪",xing:"温",wei:"甘、辛",gui:["肝","胃"],gongxiao:"活血通络·行药势"},
+  {name:"苍术",cat:"六外感",subcat:"湿邪",xing:"温",wei:"辛、苦",gui:["脾","胃","肝"],gongxiao:"燥湿健脾·祛风散寒"},
+  {name:"升麻",cat:"六外感",subcat:"外火",xing:"微寒",wei:"辛、甘",gui:["肺","脾","胃","大肠"],gongxiao:"发表透疹·清热解毒"},
+  {name:"葛根",cat:"六外感",subcat:"外火",xing:"凉",wei:"甘、辛",gui:["脾","胃"],gongxiao:"解肌退热·生津止渴"},
+  {name:"金银花",cat:"六外感",subcat:"外火",xing:"寒",wei:"甘",gui:["肺","心","胃"],gongxiao:"清热解毒·疏散风热"},
+  {name:"连翘",cat:"六外感",subcat:"外火",xing:"微寒",wei:"苦",gui:["肺","心","小肠"],gongxiao:"清热解毒·消肿散结"},
+  {name:"牛蒡子",cat:"六外感",subcat:"外火",xing:"寒",wei:"辛、苦",gui:["肺","胃"],gongxiao:"疏散风热·解毒利咽"},
+  {name:"薄荷",cat:"六外感",subcat:"外火",xing:"凉",wei:"辛",gui:["肺","肝"],gongxiao:"疏散风热·清利头目"},
+  {name:"桑叶",cat:"六外感",subcat:"热燥",xing:"寒",wei:"苦、甘",gui:["肺","肝"],gongxiao:"疏散风热·清肺润燥"},
+  {name:"胡麻仁",cat:"六外感",subcat:"热燥",xing:"平",wei:"甘",gui:["肺","脾","肝","肾"],gongxiao:"润燥滑肠·滋养肝肾"},
+  {name:"枇杷叶",cat:"六外感",subcat:"热燥",xing:"微寒",wei:"苦",gui:["肺","胃"],gongxiao:"清肺止咳·降逆止呕"},
+  {name:"紫苏叶",cat:"六外感",subcat:"凉燥",xing:"温",wei:"辛",gui:["肺","脾"],gongxiao:"解表散寒·行气和胃"},
+];
+
+// ====== 72首方剂完整数据（来自446-formula-herbs.js） ======
+const FANG72 = [
+  {"#":1,name:"黄芪甘草汤",cat:"四虚",subcat:"气虚",zhuzhi:"气虚外感、脾肺气虚托疮",herbs:["生黄芪","炙甘草"]},
+  {"#":2,name:"黄芪糯米粥",cat:"四虚",subcat:"气虚",zhuzhi:"气虚浮肿、气虚欲脱",herbs:["生黄芪","糯米"]},
+  {"#":3,name:"补阳还五汤",cat:"四虚",subcat:"气虚",zhuzhi:"气虚血瘀、中风后遗症",herbs:["生黄芪","当归","赤芍","川芎","地龙","红花","桃仁"]},
+  {"#":4,name:"补中益气汤",cat:"四虚",subcat:"气虚",zhuzhi:"气虚不升、阴火发热",herbs:["炙黄芪","人参","炒白术","炙甘草","当归","陈皮","升麻","柴胡"]},
+  {"#":5,name:"甘草干姜汤",cat:"四虚",subcat:"阳虚",zhuzhi:"阳虚咽痛、虚阳上浮",herbs:["炙甘草","干姜"]},
+  {"#":6,name:"桂枝甘草汤",cat:"四虚",subcat:"阳虚",zhuzhi:"心阳虚心悸",herbs:["桂枝","炙甘草"]},
+  {"#":7,name:"黄芪桂枝五物汤",cat:"四虚",subcat:"气虚",zhuzhi:"血痹、身体不仁",herbs:["生黄芪","桂枝","芍药","生姜","大枣"]},
+  {"#":8,name:"理中丸",cat:"四虚",subcat:"阳虚",zhuzhi:"脾胃虚寒",herbs:["人参","炒白术","干姜","炙甘草"]},
+  {"#":9,name:"吴茱萸汤",cat:"四虚",subcat:"阳虚",zhuzhi:"肝胃虚寒、阳明寒呕（必有头痛）",herbs:["吴茱萸","人参","生姜","大枣"]},
+  {"#":10,name:"四逆汤",cat:"四虚",subcat:"阳虚",zhuzhi:"亡阳欲脱（急救）",herbs:["附子","干姜","炙甘草"]},
+  {"#":11,name:"通脉四逆汤",cat:"四虚",subcat:"阳虚",zhuzhi:"阴盛格阳、下利清谷",herbs:["附子","干姜","炙甘草"]},
+  {"#":12,name:"四逆加人参汤",cat:"四虚",subcat:"阳虚",zhuzhi:"阳虚气脱",herbs:["附子","干姜","炙甘草","人参"]},
+  {"#":13,name:"茯苓四逆汤",cat:"四虚",subcat:"阳虚",zhuzhi:"阳虚烦躁",herbs:["茯苓","人参","附子","炙甘草","干姜"]},
+  {"#":14,name:"芍药甘草汤",cat:"四虚",subcat:"血虚",zhuzhi:"血虚痉挛、缓急止痛",herbs:["芍药","炙甘草"]},
+  {"#":15,name:"芍药甘草附子汤",cat:"四虚",subcat:"血虚",zhuzhi:"血虚兼阳虚、汗后不解",herbs:["芍药","炙甘草","附子"]},
+  {"#":16,name:"炙甘草汤",cat:"四虚",subcat:"血虚",zhuzhi:"阴血阳气虚弱、复脉",herbs:["生地黄","麦门冬","火麻仁","阿胶","桂枝","人参","炙甘草","生姜","大枣","清酒"]},
+  {"#":17,name:"当归四逆汤",cat:"四虚",subcat:"血虚",zhuzhi:"血虚久寒",herbs:["当归","桂枝","芍药","细辛","炙甘草","通草","大枣"]},
+  {"#":18,name:"小建中汤",cat:"四虚",subcat:"阴虚",zhuzhi:"虚劳里急、腹中痛",herbs:["桂枝","芍药","炙甘草","生姜","大枣","麦芽糖"]},
+  {"#":19,name:"麻子仁丸",cat:"四虚",subcat:"阴虚",zhuzhi:"脾约便秘、阴虚燥结",herbs:["火麻仁","芍药","枳实","大黄","厚朴","杏仁"]},
+  {"#":20,name:"百合地黄汤",cat:"四虚",subcat:"阴虚",zhuzhi:"肺阴虚百合病",herbs:["百合","生地黄"]},
+  {"#":21,name:"黄连阿胶汤",cat:"四虚",subcat:"阴虚",zhuzhi:"心肾不交、阴虚火旺",herbs:["黄连","黄芩","芍药","阿胶"]},
+  {"#":22,name:"桃花汤",cat:"四虚",subcat:"固涩",zhuzhi:"少阴虚寒下利脓血",herbs:["赤石脂","干姜","粳米"]},
+  {"#":23,name:"赤石脂禹余粮汤",cat:"四虚",subcat:"固涩",zhuzhi:"固涩止脱",herbs:["赤石脂","禹余粮"]},
+  {"#":24,name:"瓜蒂散",cat:"四实",subcat:"痰饮水湿",zhuzhi:"痰诞宿食、涌吐",herbs:["瓜蒂","赤小豆"]},
+  {"#":25,name:"小半夏汤",cat:"四实",subcat:"痰饮水湿",zhuzhi:"痰饮呕吐（呕为主·不渴）",herbs:["姜半夏","生姜"]},
+  {"#":26,name:"小半夏加茯苓汤",cat:"四实",subcat:"痰饮水湿",zhuzhi:"痰饮眩悸",herbs:["姜半夏","生姜","茯苓"]},
+  {"#":27,name:"大半夏汤",cat:"四实",subcat:"痰饮水湿",zhuzhi:"胃反呕吐、虚中有实",herbs:["姜半夏","人参"]},
+  {"#":28,name:"苓桂枣甘汤",cat:"四实",subcat:"痰饮水湿",zhuzhi:"脐下悸、欲作奔豚",herbs:["茯苓","桂枝","炙甘草","大枣"]},
+  {"#":29,name:"苓桂术甘汤",cat:"四实",subcat:"痰饮水湿",zhuzhi:"痰饮停聚（心下逆满+目眩）",herbs:["茯苓","桂枝","炒白术","炙甘草"]},
+  {"#":30,name:"苓桂姜甘汤",cat:"四实",subcat:"痰饮水湿",zhuzhi:"水停心下、厥而心悸",herbs:["茯苓","桂枝","生姜","炙甘草"]},
+  {"#":31,name:"五苓散",cat:"四实",subcat:"痰饮水湿",zhuzhi:"太阳蓄水、小便不利+渴欲饮水",herbs:["猪苓","泽泻","炒白术","茯苓","桂枝"]},
+  {"#":32,name:"防己黄芪汤",cat:"四实",subcat:"痰饮水湿",zhuzhi:"风水风湿（汗出恶风+身重）",herbs:["防己","生黄芪","炒白术","炙甘草"]},
+  {"#":33,name:"真武汤",cat:"四实",subcat:"痰饮水湿",zhuzhi:"阳虚水泛（四肢沉重+小便不利）",herbs:["茯苓","芍药","生姜","炒白术","附子"]},
+  {"#":34,name:"猪苓汤",cat:"四实",subcat:"痰饮水湿",zhuzhi:"水热互结、阴伤",herbs:["猪苓","茯苓","泽泻","阿胶","滑石"]},
+  {"#":35,name:"白虎汤",cat:"四实",subcat:"内火",zhuzhi:"阳明气分实热（四大证）",herbs:["生石膏","知母","炙甘草","粳米"]},
+  {"#":36,name:"白虎加人参汤",cat:"四实",subcat:"内火",zhuzhi:"热盛气伤、大烦渴不解",herbs:["生石膏","知母","炙甘草","粳米","人参"]},
+  {"#":37,name:"竹叶石膏汤",cat:"四实",subcat:"内火",zhuzhi:"热病后期、余热未清",herbs:["淡竹叶","生石膏","姜半夏","麦门冬","人参","炙甘草","粳米"]},
+  {"#":38,name:"麻杏石甘汤",cat:"四实",subcat:"内火",zhuzhi:"肺热咳喘、汗出而喘",herbs:["麻黄","杏仁","生石膏","炙甘草"]},
+  {"#":39,name:"黄芩汤",cat:"四实",subcat:"内火",zhuzhi:"热痢",herbs:["黄芩","芍药","炙甘草","大枣"]},
+  {"#":40,name:"黄芩加半夏生姜汤",cat:"四实",subcat:"内火",zhuzhi:"少阳郁热、吐泻不止",herbs:["黄芩","芍药","炙甘草","大枣","姜半夏","生姜"]},
+  {"#":41,name:"大黄黄连泻心汤",cat:"四实",subcat:"内火",zhuzhi:"热痞无形",herbs:["大黄","黄连","黄芩"]},
+  {"#":42,name:"葛根黄芩黄连汤",cat:"四实",subcat:"内火",zhuzhi:"协热下利、脉促",herbs:["葛根","炙甘草","黄芩","黄连"]},
+  {"#":43,name:"大承气汤",cat:"四实",subcat:"内火",zhuzhi:"阳明腑实（腹满硬痛+潮热谵语）",herbs:["大黄","厚朴","枳实","芒硝"]},
+  {"#":44,name:"茵陈蒿汤",cat:"四实",subcat:"内火",zhuzhi:"湿热黄疸",herbs:["茵陈蒿","栀子","大黄"]},
+  {"#":45,name:"白头翁汤",cat:"四实",subcat:"内火",zhuzhi:"热毒血痢、下重欲饮水",herbs:["白头翁","黄连","黄柏","秦皮"]},
+  {"#":46,name:"栀子豉汤",cat:"四实",subcat:"内火",zhuzhi:"热郁胸膈、虚烦懊憹",herbs:["栀子","淡豆豉"]},
+  {"#":47,name:"栀子甘草豉汤",cat:"四实",subcat:"内火",zhuzhi:"虚烦兼气短、补虚缓急",herbs:["栀子","炙甘草","淡豆豉"]},
+  {"#":48,name:"半夏泻心汤",cat:"四实",subcat:"内火",zhuzhi:"寒热错杂痞、满而不痛",herbs:["姜半夏","黄芩","干姜","人参","炙甘草","黄连","大枣"]},
+  {"#":49,name:"生姜泻心汤",cat:"四实",subcat:"内火",zhuzhi:"水饮食滞痞、雷鸣下利",herbs:["生姜","炙甘草","人参","干姜","黄芩","姜半夏","黄连","大枣"]},
+  {"#":50,name:"甘草泻心汤",cat:"四实",subcat:"内火",zhuzhi:"胃虚客气、蚀喉声嗄",herbs:["炙甘草","黄芩","干姜","姜半夏","大枣","黄连"]},
+  {"#":51,name:"附子泻心汤",cat:"四实",subcat:"内火",zhuzhi:"阳虚热痞、恶寒汗出",herbs:["大黄","黄连","黄芩","附子"]},
+  {"#":52,name:"四逆散",cat:"四实",subcat:"气滞",zhuzhi:"阳郁四逆、四肢冷但不畏寒",herbs:["柴胡","枳实","芍药","炙甘草"]},
+  {"#":53,name:"厚朴生姜半夏甘草人参汤",cat:"四实",subcat:"气滞",zhuzhi:"脾虚气滞腹胀",herbs:["厚朴","生姜","姜半夏","炙甘草","人参"]},
+  {"#":54,name:"桃核承气汤",cat:"四实",subcat:"血瘀",zhuzhi:"下焦瘀热、少腹急结",herbs:["桃仁","桂枝","大黄","芒硝","炙甘草"]},
+  {"#":55,name:"桂枝茯苓丸",cat:"四实",subcat:"血瘀",zhuzhi:"妇人瘀血包块、癥病",herbs:["桂枝","茯苓","赤芍","桃仁","丹皮"]},
+  {"#":56,name:"血府逐瘀汤",cat:"四实",subcat:"血瘀",zhuzhi:"胸中血瘀、头痛胸痛",herbs:["柴胡","枳壳","赤芍","炙甘草","生地黄","当归","川芎","桃仁","红花","牛膝","桔梗"]},
+  {"#":57,name:"保和丸",cat:"四实",subcat:"痰饮水湿",zhuzhi:"食积（嗳腐吞酸+脘腹胀满）",herbs:["山楂","姜半夏","茯苓","神曲","陈皮","连翘","莱菔子"]},
+  {"#":58,name:"桂枝汤",cat:"六外感",subcat:"风邪",zhuzhi:"风邪表虚、调和营卫",herbs:["桂枝","芍药","生姜","大枣","炙甘草"]},
+  {"#":59,name:"桂枝加附子汤",cat:"六外感",subcat:"寒邪",zhuzhi:"阳虚汗漏、四肢微急",herbs:["桂枝","芍药","生姜","大枣","炙甘草","附子"]},
+  {"#":60,name:"桂枝新加汤",cat:"六外感",subcat:"寒邪",zhuzhi:"汗后身痛、脉沉迟",herbs:["桂枝","芍药","炙甘草","人参","生姜","大枣"]},
+  {"#":61,name:"桂枝加葛根汤",cat:"六外感",subcat:"寒邪",zhuzhi:"项背强几几+汗出恶风",herbs:["葛根","桂枝","芍药","生姜","炙甘草","大枣"]},
+  {"#":62,name:"桂枝加杏仁厚朴汤",cat:"六外感",subcat:"寒邪",zhuzhi:"邪气壅肺、喘咳胸满",herbs:["桂枝","芍药","生姜","炙甘草","大枣","杏仁","厚朴"]},
+  {"#":63,name:"麻黄汤",cat:"六外感",subcat:"寒邪",zhuzhi:"风寒表实、无汗喘",herbs:["麻黄","桂枝","杏仁","炙甘草"]},
+  {"#":64,name:"葛根汤",cat:"六外感",subcat:"寒邪",zhuzhi:"项背强几几+无汗",herbs:["葛根","麻黄","桂枝","芍药","炙甘草","生姜","大枣"]},
+  {"#":65,name:"麻黄附子细辛汤",cat:"六外感",subcat:"寒邪",zhuzhi:"太少两感、脉沉发热",herbs:["麻黄","附子","细辛"]},
+  {"#":66,name:"大黄附子细辛汤",cat:"六外感",subcat:"寒邪",zhuzhi:"寒实内结、腹痛便秘",herbs:["大黄","附子","细辛"]},
+  {"#":67,name:"小青龙汤",cat:"六外感",subcat:"寒邪",zhuzhi:"外寒内饮、咳逆倚息",herbs:["麻黄","桂枝","芍药","干姜","细辛","五味子","姜半夏","炙甘草"]},
+  {"#":68,name:"麻黄汤加术",cat:"六外感",subcat:"湿邪",zhuzhi:"寒湿在表、身烦疼",herbs:["麻黄","桂枝","杏仁","炙甘草","炒白术"]},
+  {"#":69,name:"银翘散",cat:"六外感",subcat:"外火",zhuzhi:"风热表证",herbs:["连翘","金银花","桔梗","薄荷","淡竹叶","炙甘草","荆芥","牛蒡子","淡豆豉"]},
+  {"#":70,name:"三仁汤",cat:"六外感",subcat:"湿邪",zhuzhi:"湿温初起",herbs:["杏仁","白蔻仁","薏苡仁","厚朴","姜半夏","通草","滑石","淡竹叶"]},
+  {"#":71,name:"清燥救肺汤",cat:"六外感",subcat:"热燥",zhuzhi:"温燥伤肺",herbs:["桑叶","枇杷叶","胡麻仁","生石膏","麦门冬","杏仁","阿胶","人参","炙甘草"]},
+  {"#":72,name:"杏苏散",cat:"六外感",subcat:"凉燥",zhuzhi:"凉燥伤肺",herbs:["杏仁","紫苏叶","前胡","桔梗","枳壳","陈皮","姜半夏","茯苓","生姜","大枣","炙甘草"]},
+];
+
+// ====== 三维映射任务数据（各方中每味药的具体任务） ======
+// 格式: RW_MAP[方名][药材名] = "核心任务描述"
+// 只在药材在这一方中的任务与通用功效有显著区别时才填写
+// 默认 fallback = 该药材 gongxiao 字段
+const RW_MAP = {
+  "桂枝汤":{
+    "桂枝":"辛甘温→辛散寒邪、甘补心阳，解肌通脉",
+    "芍药":"微寒酸→敛阴和营，制桂枝发散之太过",
+    "生姜":"微温辛→助桂散寒，兼降胃气止呕",
+    "大枣":"温甘→补脾生津，助芍药养营",
+    "炙甘草":"平甘→缓中调和，居中调度诸药"
+  },
+  "麻黄汤":{
+    "麻黄":"辛温→开腠发汗，宣肺平喘",
+    "桂枝":"辛甘温→解肌助汗，温通经脉",
+    "杏仁":"苦微温→降肺气止咳喘",
+    "炙甘草":"平甘→调和麻桂刚烈之性，顾护胃气"
+  },
+  "小建中汤":{
+    "桂枝":"温辛甘→温通心脾之阳",
+    "芍药":"微寒酸→缓急止痛，柔肝养营",
+    "麦芽糖":"温甘→补脾缓急，建中气",
+    "炙甘草":"平甘→助饴糖补中缓急",
+    "生姜":"微温辛→温胃散寒",
+    "大枣":"温甘→补脾生津"
+  },
+  "四逆汤":{
+    "附子":"大热辛→回阳救逆，补命门之火",
+    "干姜":"热辛→温中散寒，助附子回阳",
+    "炙甘草":"平甘→缓附姜燥烈，护中焦"
+  },
+  "理中丸":{
+    "人参":"微温甘→补脾气之虚",
+    "炒白术":"温甘→燥湿健脾，助参运化",
+    "干姜":"热辛→温中散寒为君",
+    "炙甘草":"平甘→调和诸药，补脾和中"
+  },
+  "白虎汤":{
+    "生石膏":"大寒辛甘→大清阳明气分实热",
+    "知母":"寒甘→滋阴润燥，助石膏清热",
+    "炙甘草":"平甘→缓石膏之悍，顾护胃气",
+    "粳米":"平甘→养胃生津，防寒伤中"
+  },
+  "大承气汤":{
+    "大黄":"寒苦→攻下积滞，荡涤肠胃",
+    "芒硝":"寒咸苦→软坚润燥，助大黄泻下",
+    "厚朴":"温苦辛→行气除满，破气滞",
+    "枳实":"微寒苦辛→破气消痞，助朴行气"
+  },
+  "小青龙汤":{
+    "麻黄":"辛温→开腠散外寒，宣肺平喘",
+    "桂枝":"辛甘温→助麻发汗，温化水饮",
+    "干姜":"热辛→温肺化饮为君",
+    "细辛":"辛温→温肺散寒，助姜化饮",
+    "五味子":"温酸甘→收敛肺气，防辛散太过",
+    "姜半夏":"温辛→降逆化痰，燥湿",
+    "芍药":"微寒酸→和营敛阴，制约麻桂之过",
+    "炙甘草":"平甘→调和诸药"
+  },
+  "五苓散":{
+    "猪苓":"平甘淡→专于利水渗湿",
+    "泽泻":"寒甘淡→利水泄热，兼清相火",
+    "炒白术":"温甘→燥湿健脾，制水之源",
+    "茯苓":"平甘淡→利水渗湿兼健脾",
+    "桂枝":"温辛甘→温阳化气以助利水"
+  },
+  "真武汤":{
+    "附子":"大热辛→温肾阳以化气行水",
+    "茯苓":"平甘淡→利水渗湿",
+    "炒白术":"温甘→燥湿健脾",
+    "芍药":"微寒酸→和营敛阴，缓姜附之燥",
+    "生姜":"微温辛→宣散水气，助附温散"
+  },
+  "半夏泻心汤":{
+    "姜半夏":"温辛→降逆止呕化痰",
+    "干姜":"热辛→温中散寒，对治中寒",
+    "黄连":"寒苦→清热燥湿，对治胃热",
+    "黄芩":"寒苦→助连清热",
+    "人参":"微温甘→补脾虚",
+    "炙甘草":"平甘→补中调和",
+    "大枣":"温甘→补脾养营"
+  },
+  "四逆散":{
+    "柴胡":"微寒苦辛→疏肝解郁，透达郁阳",
+    "枳实":"微寒苦辛→破气导滞，通降胃气",
+    "芍药":"微寒酸→柔肝养血，缓急止痛",
+    "炙甘草":"平甘→和中缓急"
+  },
+  "银翘散":{
+    "连翘":"微寒苦→清热解毒为君",
+    "金银花":"寒甘→助翘清热疏散为君",
+    "薄荷":"凉辛→疏散风热利咽",
+    "牛蒡子":"寒辛苦→解毒利咽",
+    "荆芥":"微温辛→透邪外出",
+    "淡豆豉":"凉苦辛→宣散郁热",
+    "淡竹叶":"寒甘淡→清热利尿引热下行",
+    "桔梗":"平苦辛→载药上行利咽",
+    "炙甘草":"平甘→调和诸药"
+  },
+  "黄连阿胶汤":{
+    "黄连":"寒苦→清心火为君",
+    "黄芩":"寒苦→助连清上焦热",
+    "芍药":"微寒酸→敛阴养营",
+    "阿胶":"平甘→滋阴养血"
+  },
+  "炙甘草汤":{
+    "生地黄":"寒甘苦→滋阴养血为君",
+    "麦门冬":"微寒甘→养肺阴清心",
+    "火麻仁":"平甘→润肠通便",
+    "阿胶":"平甘→养血滋阴",
+    "桂枝":"温辛甘→温通心阳，防滋阴太过",
+    "人参":"微温甘→补气以生血",
+    "生姜":"微温辛→温中散寒",
+    "大枣":"温甘→补脾养血",
+    "清酒":"温甘辛→行药势通血脉",
+    "炙甘草":"平甘→调中和药"
+  },
+  "当归四逆汤":{
+    "当归":"温甘辛→补血活血为君",
+    "桂枝":"温辛甘→温通血脉",
+    "芍药":"微寒酸→养血和营",
+    "细辛":"辛温→散寒通脉",
+    "通草":"微寒甘淡→通利血脉",
+    "炙甘草":"平甘→和中调药",
+    "大枣":"温甘→补脾养血"
+  },
+  "麻黄附子细辛汤":{
+    "麻黄":"辛温→开腠散太阳之寒",
+    "附子":"大热辛→温少阴之阳",
+    "细辛":"辛温→通太少表里"
+  },
+  "桃核承气汤":{
+    "桃仁":"平苦甘→活血祛瘀为君",
+    "桂枝":"温辛甘→通血脉助行瘀",
+    "大黄":"寒苦→清热逐瘀",
+    "芒硝":"寒咸苦→软坚散结助下瘀",
+    "炙甘草":"平甘→缓诸药峻烈"
+  },
+  "吴茱萸汤":{
+    "吴茱萸":"热辛苦→温肝胃散寒止痛为君",
+    "人参":"微温甘→补中益气",
+    "生姜":"微温辛→散寒止呕",
+    "大枣":"温甘→补脾和营"
+  },
+  "补中益气汤":{
+    "炙黄芪":"温甘→补脾升阳为君",
+    "人参":"微温甘→补气助芪",
+    "炒白术":"温甘→燥湿健脾",
+    "当归":"温甘辛→养血和营",
+    "升麻":"微寒辛甘→升脾胃清阳",
+    "柴胡":"微寒苦辛→升肝经之气，助升麻升提",
+    "陈皮":"温苦辛→理气和胃防补滞",
+    "炙甘草":"平甘→调和诸药"
+  },
+  "补阳还五汤":{
+    "生黄芪":"温甘→大补元气以行血为君",
+    "当归":"温甘辛→活血补血",
+    "赤芍":"微寒苦→凉血散瘀",
+    "川芎":"温辛→行气活血",
+    "地龙":"寒咸→通经活络",
+    "红花":"温辛→活血通经",
+    "桃仁":"平苦甘→活血祛瘀"
+  },
+  "血府逐瘀汤":{
+    "柴胡":"微寒苦辛→疏肝解郁",
+    "枳壳":"微寒苦辛→行气宽胸",
+    "赤芍":"微寒苦→凉血散瘀",
+    "生地黄":"寒甘苦→养血凉血",
+    "当归":"温甘辛→补血活血",
+    "川芎":"温辛→行气活血",
+    "桃仁":"平苦甘→破血行瘀",
+    "红花":"温辛→活血通经",
+    "牛膝":"平苦酸→引血下行",
+    "桔梗":"平苦辛→载药上行",
+    "炙甘草":"平甘→调中"
+  },
+  "茵陈蒿汤":{
+    "茵陈蒿":"微寒苦辛→清利湿热退黄为君",
+    "栀子":"寒苦→清热利湿，引热下行",
+    "大黄":"寒苦→泻下瘀热"
+  },
+  "白头翁汤":{
+    "白头翁":"寒苦→清热解毒凉血为君",
+    "黄连":"寒苦→清热燥湿",
+    "黄柏":"寒苦→清下焦湿热",
+    "秦皮":"寒苦涩→收涩止痢"
+  },
+  "麻杏石甘汤":{
+    "麻黄":"辛温→宣肺平喘",
+    "杏仁":"苦微温→降气止咳",
+    "生石膏":"大寒辛甘→清肺热为君",
+    "炙甘草":"平甘→调和诸药"
+  },
+  "葛根汤":{
+    "葛根":"凉甘辛→解肌生津，舒项背",
+    "麻黄":"辛温→开腠发汗",
+    "桂枝":"辛甘温→解肌助汗",
+    "芍药":"微寒酸→和营缓急",
+    "炙甘草":"平甘→调和",
+    "生姜":"微温辛→散寒",
+    "大枣":"温甘→补营"
+  },
+  "黄芩汤":{
+    "黄芩":"寒苦→清少阳热为君",
+    "芍药":"微寒酸→和营缓痛",
+    "炙甘草":"平甘→和中",
+    "大枣":"温甘→补脾"
+  },
+  "大黄黄连泻心汤":{
+    "大黄":"寒苦→泻热消痞",
+    "黄连":"寒苦→清心胃热",
+    "黄芩":"寒苦→清上焦热"
+  },
+  "葛根黄芩黄连汤":{
+    "葛根":"凉甘辛→解肌升清止利",
+    "黄芩":"寒苦→清热燥湿",
+    "黄连":"寒苦→清热止利",
+    "炙甘草":"平甘→和中调药"
+  },
+  "三仁汤":{
+    "杏仁":"苦微温→宣肺化湿",
+    "白蔻仁":"温辛→芳香化湿行气",
+    "薏苡仁":"凉甘淡→渗湿清热",
+    "厚朴":"温苦辛→燥湿行气",
+    "姜半夏":"温辛→降逆和胃",
+    "通草":"微寒甘淡→利湿清热",
+    "滑石":"寒甘淡→清热利湿",
+    "淡竹叶":"寒甘淡→清心利尿"
+  },
+  "清燥救肺汤":{
+    "桑叶":"寒苦甘→清肺润燥为君",
+    "枇杷叶":"微寒苦→降肺止咳",
+    "胡麻仁":"平甘→润肺滋肠",
+    "生石膏":"大寒辛甘→清肺热",
+    "麦门冬":"微寒甘→养肺阴",
+    "杏仁":"苦微温→降气止咳",
+    "阿胶":"平甘→滋阴润肺",
+    "人参":"微温甘→补气生津",
+    "炙甘草":"平甘→调和"
+  },
+  "杏苏散":{
+    "杏仁":"苦微温→降气止咳为君",
+    "紫苏叶":"温辛→解表散寒为君",
+    "前胡":"微寒苦辛→降气化痰",
+    "桔梗":"平苦辛→宣肺利咽",
+    "枳壳":"微寒苦辛→行气宽胸",
+    "陈皮":"温苦辛→理气化痰",
+    "姜半夏":"温辛→降逆化痰",
+    "茯苓":"平甘淡→健脾渗湿",
+    "生姜":"微温辛→散寒",
+    "大枣":"温甘→补脾",
+    "炙甘草":"平甘→调和"
+  },
+  "猪苓汤":{
+    "猪苓":"平甘淡→利水渗湿",
+    "茯苓":"平甘淡→健脾利水",
+    "泽泻":"寒甘淡→泄热利水",
+    "阿胶":"平甘→滋阴防利水伤阴",
+    "滑石":"寒甘淡→清热利湿"
+  },
+  "防己黄芪汤":{
+    "防己":"寒苦→祛风利水消肿",
+    "生黄芪":"温甘→益气固表",
+    "炒白术":"温甘→燥湿健脾",
+    "炙甘草":"平甘→调和"
+  },
+  "栀子豉汤":{
+    "栀子":"寒苦→清热除烦",
+    "淡豆豉":"凉苦辛→宣散郁热"
+  },
+  "桂枝茯苓丸":{
+    "桂枝":"温辛甘→温通经脉",
+    "茯苓":"平甘淡→健脾渗湿",
+    "赤芍":"微寒苦→凉血散瘀",
+    "桃仁":"平苦甘→活血消癥",
+    "丹皮":"微寒苦辛→凉血化瘀"
+  },
+  "保和丸":{
+    "山楂":"微温酸甘→消食导滞为君",
+    "姜半夏":"温辛→降逆和胃",
+    "茯苓":"平甘淡→健脾渗湿",
+    "神曲":"温甘辛→消食化积",
+    "陈皮":"温苦辛→理气和胃",
+    "连翘":"微寒苦→清热散结防积热",
+    "莱菔子":"平辛甘→消食降气"
+  },
+  "厚朴生姜半夏甘草人参汤":{
+    "厚朴":"温苦辛→行气除满为君",
+    "生姜":"微温辛→散水和胃",
+    "姜半夏":"温辛→降逆化痰",
+    "炙甘草":"平甘→补中调药",
+    "人参":"微温甘→补脾益气"
+  },
+  "四逆加人参汤":{
+    "附子":"大热辛→回阳救逆为君",
+    "干姜":"热辛→温中助阳",
+    "炙甘草":"平甘→调中护胃",
+    "人参":"微温甘→益气固脱救阴"
+  },
+  "大半夏汤":{
+    "姜半夏":"温辛→降逆止呕为君",
+    "人参":"微温甘→补虚和胃"
+  },
+  "大黄附子细辛汤":{
+    "大黄":"寒苦→泻下寒积（伍附去性存用）",
+    "附子":"大热辛→温阳散寒为君",
+    "细辛":"辛温→散寒止痛通络"
+  },
+  "小半夏加茯苓汤":{
+    "姜半夏":"温辛→降逆化饮为君",
+    "生姜":"微温辛→散水止呕",
+    "茯苓":"平甘淡→利水渗湿宁心"
+  },
+  "小半夏汤":{
+    "姜半夏":"温辛→降逆止呕为君",
+    "生姜":"微温辛→散水止呕为臣"
+  },
+  "栀子甘草豉汤":{
+    "栀子":"寒苦→清热除烦",
+    "炙甘草":"平甘→补中益气缓急",
+    "淡豆豉":"凉苦辛→宣散郁热"
+  },
+  "桂枝加杏仁厚朴汤":{
+    "桂枝":"温辛甘→解肌散寒",
+    "芍药":"微寒酸→和营缓急",
+    "生姜":"微温辛→散寒",
+    "炙甘草":"平甘→调和",
+    "大枣":"温甘→补脾",
+    "杏仁":"苦微温→降气止咳",
+    "厚朴":"温苦辛→行气宽胸"
+  },
+  "桂枝加葛根汤":{
+    "葛根":"凉甘辛→解肌生津舒项",
+    "桂枝":"温辛甘→解肌散寒",
+    "芍药":"微寒酸→和营缓急",
+    "生姜":"微温辛→散寒",
+    "炙甘草":"平甘→调和",
+    "大枣":"温甘→补营"
+  },
+  "桂枝加附子汤":{
+    "桂枝":"温辛甘→解肌散寒",
+    "芍药":"微寒酸→和营敛阴",
+    "生姜":"微温辛→散寒和胃",
+    "大枣":"温甘→补脾养营",
+    "炙甘草":"平甘→调和诸药",
+    "附子":"大热辛→温阳固表止汗"
+  },
+  "桂枝新加汤":{
+    "桂枝":"温辛甘→通脉和营",
+    "芍药":"微寒酸→和营养血",
+    "炙甘草":"平甘→补中调药",
+    "人参":"微温甘→益气生津",
+    "生姜":"微温辛→散寒通脉",
+    "大枣":"温甘→补脾养血"
+  },
+  "桂枝甘草汤":{
+    "桂枝":"温辛甘→温通心阳为君",
+    "炙甘草":"平甘→补心气缓急"
+  },
+  "桃花汤":{
+    "赤石脂":"温甘涩→固涩止脱为君",
+    "干姜":"热辛→温中散寒",
+    "粳米":"平甘→养胃和中"
+  },
+  "瓜蒂散":{
+    "瓜蒂":"寒苦→涌吐痰食为君",
+    "赤小豆":"平甘酸→利水解毒佐瓜蒂"
+  },
+  "甘草干姜汤":{
+    "炙甘草":"平甘→补中缓急为君",
+    "干姜":"热辛→温中复阳为臣"
+  },
+  "甘草泻心汤":{
+    "炙甘草":"平甘→补中缓急为君",
+    "黄芩":"寒苦→清热燥湿",
+    "干姜":"热辛→温中散寒",
+    "姜半夏":"温辛→降逆化痞",
+    "大枣":"温甘→补脾养营",
+    "黄连":"寒苦→清热燥湿"
+  },
+  "生姜泻心汤":{
+    "生姜":"微温辛→散水消痞为君",
+    "炙甘草":"平甘→补中和胃",
+    "人参":"微温甘→补脾虚",
+    "干姜":"热辛→温中散寒",
+    "黄芩":"寒苦→清热燥湿",
+    "姜半夏":"温辛→降逆化痰",
+    "黄连":"寒苦→清热燥湿",
+    "大枣":"温甘→补脾养营"
+  },
+  "白虎加人参汤":{
+    "生石膏":"大寒辛甘→大清阳明热",
+    "知母":"寒甘→滋阴润燥清热",
+    "炙甘草":"平甘→护胃调中",
+    "粳米":"平甘→养胃生津",
+    "人参":"微温甘→益气生津救液"
+  },
+  "百合地黄汤":{
+    "百合":"微寒甘→清肺养阴为君",
+    "生地黄":"寒甘苦→凉血滋阴为君"
+  },
+  "竹叶石膏汤":{
+    "淡竹叶":"寒甘淡→清气分余热",
+    "生石膏":"大寒辛甘→清余热",
+    "姜半夏":"温辛→降逆和胃",
+    "麦门冬":"微寒甘→养阴生津",
+    "人参":"微温甘→补气生津",
+    "炙甘草":"平甘→调和诸药",
+    "粳米":"平甘→养胃和中"
+  },
+  "芍药甘草汤":{
+    "芍药":"微寒酸→柔肝缓急止痛为君",
+    "炙甘草":"平甘→缓急补中为臣"
+  },
+  "芍药甘草附子汤":{
+    "芍药":"微寒酸→养血柔筋缓急",
+    "炙甘草":"平甘→补中缓急",
+    "附子":"大热辛→温阳散寒固表"
+  },
+  "苓桂姜甘汤":{
+    "茯苓":"平甘淡→利水化饮",
+    "桂枝":"温辛甘→通阳散水",
+    "生姜":"微温辛→宣散水气",
+    "炙甘草":"平甘→和中调药"
+  },
+  "苓桂术甘汤":{
+    "茯苓":"平甘淡→化饮利水为君",
+    "桂枝":"温辛甘→温阳化饮平冲",
+    "炒白术":"温甘→燥湿健脾制水",
+    "炙甘草":"平甘→调中补脾"
+  },
+  "苓桂枣甘汤":{
+    "茯苓":"平甘淡→利水平冲为君",
+    "桂枝":"温辛甘→平冲降逆",
+    "炙甘草":"平甘→和中缓急",
+    "大枣":"温甘→补脾制水"
+  },
+  "茯苓四逆汤":{
+    "茯苓":"平甘淡→宁心安神利水",
+    "人参":"微温甘→益气补虚",
+    "附子":"大热辛→回阳救逆为君",
+    "炙甘草":"平甘→调和诸药",
+    "干姜":"热辛→温中助阳"
+  },
+  "赤石脂禹余粮汤":{
+    "赤石脂":"温甘涩→固涩止脱",
+    "禹余粮":"平甘涩→敛肠止泻"
+  },
+  "通脉四逆汤":{
+    "附子":"大热辛→回阳破阴为君",
+    "干姜":"热辛→助附回阳通脉",
+    "炙甘草":"平甘→缓和姜附暴烈"
+  },
+  "附子泻心汤":{
+    "大黄":"寒苦→泻热消痞",
+    "黄连":"寒苦→清热燥湿",
+    "黄芩":"寒苦→清上焦热",
+    "附子":"大热辛→温阳固表"
+  },
+  "麻子仁丸":{
+    "火麻仁":"平甘→润肠通便为君",
+    "芍药":"微寒酸→养阴和营缓急",
+    "枳实":"微寒苦辛→行气通腑",
+    "大黄":"寒苦→泻热通便",
+    "厚朴":"温苦辛→行气除满",
+    "杏仁":"苦微温→降肺气通肠"
+  },
+  "麻黄汤加术":{
+    "麻黄":"辛温→开腠散寒",
+    "桂枝":"辛甘温→解肌助汗",
+    "杏仁":"苦微温→降气平喘",
+    "炙甘草":"平甘→调和诸药",
+    "炒白术":"温甘→燥湿健脾去湿痹"
+  },
+  "黄芩加半夏生姜汤":{
+    "黄芩":"寒苦→清少阳郁热",
+    "芍药":"微寒酸→和营缓急",
+    "炙甘草":"平甘→和中调药",
+    "大枣":"温甘→补脾养营",
+    "姜半夏":"温辛→降逆止呕",
+    "生姜":"微温辛→散水止呕"
+  },
+  "黄芪桂枝五物汤":{
+    "生黄芪":"平甘→益气通痹为君",
+    "桂枝":"温辛甘→温通血脉散痹",
+    "芍药":"微寒酸→和营通痹缓急",
+    "生姜":"微温辛→宣散寒气助桂",
+    "大枣":"温甘→补脾养营"
+  },
+  "黄芪甘草汤":{
+    "生黄芪":"微温甘→益气固表托疮",
+    "炙甘草":"平甘→补脾和中，助芪益气"
+  },
+  "黄芪糯米粥":{
+    "生黄芪":"平甘→大补元气固脱",
+    "糯米":"平甘→补中益气，助芪固脱"
+  },
+};
+// ====== 剂量数据 ======
+const DOSAGE_MAP = {
+  "三仁汤":{"杏仁":"12g","白蔻仁":"6g","薏苡仁":"18g","厚朴":"6g","姜半夏":"6g","通草":"6g","滑石":"18g","淡竹叶":"6g"},
+  "五苓散":{"猪苓":"9g","泽泻":"15g","炒白术":"9g","茯苓":"9g","桂枝":"6g"},
+  "保和丸":{"山楂":"18g","姜半夏":"9g","茯苓":"9g","神曲":"18g","陈皮":"6g","连翘":"6g","莱菔子":"9g"},
+  "半夏泻心汤":{"姜半夏":"12g","黄芩":"9g","干姜":"9g","人参":"9g","炙甘草":"9g","黄连":"3g","大枣":"4枚"},
+  "厚朴生姜半夏甘草人参汤":{"厚朴":"12g","生姜":"12g","姜半夏":"6g","炙甘草":"6g","人参":"3g"},
+  "四逆加人参汤":{"附子":"9g","干姜":"6g","炙甘草":"6g","人参":"6g"},
+  "四逆散":{"柴胡":"9g","枳实":"9g","芍药":"9g","炙甘草":"9g"},
+  "四逆汤":{"附子":"9g","干姜":"6g","炙甘草":"6g"},
+  "大半夏汤":{"姜半夏":"15g","人参":"9g"},
+  "大黄附子细辛汤":{"大黄":"9g","附子":"9g","细辛":"6g"},
+  "大黄黄连泻心汤":{"大黄":"6g","黄连":"3g","黄芩":"3g"},
+  "大承气汤":{"大黄":"12g","厚朴":"15g","枳实":"9g","芒硝":"6g"},
+  "小半夏加茯苓汤":{"姜半夏":"15g","生姜":"15g","茯苓":"9g"},
+  "小半夏汤":{"姜半夏":"15g","生姜":"15g"},
+  "小建中汤":{"桂枝":"9g","芍药":"18g","炙甘草":"6g","生姜":"9g","大枣":"4枚","麦芽糖":"30g"},
+  "小青龙汤":{"麻黄":"9g","桂枝":"9g","芍药":"9g","干姜":"9g","细辛":"6g","五味子":"6g","姜半夏":"9g","炙甘草":"6g"},
+  "当归四逆汤":{"当归":"9g","桂枝":"9g","芍药":"9g","细辛":"6g","炙甘草":"6g","通草":"6g","大枣":"4枚"},
+  "栀子甘草豉汤":{"栀子":"9g","炙甘草":"6g","淡豆豉":"6g"},
+  "栀子豉汤":{"栀子":"9g","淡豆豉":"6g"},
+  "桂枝加杏仁厚朴汤":{"桂枝":"9g","芍药":"9g","生姜":"9g","炙甘草":"6g","大枣":"4枚","杏仁":"9g","厚朴":"6g"},
+  "桂枝加葛根汤":{"葛根":"12g","桂枝":"9g","芍药":"9g","生姜":"9g","炙甘草":"6g","大枣":"4枚"},
+  "桂枝加附子汤":{"桂枝":"9g","芍药":"9g","生姜":"9g","大枣":"4枚","炙甘草":"6g","附子":"6g"},
+  "桂枝新加汤":{"桂枝":"9g","芍药":"12g","炙甘草":"6g","人参":"9g","生姜":"12g","大枣":"4枚"},
+  "桂枝甘草汤":{"桂枝":"12g","炙甘草":"6g"},
+  "桂枝茯苓丸":{"桂枝":"9g","茯苓":"9g","赤芍":"9g","桃仁":"9g","丹皮":"9g"},
+  "桂枝汤":{"桂枝":"9g","芍药":"9g","生姜":"9g","大枣":"4枚","炙甘草":"6g"},
+  "桃花汤":{"赤石脂":"30g","干姜":"6g","粳米":"30g"},
+  "桃核承气汤":{"桃仁":"9g","桂枝":"6g","大黄":"12g","芒硝":"6g","炙甘草":"6g"},
+  "瓜蒂散":{"瓜蒂":"3g","赤小豆":"3g"},
+  "甘草干姜汤":{"炙甘草":"12g","干姜":"6g"},
+  "甘草泻心汤":{"炙甘草":"12g","黄芩":"9g","干姜":"9g","姜半夏":"12g","大枣":"4枚","黄连":"3g"},
+  "生姜泻心汤":{"生姜":"12g","炙甘草":"9g","人参":"9g","干姜":"3g","黄芩":"9g","姜半夏":"12g","黄连":"3g","大枣":"4枚"},
+  "白虎加人参汤":{"生石膏":"30g","知母":"9g","炙甘草":"6g","粳米":"15g","人参":"9g"},
+  "白虎汤":{"生石膏":"30g","知母":"9g","炙甘草":"6g","粳米":"15g"},
+  "百合地黄汤":{"百合":"15g","生地黄":"15g"},
+  "真武汤":{"茯苓":"9g","芍药":"9g","生姜":"9g","炒白术":"6g","附子":"9g"},
+  "竹叶石膏汤":{"淡竹叶":"9g","生石膏":"30g","姜半夏":"9g","麦门冬":"15g","人参":"6g","炙甘草":"6g","粳米":"15g"},
+  "芍药甘草汤":{"芍药":"12g","炙甘草":"12g"},
+  "芍药甘草附子汤":{"芍药":"9g","炙甘草":"9g","附子":"3g"},
+  "苓桂姜甘汤":{"茯苓":"12g","桂枝":"9g","生姜":"9g","炙甘草":"6g"},
+  "苓桂术甘汤":{"茯苓":"12g","桂枝":"9g","炒白术":"9g","炙甘草":"6g"},
+  "苓桂枣甘汤":{"茯苓":"24g","桂枝":"12g","炙甘草":"6g","大枣":"4枚"},
+  "茯苓四逆汤":{"茯苓":"12g","人参":"3g","附子":"9g","炙甘草":"6g","干姜":"6g"},
+  "茵陈蒿汤":{"茵陈蒿":"15g","栀子":"9g","大黄":"6g"},
+  "葛根黄芩黄连汤":{"葛根":"15g","炙甘草":"6g","黄芩":"9g","黄连":"9g"},
+  "葛根汤":{"葛根":"12g","麻黄":"9g","桂枝":"6g","芍药":"6g","炙甘草":"6g","生姜":"9g","大枣":"4枚"},
+  "赤石脂禹余粮汤":{"赤石脂":"30g","禹余粮":"30g"},
+  "通脉四逆汤":{"附子":"15g","干姜":"9g","炙甘草":"6g"},
+  "附子泻心汤":{"大黄":"6g","黄连":"3g","黄芩":"3g","附子":"3g"},
+  "防己黄芪汤":{"防己":"9g","生黄芪":"15g","炒白术":"9g","炙甘草":"6g"},
+  "吴茱萸汤":{"吴茱萸":"9g","人参":"9g","生姜":"18g","大枣":"4枚"},
+  "黄芩加半夏生姜汤":{"黄芩":"9g","芍药":"9g","炙甘草":"6g","大枣":"4枚","姜半夏":"9g","生姜":"9g"},
+  "黄芩汤":{"黄芩":"9g","芍药":"9g","炙甘草":"6g","大枣":"4枚"},
+  "黄芪桂枝五物汤":{"生黄芪":"9g","桂枝":"9g","芍药":"9g","生姜":"18g","大枣":"4枚"},
+  "黄芪甘草汤":{"生黄芪":"18g","炙甘草":"6g"},
+  "黄芪糯米粥":{"生黄芪":"30g","糯米":"15g"},
+  "黄连阿胶汤":{"黄连":"12g","黄芩":"6g","芍药":"6g","阿胶":"9g"},
+  "麻子仁丸":{"火麻仁":"12g","芍药":"9g","枳实":"9g","大黄":"12g","厚朴":"9g","杏仁":"12g"},
+  "麻杏石甘汤":{"麻黄":"12g","杏仁":"9g","生石膏":"24g","炙甘草":"6g"},
+  "麻黄附子细辛汤":{"麻黄":"6g","附子":"9g","细辛":"6g"},
+  "麻黄汤加术":{"麻黄":"9g","桂枝":"6g","杏仁":"9g","炙甘草":"3g","炒白术":"9g"},
+  "麻黄汤":{"麻黄":"9g","桂枝":"6g","杏仁":"9g","炙甘草":"3g"},
+  "补中益气汤":{"炙黄芪":"18g","人参":"9g","炒白术":"9g","当归":"6g","升麻":"6g","柴胡":"6g","陈皮":"6g","炙甘草":"6g"},
+  "补阳还五汤":{"生黄芪":"60g","当归":"6g","赤芍":"6g","川芎":"3g","地龙":"6g","红花":"3g","桃仁":"6g"},
+  "血府逐瘀汤":{"柴胡":"6g","枳壳":"12g","赤芍":"9g","炙甘草":"6g","生地黄":"12g","当归":"9g","川芎":"6g","桃仁":"12g","红花":"9g","牛膝":"9g","桔梗":"6g"},
+  "猪苓汤":{"猪苓":"9g","茯苓":"9g","泽泻":"9g","阿胶":"9g","滑石":"9g"},
+  "炙甘草汤":{"生地黄":"24g","麦门冬":"12g","火麻仁":"9g","阿胶":"6g","桂枝":"9g","人参":"6g","炙甘草":"12g","生姜":"9g","大枣":"5枚","清酒":"适量"},
+  "理中丸":{"人参":"9g","炒白术":"9g","干姜":"9g","炙甘草":"9g"},
+  "银翘散":{"连翘":"9g","金银花":"9g","桔梗":"6g","薄荷":"6g","淡竹叶":"6g","炙甘草":"3g","荆芥":"6g","牛蒡子":"9g","淡豆豉":"6g"},
+  "清燥救肺汤":{"桑叶":"9g","枇杷叶":"6g","胡麻仁":"6g","生石膏":"15g","麦门冬":"9g","杏仁":"6g","阿胶":"6g","人参":"6g","炙甘草":"3g"},
+  "杏苏散":{"杏仁":"9g","紫苏叶":"6g","前胡":"6g","桔梗":"6g","枳壳":"6g","陈皮":"6g","姜半夏":"6g","茯苓":"6g","生姜":"6g","大枣":"3枚","炙甘草":"3g"},
+};
+// ====== 别名映射 ======
+
+// Herb name → HERBS entry lookup (with aliases)
+function findHerb(n){return HERBS.find(h=>h.name===n)}
+function findHerbAlias(raw){
+  // Direct match
+  let h = findHerb(raw); if(h) return h;
+  // Aliases
+  const map={
+    "芍药":"炒白芍","生甘草":"炙甘草","甘草":"炙甘草","香豉":"淡豆豉",
+    "胶饴":"麦芽糖","半夏":"姜半夏","竹叶":"淡竹叶","银花":"金银花",
+    "苏叶":"紫苏叶","白术":"炒白术","生薏苡仁":"薏苡仁",
+    "黄芪":"生黄芪","牡丹皮":"丹皮","生地":"生地黄",
+    "瓜蒂":"瓜蒂","赤小豆":"赤小豆","生姜":"生姜","大枣":"大枣",
+  };
+  if(map[raw]) return findHerb(map[raw]);
+  return null;
+}
+
+// ====== 三维映射推导函数 ======
+const XING_DINGXING = {
+  "大热":"热以胜寒·回阳救逆","热":"热以胜寒·温中散寒",
+  "温":"温以散寒·温通经脉","微温":"微温助阳·缓散寒邪",
+  "平":"平和不偏·调和补益","微寒":"微寒清热·凉润不伤正",
+  "凉":"凉以清热·疏散风热","寒":"寒以泻火·清热凉血",
+  "大寒":"大寒胜热·泻火除烦"
+};
+const WEI_DINGFA = {
+  "辛":"辛→散行气血","甘":"甘→补缓中和","苦":"苦→泄燥降",
+  "酸":"酸→收固涩","咸":"咸→软润下","淡":"淡→渗利湿"
+};
+const GUI_DINGWEI = {
+  "肺":"肺（司呼吸·主宣降）","脾":"脾（主运化·升清）","心":"心（主血脉·藏神）",
+  "肝":"肝（主疏泄·藏血）","肾":"肾（主藏精·纳气）","胃":"胃（主受纳·降浊）",
+  "胆":"胆（主决断·藏精汁）","大肠":"大肠（主传导·糟粕）","小肠":"小肠（泌别清浊）",
+  "膀胱":"膀胱（主气化·藏津）","心包":"心包（代心受邪）","三焦":"三焦（通调水道）"
+};
+function deriveDingxing(herb){ return XING_DINGXING[parseXing(herb.xing)]||"平和不偏·调和补益"; }
+function deriveDingfa(herb){
+  const weis = herb.wei.split('、').map(w=>w.trim()).filter(w=>WEI_DINGFA[w]);
+  return weis.map(w=>WEI_DINGFA[w]).join(' + ') || '甘→补缓中和';
+}
+function deriveDingwei(herb){
+  return (herb.gui||[]).map(g=>GUI_DINGWEI[g]||g).join(' · ') || '';
+}
+function deriveTask(fangName, herbName){
+  if(RW_MAP[fangName] && RW_MAP[fangName][herbName]) return RW_MAP[fangName][herbName];
+  const h = findHerbAlias(herbName);
+  return h ? h.gongxiao : '';
+}
+
+// ====== 工具函数 ======
+const NATURE_ORDER = ["大热","热","温","微温","平","微寒","凉","寒","大寒"];
+const MERIDIANS = ["小肠","膀胱","大肠","胃","三焦","胆","肺","脾","心","肾","心包","肝"];
+const MERI_PERSONALITY = {
+  "肺":"肺喜辛散·主宣降","脾":"脾家喜甘温·主运化","心":"心喜苦寒·主血脉神",
+  "肝":"肝喜辛散苦泄·主疏泄","肾":"肾喜咸甘温·主藏精","胃":"胃喜甘平·主受纳",
+  "胆":"胆喜苦·主决断","大肠":"大肠喜润·主传导","小肠":"小肠喜淡·主分清泌浊",
+  "膀胱":"膀胱喜淡·主气化","心包":"心包代心受邪","三焦":"三焦为水道"
+};
+
+function getHeatClass(xing){
+  if(xing==="大热"||xing==="热") return "hot";
+  if(xing==="温"||xing==="微温") return "warm";
+  if(xing==="平") return "mid";
+  if(xing==="微寒"||xing==="凉") return "cool";
+  if(xing==="寒"||xing==="大寒") return "cold";
+  return "mid";
+}
+function getHeatBg(hc){
+  return {hot:"#FEF2F2",warm:"#FFF7ED",mid:"#FAFAF5",cool:"#F0F7FF",cold:"#EFF6FF"}[hc]||"#FAFAF5";
+}
+function parseXing(raw){
+  if(!raw) return "平";
+  if(raw.includes("大热")) return "大热";
+  if(raw.includes("大寒")) return "大寒";
+  if(raw.includes("热")&&!raw.includes("微")) return "热";
+  if(raw.includes("微温")) return "微温";
+  if(raw.includes("温")&&!raw.includes("微")&&!raw.includes("大")) return "温";
+  if(raw.includes("微寒")) return "微寒";
+  if(raw.includes("凉")) return "凉";
+  if(raw.includes("寒")&&!raw.includes("微")&&!raw.includes("大")) return "寒";
+  return "平";
+}
+
+let currentCat = "all";
+let currentStage = 1;
+function filterHerbs(){ return currentCat==="all"?HERBS:HERBS.filter(h=>h.cat===currentCat); }
+function filterFormulas(){ return currentCat==="all"?FANG72:FANG72.filter(f=>f.cat===currentCat); }
+
+// ====== 第一阶：归经谱系 ======
+function renderStage1(){
+  const herbs = filterHerbs();
+  const meriMap = {};
+  MERIDIANS.forEach(m=>{meriMap[m]=[]});
+  herbs.forEach(h=>{(h.gui||[]).forEach(m=>{if(meriMap[m])meriMap[m].push(h)})});
+  
+  const meriSorted = MERIDIANS.filter(m=>meriMap[m].length>0);
+  
+  let html = '';
+  const PAIR_NAMES = ["太阳病","阳明病","少阳病","太阴病","少阴病","厥阴病"];
+const LIUJING_TAG = {
+  "太阳病":"城墙卫兵·最外层", "阳明病":"灶台大火·里实热",
+  "少阳病":"门轴合页·半表里", "太阴病":"潮湿仓库·脾阳虚",
+  "少阴病":"炉底火种·心肾根", "厥阴病":"黎明破晓·阴阳搏"
+};
+  let pairIdx = 0;
+  meriSorted.forEach((m,i)=>{
+    const mherbs = meriMap[m];
+    const xingDist = {};
+    mherbs.forEach(h=>{const x=parseXing(h.xing);xingDist[x]=(xingDist[x]||0)+1});
+    const warm = ["大热","热","温","微温"], cold = ["微寒","凉","寒","大寒"];
+    let wc=0,cc=0;
+    Object.entries(xingDist).forEach(([x,c])=>{if(warm.includes(x))wc+=c;if(cold.includes(x))cc+=c});
+    const lean=wc>cc?"温":"寒";
+    const leanBg=lean==="温"?"#FEF2F2":"#EFF6FF", leanColor=lean==="温"?"#A32D2D":"#185FA5";
+    
+    const xingStr = Object.entries(xingDist).sort((a,b)=>NATURE_ORDER.indexOf(a[0])-NATURE_ORDER.indexOf(b[0])).map(([x,c])=>`${x}${c}味`).join(' · ');
+    const weiDist = {};
+    mherbs.forEach(h=>{h.wei.split('、').forEach(w=>{const wt=w.trim();if(wt)weiDist[wt]=(weiDist[wt]||0)+1})});
+    const weiStr = Object.entries(weiDist).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([w,c])=>`${w}${c}味`).join(' · ');
+    
+    html += `<div class="meri-card" style="border-left:3px solid ${leanColor}">`;
+    if(i%2===0 && pairIdx<PAIR_NAMES.length){
+      html += `<div class="pair-divider">${PAIR_NAMES[pairIdx]}<span>${LIUJING_TAG[PAIR_NAMES[pairIdx]]}</span></div>`;
+    }
+    html += `<div class="meri-card-header"><span class="meri-name">${m}经</span><span class="meri-tag" style="background:${leanBg};color:${leanColor}">${lean==="温"?"温性为主":"寒凉为主"}</span><span class="meri-count">${mherbs.length}味</span></div>`;
+    html += `<div class="meri-pattern"><strong>${MERI_PERSONALITY[m]||""}</strong><br>性：${xingStr}<br>味：${weiStr}</div>`;
+    html += `<div class="meri-herbs">`;
+    mherbs.forEach(h=>{
+      const hc=getHeatClass(parseXing(h.xing));
+      html += `<span class="meri-chip" style="background:${getHeatBg(hc)}">${h.name}</span>`;
+    });
+    html += `</div></div>`;
+    if(i%2===1) pairIdx++;
+  });
+  document.getElementById('stage1View').innerHTML = html;
+}
+
+// ====== 第二阶：方剂锚定（72首完整数据） ======
+function renderStage2(){
+  const formulas = filterFormulas();
+  const catOrder = {四虚:1,四实:2,六外感:3};
+  const sorted = [...formulas].sort((a,b)=>{
+    const ca=catOrder[a.cat]||4,cb=catOrder[b.cat]||4;
+    return ca!==cb?ca-cb:a["#"]-b["#"];
+  });
+  
+  let html = '';
+  sorted.forEach(f=>{
+    // Collect aggregate stats (for summary bar)
+    const xings=new Set(), weis=new Set(), guis=new Set();
+    let herb3d = '';
+    
+    f.herbs.forEach(hn=>{
+      const hh = findHerbAlias(hn);
+      if(hh){
+        xings.add(parseXing(hh.xing));
+        hh.wei.split('、').forEach(w=>weis.add(w.trim()));
+        (hh.gui||[]).forEach(g=>guis.add(g));
+        const hc=getHeatClass(parseXing(hh.xing));
+        
+        // 三维映射推导
+        const dingxing = deriveDingxing(hh);
+        const dingfa = deriveDingfa(hh);
+        const dingwei = deriveDingwei(hh);
+        const task = deriveTask(f.name, hn);
+        
+        herb3d += `<div class="fang-herb-3d" style="background:${getHeatBg(hc)}">`;
+        const doseInfo = DOSAGE_MAP[f.name]?.[hn] || '';
+        herb3d += `<span class="fh3d-name">${hh.name}${doseInfo ? ` <span class="fh3d-dose">${doseInfo}</span>` : ''}</span>`;
+        herb3d += `<div class="fh3d-row"><span class="fh3d-label">性</span><span class="fh3d-val">${hh.xing} → </span><span class="fh3d-ding">${dingxing}</span></div>`;
+        herb3d += `<div class="fh3d-row"><span class="fh3d-label">味</span><span class="fh3d-val">${hh.wei} → </span><span class="fh3d-ding">${dingfa}</span></div>`;
+        herb3d += `<div class="fh3d-row"><span class="fh3d-label">归</span><span class="fh3d-val">${hh.gui.join('、')} → </span><span class="fh3d-ding">${dingwei}</span></div>`;
+        herb3d += `<div class="fh3d-task"><span class="fh3d-task-label">任务</span>${task}</div>`;
+        herb3d += `</div>`;
+      } else {
+        herb3d += `<div class="fang-herb-chip" style="background:#F8F7F5">`;
+        herb3d += `<span class="fh-name">${hn}</span>`;
+        herb3d += `<span class="fh-meta-nf">（不在89味药材表中）</span></div>`;
+      }
+    });
+    
+    html += `<div class="fang-card">`;
+    html += `<div class="fang-card-header">`;
+    html += `<span class="fang-name"><span class="fang-num">#${f["#"]} </span>${f.name}</span>`;
+    html += `<span class="fang-meta">${f.cat}·${f.subcat} · ${f.herbs.length}味</span>`;
+    html += `</div>`;
+    html += `<div class="fang-zhuzhi">${f.zhuzhi}</div>`;
+    html += `<div class="fang-herbs" style="display:flex;flex-wrap:wrap;gap:6px">${herb3d}</div>`;
+    if(xings.size>0){
+      html += `<div class="fang-pattern">`;
+      html += `<span class="fang-pattern-chip"><strong>性:</strong>${[...xings].join('、')}</span>`;
+      html += `<span class="fang-pattern-chip"><strong>味:</strong>${[...weis].join('、')}</span>`;
+      html += `<span class="fang-pattern-chip"><strong>归:</strong>${[...guis].join('、')}</span>`;
+      html += `</div>`;
+    }
+    html += `</div>`;
+  });
+  
+  document.getElementById('stage2View').innerHTML = html;
+}
+
+// ====== 第三阶：鉴别对比 ======
+const CONTRASTS = [
+  {title:"柴胡 vs 升麻 — 同能升举",herbs:[
+    {name:"柴胡",xing:"微寒",wei:"苦、辛",gui:"肝、胆、肺",gongxiao:"和解退热·疏肝解郁",diff:"升肝经之气，主半表半里"},
+    {name:"升麻",xing:"微寒",wei:"辛、甘",gui:"肺、脾、胃、大肠",gongxiao:"发表透疹·清热解毒",diff:"升脾胃之气，主阳明表证"}
+  ]},
+  {title:"黄芩 vs 黄连 vs 黄柏 — 三黄鉴别",herbs:[
+    {name:"黄芩",xing:"寒",wei:"苦",gui:"肺、胆、脾、大肠、小肠",gongxiao:"清热燥湿·凉血止血",diff:"上焦（肺热）"},
+    {name:"黄连",xing:"寒",wei:"苦",gui:"心、脾、胃、肝、胆、大肠",gongxiao:"清热燥湿·泻火解毒",diff:"中焦（心胃）"},
+    {name:"黄柏",xing:"寒",wei:"苦",gui:"肾、膀胱",gongxiao:"清热燥湿·泻火解毒",diff:"下焦（肾膀胱）"}
+  ]},
+  {title:"白芍三变 — 炒白芍 vs 生白芍 vs 赤芍",herbs:[
+    {name:"炒白芍",xing:"微寒",wei:"苦、酸",gui:"肝、脾",gongxiao:"养血和营·柔肝止痛",diff:"养血为主（炒制减寒）"},
+    {name:"生白芍",xing:"微寒",wei:"苦、酸",gui:"肝、脾",gongxiao:"养血调经·柔肝止痛",diff:"柔肝止痛（生用偏凉）"},
+    {name:"赤芍",xing:"微寒",wei:"苦",gui:"肝",gongxiao:"清热凉血·散瘀止痛",diff:"凉血散瘀（无酸味，不入脾）"}
+  ]},
+  {title:"姜之三变 — 生姜 vs 干姜 vs 炮姜",herbs:[
+    {name:"生姜",xing:"微温",wei:"辛",gui:"肺、脾、胃",gongxiao:"解表散寒·温中止呕",diff:"走而不守，解表散寒"},
+    {name:"干姜",xing:"热",wei:"辛",gui:"脾、胃、肾、心、肺",gongxiao:"温中散寒·回阳通脉",diff:"守而不走，温中回阳"},
+    {name:"炮姜",xing:"热",wei:"辛",gui:"脾、胃、肾",gongxiao:"温经止血·温中止痛",diff:"入血分，温经止血"}
+  ]},
+  {title:"黄芪二制 — 生黄芪 vs 炙黄芪",herbs:[
+    {name:"生黄芪",xing:"温",wei:"甘",gui:"脾、肺",gongxiao:"补气固表·利水·托毒",diff:"固表利水托毒（走表）"},
+    {name:"炙黄芪",xing:"温",wei:"甘",gui:"脾、肺",gongxiao:"补气健脾",diff:"补中益气（入里）"}
+  ]},
+  {title:"地黄二制 — 生地黄 vs 熟地",herbs:[
+    {name:"生地黄",xing:"寒",wei:"甘、苦",gui:"心、肝、肾",gongxiao:"清热凉血·养阴生津",diff:"凉血清热（性寒）"},
+    {name:"熟地",xing:"微温",wei:"甘",gui:"肝、肾",gongxiao:"补血滋阴·益精填髓",diff:"温补精血（性转温）"}
+  ]},
+  {title:"大黄 vs 芒硝 — 攻下双雄",herbs:[
+    {name:"大黄",xing:"寒",wei:"苦",gui:"脾、胃、大肠、肝、心包",gongxiao:"泻下攻积·清热凉血",diff:"攻积泻下（气分+血分）"},
+    {name:"芒硝",xing:"寒",wei:"咸、苦",gui:"胃、大肠",gongxiao:"泻下通便·润燥软坚",diff:"软坚润燥（咸能软坚）"}
+  ]},
+  {title:"利水三杰 — 茯苓 vs 猪苓 vs 泽泻",herbs:[
+    {name:"茯苓",xing:"平",wei:"甘、淡",gui:"心、脾、肾",gongxiao:"利水渗湿·健脾宁心",diff:"健脾宁心（利中有补）"},
+    {name:"猪苓",xing:"平",wei:"甘、淡",gui:"肾、膀胱",gongxiao:"利水渗湿",diff:"专于利水（力强于苓）"},
+    {name:"泽泻",xing:"寒",wei:"甘、淡",gui:"肾、膀胱",gongxiao:"利水泄热",diff:"利水泄热（兼清相火）"}
+  ]},
+  {title:"麻黄 vs 桂枝 — 解表二将",herbs:[
+    {name:"麻黄",xing:"温",wei:"辛、微苦",gui:"肺、膀胱",gongxiao:"发汗散寒·宣肺平喘",diff:"开腠理发汗（力猛）"},
+    {name:"桂枝",xing:"温",wei:"辛、甘",gui:"心、肺、膀胱",gongxiao:"发汗解肌·温通经脉",diff:"解肌和营卫（力缓）"}
+  ]},
+  {title:"附子 vs 桂枝 — 温通之别",herbs:[
+    {name:"附子",xing:"大热",wei:"辛",gui:"心、肾、脾",gongxiao:"回阳救逆·补火助阳",diff:"温阳救逆（走里，大热）"},
+    {name:"桂枝",xing:"温",wei:"辛、甘",gui:"心、肺、膀胱",gongxiao:"发汗解肌·温通经脉",diff:"温经通脉（走表，温）"}
+  ]},
+];
+
+function renderStage3(){
+  const herbs = filterHerbs();
+  const herbNames = new Set(herbs.map(h=>h.name));
+  let html = '';
+  CONTRASTS.forEach(pair=>{
+    const available = pair.herbs.filter(h=>herbNames.has(h.name));
+    if(available.length<2) return;
+    html += `<div class="contrast-pair"><div class="contrast-title">${pair.title}</div><div class="contrast-herbs">`;
+    pair.herbs.forEach(h=>{
+      if(!herbNames.has(h.name)) return;
+      const hc=getHeatClass(parseXing(h.xing)),bg=getHeatBg(hc);
+      html += `<div class="contrast-herb" style="background:${bg}">`;
+      html += `<span class="ch-name">${h.name}</span>`;
+      html += `<div class="ch-row"><span class="ch-label">性</span><span class="ch-val">${h.xing}</span></div>`;
+      html += `<div class="ch-row"><span class="ch-label">味</span><span class="ch-val">${h.wei}</span></div>`;
+      html += `<div class="ch-row"><span class="ch-label">归</span><span class="ch-val">${h.gui}</span></div>`;
+      html += `<div class="ch-row"><span class="ch-label">功</span><span class="ch-val">${h.gongxiao}</span></div>`;
+      html += `<div class="ch-row"><span class="ch-label">鉴</span><span class="ch-val ch-diff">${h.diff}</span></div>`;
+      html += `</div>`;
+    });
+    html += `</div></div>`;
+  });
+  document.getElementById('stage3View').innerHTML = html || '<div style="text-align:center;color:#A8A29E;padding:20px;font-size:13px">当前筛选下无可对比药材</div>';
+}
+
+function switchStage(stage){
+  currentStage = stage;
+  document.querySelectorAll('.stage-tab').forEach(b=>b.classList.remove('active'));
+  document.querySelector(`[data-stage="${stage}"]`).classList.add('active');
+  document.getElementById('stage1View').style.display = stage===1?'block':'none';
+  document.getElementById('stage2View').style.display = stage===2?'block':'none';
+  document.getElementById('stage3View').style.display = stage===3?'block':'none';
+  if(stage===1) renderStage1();
+  if(stage===2) renderStage2();
+  if(stage===3) renderStage3();
+}
+
+// ====== 性味景观（感官映射） ======
+const FLAVOR_SENSE = {
+  辛:"如椒如姜·散而走窜",甘:"如饴如枣·缓而补益",
+  苦:"如药如茶·燥而泄降",酸:"如梅如醋·收而固涩",
+  咸:"如盐如海·软而润下",淡:"如水如露·渗而利湿"
+};
+
+function renderLandscape(){
+  const herbs = filterHerbs();
+  // Collect all wei values, split by 、
+  const flavorHerbs = {辛:[],甘:[],苦:[],酸:[],咸:[],淡:[]};
+  herbs.forEach(h=>{
+    h.wei.split('、').forEach(w=>{
+      const wt = w.trim();
+      if(flavorHerbs[wt]) flavorHerbs[wt].push(h);
+    });
+  });
+  
+  let html = '';
+  Object.entries(flavorHerbs).forEach(([flavor, fherbs])=>{
+    if(fherbs.length===0) return;
+    // Sort by 性 from hot to cold
+    fherbs.sort((a,b)=>NATURE_ORDER.indexOf(parseXing(a.xing))-NATURE_ORDER.indexOf(parseXing(b.xing)));
+    
+    // Count 性 distribution
+    const xingCnt={};
+    fherbs.forEach(h=>{const x=parseXing(h.xing);xingCnt[x]=(xingCnt[x]||0)+1});
+    const warm=["大热","热","温","微温"],cold=["微寒","凉","寒","大寒"];
+    let wc=0,cc=0;
+    Object.entries(xingCnt).forEach(([x,c])=>{if(warm.includes(x))wc+=c;if(cold.includes(x))cc+=c});
+    const dominance = wc>cc?"温热为主":cc>wc?"寒凉为主":"寒热均衡";
+    
+    html += `<div class="flavor-band">`;
+    html += `<div class="flavor-band-header">`;
+    html += `<span class="flavor-label">${flavor}</span>`;
+    html += `<span class="flavor-sense">${FLAVOR_SENSE[flavor]} · ${fherbs.length}味 · ${dominance}</span>`;
+    html += `</div>`;
+    html += `<div class="flavor-chips">`;
+    fherbs.forEach(h=>{
+      const hc = getHeatClass(parseXing(h.xing));
+      html += `<span class="flavor-chip flavor-${hc}">${h.name}</span>`;
+    });
+    html += `</div></div>`;
+  });
+  
+  document.getElementById('landscapeView').innerHTML = html;
+}
+
+function toggleLandscape(){
+  const toggle = document.querySelector('.landscape-toggle');
+  toggle.classList.toggle('open');
+  const lv = document.getElementById('landscapeView');
+  lv.style.display = toggle.classList.contains('open')?'block':'none';
+  if(toggle.classList.contains('open') && !lv.innerHTML) renderLandscape();
+}
+
+// ====== 事件绑定 ======
+document.querySelectorAll('.filter-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    currentCat = btn.dataset.cat;
+    renderLandscape();
+    switchStage(currentStage);
+  });
+});
+document.querySelectorAll('.stage-tab').forEach(btn=>{
+  btn.addEventListener('click',()=>{ switchStage(parseInt(btn.dataset.stage)); });
+});
+
+// ====== 初始化 ======
+renderLandscape();
+switchStage(1);
+</script>
+</body>
+</html>
